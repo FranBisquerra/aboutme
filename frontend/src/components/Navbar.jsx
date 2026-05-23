@@ -7,7 +7,6 @@ function Navbar() {
                 </span>
                 <ul className="flex gap-8 text-sm text-gray-600">
                     <li><a href="#about" className="hover:text-gray-900 transition-colors">About</a></li>
-                    <li><a href="#contact" className="hover:text-gray-900 transition-colors">Contact</a></li>
                 </ul>
             </div>
         </nav>

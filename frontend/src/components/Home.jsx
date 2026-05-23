@@ -16,9 +16,6 @@ function Home() {
                     <a href="#experience" className="px-6 py-3 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors">
                         See experience
                     </a>
-                    <a href={`mailto:${profile.email}`} className="px-6 py-3 text-gray-700 text-sm font-medium rounded-lg border border-gray-200 hover:border-gray-400 transition-colors">
-                        Contact
-                    </a>
                 </div>
                 <div className="flex flex-wrap gap-2">
                     {profile.skills.map(skill => (
