@@ -1,26 +1,76 @@
 # About Me
 
-Personal about me application built with Spring Boot.
+Personal website built as a learning project. Implements a modern architecture with Spring Boot (Hexagonal + DDD) on the backend and React on the frontend, deployed with Docker.
 
-## Tech Stack
+## Stack
 
-- Java 26
-- Spring Boot
-- Gradle
+| Layer | Technology |
+|-------|-----------|
+| Backend | Java 26 · Spring Boot 4 · Gradle |
+| Frontend | React 18 · Vite 5 · Axios |
+| Server | Nginx (reverse proxy) |
+| Containerization | Docker · Docker Compose |
 
-## Build
+## Project Structure
 
-```bash
-./gradlew build
+```
+aboutme/
+├── src/                          # Java backend (Hexagonal + DDD)
+│   └── main/java/com/fbisquerra/aboutme/
+│       ├── home/                 # Home module
+│       │   └── infrastructure/controller/HomeController.java
+│       └── shared/               # Shared configuration
+│           └── infrastructure/config/CorsConfig.java
+├── frontend/                     # React + Vite frontend
+│   └── src/
+│       ├── components/Home.jsx
+│       └── api/client.js
+├── infrastructure/
+│   └── docker/                   # Dockerfiles + Nginx + Compose
+│       ├── backend/Dockerfile
+│       ├── frontend/Dockerfile
+│       ├── frontend/nginx.conf
+│       └── docker-compose.yml
+└── build.gradle                  # Backend + frontend + Docker build tasks
 ```
 
-## Run
+## Profiles
+
+| Profile | Use case | How to run |
+|---------|----------|------------|
+| `dev` | Development with hot reload | IntelliJ + `npm run dev` |
+| `local` | Full production environment locally | `./gradlew dockerRun` |
+| `pro` | Production | `./gradlew dockerRun -Pprofile=pro` |
+
+## Development (dev profile)
 
 ```bash
+# Terminal 1 — backend
 ./gradlew bootRun
+
+# Terminal 2 — frontend (http://localhost:5173)
+cd frontend && npm run dev
 ```
 
-## Test
+Vite proxies `/api/*` requests to `localhost:8080` during development.
+
+## Local environment with Docker (local profile)
+
+```bash
+./gradlew dockerRun -x test
+```
+
+Builds the JAR and frontend, then starts:
+- `frontend` — Nginx at `http://localhost:80` (serves React + proxies `/api/*` → backend)
+- `backend` — Spring Boot at `:8080` (internal only)
+
+## API
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/home/greeting` | Returns `{"message": "Hello world!"}` |
+
+## Tests
 
 ```bash
 ./gradlew test
