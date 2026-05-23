@@ -1,6 +1,6 @@
 {
-  "name": "Francesc Bisquerra",
-  "title": "Full Stack Developer",
+  "name": "Francesc Bisquerra Castell",
+  "title": "Software Engineer",
   "location": "Palma de Mallorca",
   "email": "francesc.bisquerra@gmail.com",
   "linkedin": "https://www.linkedin.com/in/franbisquerra",
@@ -12,7 +12,7 @@
   ],
   "skills": [
     "Java", "Kotlin", "Spring Boot", "JavaScript", "React",
-    "Docker", "Kubernetes", "AWS", "CI/CD", "Git", "MySQL"
+    "Docker", "Kubernetes", "AWS", "CI/CD", "Git", "MariaDB"
   ],
   "experience": [
     {
