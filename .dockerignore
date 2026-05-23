@@ -1,0 +1,13 @@
+.gradle/
+node_modules/
+src/
+*.md
+.git/
+.idea/
+frontend/node_modules/
+frontend/src/
+frontend/.vite/
+frontend/index.html
+frontend/package.json
+frontend/package-lock.json
+frontend/vite.config.js

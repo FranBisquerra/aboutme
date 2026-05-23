@@ -40,3 +40,6 @@ out/
 frontend/node_modules/
 frontend/dist/
 frontend/.vite/
+
+### Node (root) ###
+node_modules/
