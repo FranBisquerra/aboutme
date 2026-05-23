@@ -6,8 +6,8 @@
   "linkedin": "https://www.linkedin.com/in/franbisquerra",
   "bio": "I consider myself a passionate person, who likes to learn, share and enjoy the challenges presented by information technologies.",
   "languages": [
-    { "name": "Català", "level": "Natiu" },
-    { "name": "Castellano", "level": "Nativo" },
+    { "name": "Catalan", "level": "Native" },
+    { "name": "Spanish", "level": "Native" },
     { "name": "English", "level": "Full Professional" }
   ],
   "skills": [
@@ -61,7 +61,7 @@
   "education": [
     {
       "institution": "Universitat de les Illes Balears",
-      "degree": "Grado en Ingeniería Informática",
+      "degree": "Bachelor's Degree in Computer Engineering",
       "start": "2012",
       "end": "2019"
     }

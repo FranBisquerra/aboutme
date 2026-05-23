@@ -4,9 +4,8 @@ function Navbar() {
       <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
         <span className="font-semibold text-gray-900 tracking-tight">fbisquerra</span>
         <ul className="flex gap-8 text-sm text-gray-600">
-          <li><a href="#about" className="hover:text-gray-900 transition-colors">Sobre mí</a></li>
-          <li><a href="#projects" className="hover:text-gray-900 transition-colors">Proyectos</a></li>
-          <li><a href="#contact" className="hover:text-gray-900 transition-colors">Contacto</a></li>
+          <li><a href="#about" className="hover:text-gray-900 transition-colors">About</a></li>
+<li><a href="#contact" className="hover:text-gray-900 transition-colors">Contact</a></li>
         </ul>
       </div>
     </nav>
