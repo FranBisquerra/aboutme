@@ -94,10 +94,40 @@ src/main/java/com/fbisquerra/aboutme/
 
 ---
 
-## 🚫 RESTRICCIONES CRÍTICAS PARA IAs
+## 🚀 Filosofía de Desarrollo
 
-### ⚠️ GIT - COMMITS
+### Iteración e Incrementalidad
 
+- **Versiones pequeñas y funcionales**: Mejor tener un feature simple que funciona que muchas características a medias
+- **Agregar dependencias bajo demanda**: Solo cuando realmente se necesitan, no "por si acaso"
+- **Refactorizar gradualmente**: Mejorar el diseño conforme crecen los requisitos
+- **Validar frecuentemente**: Compilar y testear regularmente para detectar problemas temprano
+- **Integración continua**: Los cambios se integran frecuentemente en `develop`
+
+### Principio YAGNI (You Aren't Gonna Need It)
+
+- ✅ Implementar solo lo que se necesita ahora
+- ✅ Diseñar para extensibilidad pero no sobre-ingenierizar
+- ✅ Agregar features cuando sean realmente solicitadas
+- ❌ No agregar código "por si acaso"
+- ❌ No usar patrones complejos si una solución simple funciona
+
+### Gestión de Dependencias
+
+- ✅ Agregar dependencias cuando se necesitan para una feature específica
+- ✅ Documentar por qué se agrega cada dependencia
+- ✅ Usar versiones estables y bien mantenidas
+- ✅ Revisar licencias y compatibilidad
+- ❌ No agregar librerías por "seguir tendencias"
+- ❌ No duplicar funcionalidad que ya existe en las dependencias actuales
+
+---
+
+## 🚫 RESTRICCIONES Y LINEAMIENTOS PARA IAs
+
+### ⚠️ Restricciones Críticas
+
+**GIT - COMMITS**:
 - **🔴 NO COMITEAR NADA SIN ORDEN EXPLÍCITA DEL USUARIO**
 - Antes de cualquier acción, informar al usuario del plan
 - Verificar siempre con `git status` antes de considerar cambios
@@ -105,23 +135,19 @@ src/main/java/com/fbisquerra/aboutme/
 - Nunca hacer force-push
 - Nunca modificar historial de commits existentes
 
-### ⚠️ TESTS
-
+**TESTS**:
 - **🔴 NO EJECUTAR `./gradlew test` A MENOS QUE SE INDIQUE EXPLÍCITAMENTE**
 - ✅ Sí compilar con `./gradlew build` para verificar errores de compilación
 - Si hay fallos de compilación, reportar al usuario EN VEZ DE commitear
 - Solo ejecutar tests cuando el usuario explícitamente lo pida
 
-### ⚠️ CAMBIOS DE CÓDIGO
-
+**CAMBIOS DE CÓDIGO**:
 - Antes de hacer cambios significativos, **informar al usuario del plan completo**
 - Esperar **confirmación explícita** antes de proceder
 - Si hay dudas sobre diseño o arquitectura, **preguntar primero**
 - No asumir preferencias del usuario
 
----
-
-## ✅ SÍ
+### ✅ Buenas Prácticas
 
 - Mantener consistencia con la estructura propuesta
 - Crear archivos en las carpetas correctas siguiendo la convención
@@ -133,7 +159,7 @@ src/main/java/com/fbisquerra/aboutme/
 - Usar DTOs para exponer datos en APIs REST
 - Hacer Value Objects inmutables y validar en el constructor
 
-## ❌ NO
+### ❌ Evitar
 
 - No comitear sin orden explícita
 - No ejecutar tests sin orden explícita
@@ -298,6 +324,6 @@ Usar matchers legibles y expresivos para validaciones.
 
 ---
 
-**Última actualización**: Planificación de arquitectura  
-**Versión**: 2.0  
+**Última actualización**: Especificación con filosofía de desarrollo  
+**Versión**: 3.0  
 **Estado**: Especificación lista para implementación
