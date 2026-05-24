@@ -1,3 +1,5 @@
+name: aboutme
+
 services:
   backend:
     build:
