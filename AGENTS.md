@@ -217,6 +217,13 @@ The `build` task depends on `buildFrontend`, so compiling the backend already in
 - Use DTOs to expose data in REST APIs
 - Make Value Objects immutable and validate in the constructor
 
+### Spring Boot 4 Compatibility Notes
+
+- **Jackson 3.x**: El paquete cambió de `com.fasterxml.jackson` a `tools.jackson`. Usar `tools.jackson.databind.ObjectMapper`, `tools.jackson.databind.JsonNode`, etc.
+- **MockMvc**: `@AutoConfigureMockMvc` eliminado — configurar con `MockMvcBuilders.webAppContextSetup(context).build()`
+- **Jackson como dependencia explícita**: `spring-boot-starter-json` debe declararse explícitamente en `build.gradle`
+- **Mockito como Java agent**: Java 26 no permite carga dinámica de agentes; Mockito debe configurarse como `-javaagent` vía configuración `mockitoAgent` en `build.gradle`
+
 ### Avoid
 
 - Do not commit without explicit instruction
@@ -285,6 +292,7 @@ src/test/java/com/fbisquerra/aboutme/
 
 **Integration Tests** (with MockMvc):
 - Use `@SpringBootTest` to load context
+- Set up MockMvc manually via `MockMvcBuilders.webAppContextSetup(context).build()` in `@BeforeEach` (`@AutoConfigureMockMvc` no existe en Spring Boot 4)
 - Use MockMvc to test controllers
 - Validate full request → response flow
 - Functionally named tests
@@ -363,6 +371,7 @@ Use readable and expressive matchers for validations.
 - Java: 26
 - Current dependencies:
   - `spring-boot-starter-web`
+  - `spring-boot-starter-json` (Jackson 3.x — required explicitly, not transitive in Spring Boot 4)
 - Pending dependencies (to add when needed):
   - `spring-boot-starter-data-jpa`
   - `spring-boot-starter-validation`
