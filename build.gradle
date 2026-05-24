@@ -51,7 +51,7 @@ tasks.register('dockerRun', Exec) {
 
     dependsOn 'build'
 
-    def args = ['docker', 'compose', '-f', composeFile, 'up', '--build', '-d']
+    def args = ['docker', 'compose', '-f', composeFile, '--env-file', '.env', 'up', '--build', '-d']
 
     environment('SPRING_PROFILES_ACTIVE', profile)
 
