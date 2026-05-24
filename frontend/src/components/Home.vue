@@ -24,13 +24,12 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { getProfile } from '../api/profile.js'
+import { onMounted } from 'vue'
+import { storeToRefs } from 'pinia'
+import { useProfileStore } from '../stores/profile.js'
 
-const profile = ref(null)
+const store = useProfileStore()
+const { profile } = storeToRefs(store)
 
-onMounted(async () => {
-  const response = await getProfile()
-  profile.value = response.data
-})
+onMounted(() => store.fetch())
 </script>
