@@ -43,10 +43,14 @@ tasks.named('build') {
     dependsOn 'buildFrontend'
 }
 
-def composeFile(profile) {
-    return profile == 'pro'
-        ? 'infrastructure/docker/docker-compose.prod.yml'
-        : 'infrastructure/docker/docker-compose.yml'
+def composeFiles(String profile) {
+    def files = ['docker', 'compose', '-f', 'infrastructure/docker/docker-compose.yml']
+    if (profile == 'pro') {
+        files += ['-f', 'infrastructure/docker/docker-compose.prod.yml']
+    } else {
+        files += ['-f', 'infrastructure/docker/docker-compose.local.yml']
+    }
+    return files
 }
 
 tasks.register('dockerRun', Exec) {
@@ -54,9 +58,7 @@ tasks.register('dockerRun', Exec) {
 
     dependsOn 'build'
 
-    def args = ['docker', 'compose', '-f', composeFile(profile), '--env-file', '.env', 'up', '--build', '-d']
-
-    environment('SPRING_PROFILES_ACTIVE', profile)
+    def args = composeFiles(profile) + ['--env-file', '.env', 'up', '--build', '-d']
 
     doFirst {
         println "Starting with profile: ${profile}"
@@ -69,7 +71,7 @@ tasks.register('dockerRun', Exec) {
 tasks.register('dockerStop', Exec) {
     def profile = project.findProperty('profile') ?: 'local'
 
-    commandLine 'docker', 'compose', '-f', composeFile(profile), 'stop'
+    commandLine composeFiles(profile) + ['stop']
 
     doFirst {
         println "Stopping containers for profile: ${profile}"
@@ -79,7 +81,7 @@ tasks.register('dockerStop', Exec) {
 tasks.register('dockerStart', Exec) {
     def profile = project.findProperty('profile') ?: 'local'
 
-    commandLine 'docker', 'compose', '-f', composeFile(profile), 'start'
+    commandLine composeFiles(profile) + ['start']
 
     doFirst {
         println "Starting containers for profile: ${profile}"

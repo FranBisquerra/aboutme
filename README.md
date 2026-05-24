@@ -79,7 +79,7 @@ Builds the JAR and frontend, then starts:
 ./gradlew dockerRun -Pprofile=pro
 ```
 
-Builds the JAR and frontend, then starts:
+Merges `docker-compose.yml` (base) with `docker-compose.prod.yml` (overrides), then starts:
 - `frontend` — Nginx at ports 80 (HTTP→HTTPS redirect) and 443 (HTTPS, SSL)
 - `backend` — Spring Boot at `:8080` (internal only)
 - `certbot` — Let's Encrypt SSL certificate automation with 12-hour renewal

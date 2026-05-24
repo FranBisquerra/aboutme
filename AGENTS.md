@@ -171,12 +171,13 @@ El task `build` depende de `buildFrontend`, por lo que compilar el backend ya in
 | `local` | `docker-compose.yml` | `frontend`, `backend` | `http://localhost` |
 | `pro` | `docker-compose.prod.yml` | `frontend`, `backend`, `certbot` | `https://<DOMAIN>` |
 
-### Detalles del perfil `pro`
+### Estrategia de compose: base + override
 
-- Nginx escucha en puerto 80 (redirige a HTTPS) y 443 (SSL/TLS)
-- Certbot gestiona certificados Let's Encrypt con renovación automática cada 12h
+`docker-compose.yml` es el archivo base (perfil `local`). Para `pro`, se aplica `docker-compose.prod.yml` encima con `-f` adicional, que añade/sobreescribe solo las diferencias:
+- Nginx añade puerto 443, volúmenes SSL y la config `nginx.prod.conf`
+- Backend fuerza `SPRING_PROFILES_ACTIVE: pro` y `restart: unless-stopped`
+- Se añade el servicio `certbot` (solo existe en `pro`)
 - Requiere variable `DOMAIN` en `.env` (actualmente `franbisquerra.dev`)
-- El backend tiene política `restart: always` en producción
 
 ---
 
