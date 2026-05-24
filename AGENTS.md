@@ -6,12 +6,37 @@
 
 **Stack Tecnológico**:
 - **Backend**: Spring Boot 4.0.4 (Java 26) con Arquitectura Hexagonal + DDD
-- **Frontend**: React (a definir: Vite o CRA)
-- **Build**: Gradle (backend), npm/yarn (frontend)
-- **Contenedorización**: Docker + Docker Compose
+- **Frontend**: Vue 3.5.34 + Vite 5 + Tailwind CSS 4 + Axios
+- **Build**: Gradle (backend + tareas Docker), npm (frontend)
+- **Contenedorización**: Docker + Docker Compose (local y producción)
+- **SSL/TLS**: Let's Encrypt (Certbot, renovación automática)
 - **Gestión de versiones**: Git (rama main/develop)
 
 **Propósito**: Implementar de forma progresiva características como autenticación, cola de mensajería, envío de emails, etc., con el objetivo de aprender cómo se implementan en una aplicación real.
+
+---
+
+## 📁 Estructura del Proyecto - Frontend (Vue 3)
+
+```
+frontend/
+├── src/
+│   ├── App.vue                    # Componente raíz
+│   ├── main.js                    # Punto de entrada
+│   ├── index.css                  # Estilos globales + Tailwind
+│   ├── api/                       # Clientes HTTP (Axios)
+│   ├── data/                      # Datos estáticos (JSON)
+│   └── components/                # Componentes de la UI
+├── index.html
+├── vite.config.js
+└── package.json
+```
+
+**Convenciones frontend**:
+- Componentes en PascalCase con extensión `.vue`
+- Estilos con clases de Tailwind CSS (sin CSS custom salvo `index.css`)
+- Llamadas HTTP centralizadas en `api/`
+- Datos estáticos del perfil en `data/` (sin API)
 
 ---
 
@@ -120,6 +145,38 @@ src/main/java/com/fbisquerra/aboutme/
 - ✅ Revisar licencias y compatibilidad
 - ❌ No agregar librerías por "seguir tendencias"
 - ❌ No duplicar funcionalidad que ya existe en las dependencias actuales
+
+---
+
+## 🚀 Despliegue con Gradle + Docker
+
+### Tareas Gradle disponibles
+
+| Tarea | Comando | Descripción |
+|-------|---------|-------------|
+| `installFrontend` | (interna) | Ejecuta `npm install` en `frontend/` |
+| `buildFrontend` | (interna) | Ejecuta `npm run build` (produce `frontend/dist/`) |
+| `dockerRun` | `./gradlew dockerRun` | Perfil `local`: construye y levanta 2 contenedores |
+| `dockerRun (pro)` | `./gradlew dockerRun -Pprofile=pro` | Perfil `pro`: 3 contenedores con SSL |
+| `dockerStop` | `./gradlew dockerStop` | Para los contenedores activos |
+| `dockerStart` | `./gradlew dockerStart` | Reanuda contenedores ya creados |
+
+El task `build` depende de `buildFrontend`, por lo que compilar el backend ya incluye compilar el frontend.
+
+### Perfiles de entorno
+
+| Perfil | Compose file | Contenedores | Acceso |
+|--------|-------------|--------------|--------|
+| `dev` | — | ninguno (procesos locales) | backend `:8080`, frontend `:5173` |
+| `local` | `docker-compose.yml` | `frontend`, `backend` | `http://localhost` |
+| `pro` | `docker-compose.prod.yml` | `frontend`, `backend`, `certbot` | `https://<DOMAIN>` |
+
+### Detalles del perfil `pro`
+
+- Nginx escucha en puerto 80 (redirige a HTTPS) y 443 (SSL/TLS)
+- Certbot gestiona certificados Let's Encrypt con renovación automática cada 12h
+- Requiere variable `DOMAIN` en `.env` (actualmente `franbisquerra.dev`)
+- El backend tiene política `restart: always` en producción
 
 ---
 
@@ -298,19 +355,26 @@ Usar matchers legibles y expresivos para validaciones.
 
 ## ⚙️ Configuración Técnica Actual
 
-**Spring Boot**:
+**Backend (Spring Boot)**:
 - Versión: 4.0.4
 - Java: 26
-- Dependencias necesarias (a definir):
-  - spring-boot-starter-web
-  - spring-boot-starter-data-jpa
-  - spring-boot-starter-validation
-  - spring-boot-starter-security (cuando corresponda)
+- Dependencias actuales:
+  - `spring-boot-starter-web`
+- Dependencias pendientes (a añadir cuando se necesiten):
+  - `spring-boot-starter-data-jpa`
+  - `spring-boot-starter-validation`
+  - `spring-boot-starter-security`
   - Database driver (PostgreSQL o H2)
 
 **Build**: Gradle 8.x
 
 **Package**: `com.fbisquerra.aboutme`
+
+**Frontend (Vue 3)**:
+- Vue: 3.5.34
+- Vite: 5.4.11
+- Tailwind CSS: 4.3.0 (via plugin `@tailwindcss/vite`)
+- Axios: 1.7.9
 
 ---
 
@@ -324,6 +388,6 @@ Usar matchers legibles y expresivos para validaciones.
 
 ---
 
-**Última actualización**: Especificación con filosofía de desarrollo  
-**Versión**: 3.0  
-**Estado**: Especificación lista para implementación
+**Última actualización**: Migración a Vue 3 + herramientas de despliegue (2026-05-24)  
+**Versión**: 4.0  
+**Estado**: En desarrollo activo

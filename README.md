@@ -1,13 +1,13 @@
 # About Me
 
-Personal website built as a learning project. Implements a modern architecture with Spring Boot (Hexagonal + DDD) on the backend and React on the frontend, deployed with Docker.
+Personal website built as a learning project. Implements a modern architecture with Spring Boot (Hexagonal + DDD) on the backend and Vue 3 on the frontend, deployed with Docker.
 
 ## Stack
 
 | Layer | Technology |
 |-------|-----------|
 | Backend | Java 26 · Spring Boot 4 · Gradle |
-| Frontend | React 18 · Vite 5 · Axios |
+| Frontend | Vue 3 · Vite 5 · Axios · Tailwind CSS 4 |
 | Server | Nginx (reverse proxy) |
 | Containerization | Docker · Docker Compose |
 
@@ -21,16 +21,25 @@ aboutme/
 │       │   └── infrastructure/controller/HomeController.java
 │       └── shared/               # Shared configuration
 │           └── infrastructure/config/CorsConfig.java
-├── frontend/                     # React + Vite frontend
+├── frontend/                     # Vue 3 + Vite frontend
 │   └── src/
-│       ├── components/Home.jsx
-│       └── api/client.js
+│       ├── App.vue
+│       ├── main.js
+│       ├── api/client.js
+│       ├── data/profile.json
+│       └── components/
+│           ├── Home.vue
+│           ├── Navbar.vue
+│           ├── Experience.vue
+│           └── BackToTop.vue
 ├── infrastructure/
 │   └── docker/                   # Dockerfiles + Nginx + Compose
 │       ├── backend/Dockerfile
 │       ├── frontend/Dockerfile
 │       ├── frontend/nginx.conf
-│       └── docker-compose.yml
+│       ├── frontend/nginx.prod.conf
+│       ├── docker-compose.yml
+│       └── docker-compose.prod.yml
 └── build.gradle                  # Backend + frontend + Docker build tasks
 ```
 
@@ -61,8 +70,21 @@ Vite proxies `/api/*` requests to `localhost:8080` during development.
 ```
 
 Builds the JAR and frontend, then starts:
-- `frontend` — Nginx at `http://localhost:80` (serves React + proxies `/api/*` → backend)
+- `frontend` — Nginx at `http://localhost:80` (serves Vue + proxies `/api/*` → backend)
 - `backend` — Spring Boot at `:8080` (internal only)
+
+## Production environment with Docker (pro profile)
+
+```bash
+./gradlew dockerRun -Pprofile=pro
+```
+
+Builds the JAR and frontend, then starts:
+- `frontend` — Nginx at ports 80 (HTTP→HTTPS redirect) and 443 (HTTPS, SSL)
+- `backend` — Spring Boot at `:8080` (internal only)
+- `certbot` — Let's Encrypt SSL certificate automation with 12-hour renewal
+
+Requires `DOMAIN` set in `.env` (configured as `franbisquerra.dev`).
 
 ## API
 
