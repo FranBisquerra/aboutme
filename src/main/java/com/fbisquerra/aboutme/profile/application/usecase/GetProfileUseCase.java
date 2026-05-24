@@ -26,6 +26,7 @@ public class GetProfileUseCase {
                 profile.location(),
                 profile.email(),
                 profile.linkedin(),
+                profile.github(),
                 profile.bio(),
                 profile.languages().stream()
                         .map(l -> new ProfileResponse.Language(l.name(), l.level()))

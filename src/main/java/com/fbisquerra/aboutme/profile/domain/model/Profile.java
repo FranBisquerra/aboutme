@@ -8,6 +8,7 @@ public record Profile(
         String location,
         String email,
         String linkedin,
+        String github,
         String bio,
         List<Language> languages,
         List<String> skills,
