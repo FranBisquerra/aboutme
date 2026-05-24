@@ -86,12 +86,6 @@ Merges `docker-compose.yml` (base) with `docker-compose.prod.yml` (overrides), t
 
 Requires `DOMAIN` set in `.env` (configured as `franbisquerra.dev`).
 
-## API
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/home/greeting` | Returns `{"message": "Hello world!"}` |
-
 ## Tests
 
 ```bash

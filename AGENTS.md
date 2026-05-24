@@ -281,6 +281,7 @@ src/test/java/com/fbisquerra/aboutme/
 - Test use case orchestration
 - Validate DTO mapping
 - Do not load Spring context
+- Use `doReturn(...).when(mock).method()` syntax (not `when(...).thenReturn(...)`)
 
 **Integration Tests** (with MockMvc):
 - Use `@SpringBootTest` to load context
@@ -329,6 +330,7 @@ shouldReturnHttpCreatedStatusOnSuccessfulRegistration()
 - Do not hardcode magic values (use fixtures)
 - Do not use `Thread.sleep()` in tests
 - Do not share state between tests
+- **Do not write unit tests for fixtures** — fixtures are test helpers, not production code
 
 ### Fixtures: Factory Methods
 
