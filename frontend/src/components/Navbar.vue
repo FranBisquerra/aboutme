@@ -25,7 +25,7 @@
   </nav>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, watchEffect } from 'vue'
 
 const dark = ref(

@@ -7,7 +7,7 @@ Personal website built as a learning project. Implements a modern architecture w
 | Layer | Technology |
 |-------|-----------|
 | Backend | Java 26 · Spring Boot 4 · Gradle |
-| Frontend | Vue 3 · Vite 5 · Axios · Tailwind CSS 4 |
+| Frontend | Vue 3 · Vite 5 · TypeScript · Axios · Tailwind CSS 4 · Pinia |
 | Server | Nginx (reverse proxy) |
 | Containerization | Docker · Docker Compose |
 
@@ -19,14 +19,23 @@ aboutme/
 │   └── main/java/com/fbisquerra/aboutme/
 │       ├── home/                 # Home module
 │       │   └── infrastructure/controller/HomeController.java
+│       ├── profile/              # Profile module
+│       │   ├── domain/model/Profile.java
+│       │   ├── domain/repository/ProfileRepository.java
+│       │   ├── application/dto/ProfileResponse.java
+│       │   ├── application/usecase/GetProfileUseCase.java
+│       │   ├── infrastructure/persistence/JsonProfileRepository.java
+│       │   └── infrastructure/controller/ProfileController.java
 │       └── shared/               # Shared configuration
 │           └── infrastructure/config/CorsConfig.java
-├── frontend/                     # Vue 3 + Vite frontend
+├── frontend/                     # Vue 3 + Vite + TypeScript frontend
 │   └── src/
 │       ├── App.vue
-│       ├── main.js
-│       ├── api/client.js
-│       ├── data/profile.json
+│       ├── main.ts
+│       ├── types/profile.ts      # TypeScript interfaces
+│       ├── api/client.ts
+│       ├── api/profile.ts
+│       ├── stores/profile.ts     # Pinia store
 │       └── components/
 │           ├── Home.vue
 │           ├── Navbar.vue
@@ -85,6 +94,8 @@ Merges `docker-compose.yml` (base) with `docker-compose.prod.yml` (overrides), t
 - `certbot` — Let's Encrypt SSL certificate automation with 12-hour renewal
 
 Requires `DOMAIN` set in `.env` (configured as `franbisquerra.dev`).
+
+<!-- API documented via Swagger (pending) -->
 
 ## Tests
 

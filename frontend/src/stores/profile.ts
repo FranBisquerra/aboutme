@@ -1,9 +1,10 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
-import { getProfile } from '../api/profile.js'
+import type { Profile } from '../types/profile'
+import { getProfile } from '../api/profile'
 
 export const useProfileStore = defineStore('profile', () => {
-  const profile = ref(null)
+  const profile = ref<Profile | null>(null)
 
   async function fetch() {
     if (profile.value) return

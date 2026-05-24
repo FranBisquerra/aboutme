@@ -37,19 +37,19 @@
   </section>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
-import { useProfileStore } from '../stores/profile.js'
+import { useProfileStore } from '../stores/profile'
 
 const store = useProfileStore()
 const { profile } = storeToRefs(store)
 
 onMounted(() => store.fetch())
 
-function formatDate(dateStr) {
+function formatDate(dateStr: string | null) {
   if (!dateStr) return 'Present'
-  const [year, month] = dateStr.split('-')
+  const [year, month] = dateStr.split('-').map(Number)
   return new Date(year, month - 1).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' })
 }
 </script>

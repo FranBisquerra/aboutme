@@ -6,7 +6,7 @@
 
 **Tech Stack**:
 - **Backend**: Spring Boot 4.0.4 (Java 26) with Hexagonal Architecture + DDD
-- **Frontend**: Vue 3.5.34 + Vite 5 + Tailwind CSS 4 + Axios
+- **Frontend**: Vue 3.5.34 + Vite 5 + TypeScript + Tailwind CSS 4 + Axios + Pinia
 - **Build**: Gradle (backend + Docker tasks), npm (frontend)
 - **Containerization**: Docker + Docker Compose (local and production)
 - **SSL/TLS**: Let's Encrypt (Certbot, automatic renewal)
@@ -22,21 +22,26 @@
 frontend/
 ├── src/
 │   ├── App.vue                    # Root component
-│   ├── main.js                    # Entry point
+│   ├── main.ts                    # Entry point
 │   ├── index.css                  # Global styles + Tailwind
+│   ├── types/                     # TypeScript interfaces (contract with backend)
 │   ├── api/                       # HTTP clients (Axios)
-│   ├── data/                      # Static data (JSON)
+│   ├── stores/                    # Pinia stores (global state)
 │   └── components/                # UI components
+├── env.d.ts                       # Vite + Vue type declarations
+├── tsconfig.json
 ├── index.html
-├── vite.config.js
+├── vite.config.ts
 └── package.json
 ```
 
 **Frontend conventions**:
+- TypeScript in all `.ts` files and `<script setup lang="ts">` in components
 - Components in PascalCase with `.vue` extension
 - Styles with Tailwind CSS classes (no custom CSS except `index.css`)
 - HTTP calls centralized in `api/`
-- Static profile data in `data/` (no API)
+- Global state in `stores/` (Pinia) — shared data fetched once, not per component
+- Backend contracts typed in `types/`
 
 ---
 
@@ -382,11 +387,13 @@ Use readable and expressive matchers for validations.
 
 **Package**: `com.fbisquerra.aboutme`
 
-**Frontend (Vue 3)**:
+**Frontend (Vue 3 + TypeScript)**:
 - Vue: 3.5.34
 - Vite: 5.4.11
+- TypeScript: 6.x
 - Tailwind CSS: 4.3.0 (via plugin `@tailwindcss/vite`)
 - Axios: 1.7.9
+- Pinia: 3.0.4
 
 ---
 
@@ -400,6 +407,6 @@ Use readable and expressive matchers for validations.
 
 ---
 
-**Last updated**: Migration to Vue 3 + deployment tools (2026-05-24)
+**Last updated**: TypeScript migration + profile API (2026-05-24)
 **Version**: 4.0
 **Status**: Under active development
