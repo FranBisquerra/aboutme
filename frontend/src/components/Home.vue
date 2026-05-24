@@ -1,6 +1,6 @@
 <template>
   <main class="min-h-screen bg-gray-50 dark:bg-gray-950">
-    <section id="about" class="max-w-5xl mx-auto px-6 pt-40 pb-24">
+    <section v-if="profile" id="about" class="max-w-5xl mx-auto px-6 pt-40 pb-24">
       <p class="text-sm font-medium text-indigo-600 dark:text-indigo-400 mb-4 tracking-wide uppercase">Hi, I'm</p>
       <h1 class="text-5xl font-bold text-gray-900 dark:text-white mb-4 leading-tight">{{ profile.name }}</h1>
       <p class="text-xl text-indigo-500 dark:text-indigo-400 font-medium mb-6">{{ profile.title }}</p>
@@ -24,5 +24,13 @@
 </template>
 
 <script setup>
-import profile from '../data/profile.json'
+import { ref, onMounted } from 'vue'
+import { getProfile } from '../api/profile.js'
+
+const profile = ref(null)
+
+onMounted(async () => {
+  const response = await getProfile()
+  profile.value = response.data
+})
 </script>

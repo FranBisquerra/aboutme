@@ -1,5 +1,5 @@
 <template>
-  <section id="experience" class="bg-gray-50 dark:bg-gray-950">
+  <section v-if="profile" id="experience" class="bg-gray-50 dark:bg-gray-950">
     <div class="max-w-5xl mx-auto px-6 py-20">
       <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-12">Experience</h2>
       <div class="relative">
@@ -38,7 +38,15 @@
 </template>
 
 <script setup>
-import profile from '../data/profile.json'
+import { ref, onMounted } from 'vue'
+import { getProfile } from '../api/profile.js'
+
+const profile = ref(null)
+
+onMounted(async () => {
+  const response = await getProfile()
+  profile.value = response.data
+})
 
 function formatDate(dateStr) {
   if (!dateStr) return 'Present'
