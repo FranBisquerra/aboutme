@@ -1,261 +1,261 @@
-# Guía para IAs - Proyecto About Me
+# AI Guide - About Me Project
 
-## 🎯 Visión General del Proyecto
+## Project Overview
 
-**Objetivo**: Crear una página personal "Sobre mí" con múltiples características técnicas implementadas como ejercicio de aprendizaje.
+**Goal**: Create a personal "About Me" page with multiple technical features implemented as a learning exercise.
 
-**Stack Tecnológico**:
-- **Backend**: Spring Boot 4.0.4 (Java 26) con Arquitectura Hexagonal + DDD
+**Tech Stack**:
+- **Backend**: Spring Boot 4.0.4 (Java 26) with Hexagonal Architecture + DDD
 - **Frontend**: Vue 3.5.34 + Vite 5 + Tailwind CSS 4 + Axios
-- **Build**: Gradle (backend + tareas Docker), npm (frontend)
-- **Contenedorización**: Docker + Docker Compose (local y producción)
-- **SSL/TLS**: Let's Encrypt (Certbot, renovación automática)
-- **Gestión de versiones**: Git (rama main/develop)
+- **Build**: Gradle (backend + Docker tasks), npm (frontend)
+- **Containerization**: Docker + Docker Compose (local and production)
+- **SSL/TLS**: Let's Encrypt (Certbot, automatic renewal)
+- **Version control**: Git (main/develop branches)
 
-**Propósito**: Implementar de forma progresiva características como autenticación, cola de mensajería, envío de emails, etc., con el objetivo de aprender cómo se implementan en una aplicación real.
+**Purpose**: Progressively implement features such as authentication, message queues, email sending, etc., with the goal of learning how they are implemented in a real application.
 
 ---
 
-## 📁 Estructura del Proyecto - Frontend (Vue 3)
+## Project Structure - Frontend (Vue 3)
 
 ```
 frontend/
 ├── src/
-│   ├── App.vue                    # Componente raíz
-│   ├── main.js                    # Punto de entrada
-│   ├── index.css                  # Estilos globales + Tailwind
-│   ├── api/                       # Clientes HTTP (Axios)
-│   ├── data/                      # Datos estáticos (JSON)
-│   └── components/                # Componentes de la UI
+│   ├── App.vue                    # Root component
+│   ├── main.js                    # Entry point
+│   ├── index.css                  # Global styles + Tailwind
+│   ├── api/                       # HTTP clients (Axios)
+│   ├── data/                      # Static data (JSON)
+│   └── components/                # UI components
 ├── index.html
 ├── vite.config.js
 └── package.json
 ```
 
-**Convenciones frontend**:
-- Componentes en PascalCase con extensión `.vue`
-- Estilos con clases de Tailwind CSS (sin CSS custom salvo `index.css`)
-- Llamadas HTTP centralizadas en `api/`
-- Datos estáticos del perfil en `data/` (sin API)
+**Frontend conventions**:
+- Components in PascalCase with `.vue` extension
+- Styles with Tailwind CSS classes (no custom CSS except `index.css`)
+- HTTP calls centralized in `api/`
+- Static profile data in `data/` (no API)
 
 ---
 
-## 📁 Estructura del Proyecto - Backend (Hexagonal + DDD)
+## Project Structure - Backend (Hexagonal + DDD)
 
-### Arquitectura Hexagonal (Puertos y Adaptadores)
+### Hexagonal Architecture (Ports and Adapters)
 
-La aplicación se organiza en **módulos por agregado**, cada uno con tres capas:
+The application is organized in **modules by aggregate**, each with three layers:
 
 ```
 src/main/java/com/fbisquerra/aboutme/
 │
-├── shared/                              # Código compartido entre módulos
+├── shared/                              # Shared code across modules
 │   ├── domain/
-│   │   ├── DomainEvent.java           # Clase base para eventos
-│   │   ├── DomainException.java       # Excepción base de dominio
-│   │   └── ValueObject.java           # Interfaz/clase base para VOs
+│   │   ├── DomainEvent.java           # Base class for events
+│   │   ├── DomainException.java       # Base domain exception
+│   │   └── ValueObject.java           # Interface/base class for VOs
 │   └── infrastructure/
-│       └── config/                     # Configuración compartida
+│       └── config/                     # Shared configuration
 │
-├── {modulo}/                           # Módulo (Agregado raíz)
+├── {module}/                           # Module (Root Aggregate)
 │   │
-│   ├── domain/                         # CAPA DE DOMINIO
-│   │   ├── model/                      # Agregados, Entidades, Value Objects
-│   │   │   ├── {Agregado}.java
-│   │   │   ├── {AgregadoId}.java      # Value Object de ID
-│   │   │   └── {OtroVO}.java
-│   │   ├── repository/                 # PUERTO: Interfaz de persistencia
-│   │   │   └── {Agregado}Repository.java
-│   │   ├── service/                    # Servicios de Dominio (lógica pura)
+│   ├── domain/                         # DOMAIN LAYER
+│   │   ├── model/                      # Aggregates, Entities, Value Objects
+│   │   │   ├── {Aggregate}.java
+│   │   │   ├── {AggregateId}.java     # ID Value Object
+│   │   │   └── {OtherVO}.java
+│   │   ├── repository/                 # PORT: Persistence interface
+│   │   │   └── {Aggregate}Repository.java
+│   │   ├── service/                    # Domain Services (pure logic)
 │   │   │   └── {Feature}DomainService.java
-│   │   └── event/                      # Eventos de Dominio
-│   │       └── {Evento}Event.java
+│   │   └── event/                      # Domain Events
+│   │       └── {Event}Event.java
 │   │
-│   ├── application/                    # CAPA DE APLICACIÓN
-│   │   ├── usecase/                    # Casos de Uso (orquestación)
-│   │   │   └── {Accion}UseCase.java
+│   ├── application/                    # APPLICATION LAYER
+│   │   ├── usecase/                    # Use Cases (orchestration)
+│   │   │   └── {Action}UseCase.java
 │   │   ├── dto/                        # Data Transfer Objects
-│   │   │   ├── {Agregado}Request.java
-│   │   │   └── {Agregado}Response.java
-│   │   ├── mapper/                     # Mapeo Domain ↔ DTO
-│   │   │   └── {Agregado}Mapper.java
-│   │   └── command/                    # CQRS: Comandos
-│   │       └── {Comando}Command.java
+│   │   │   ├── {Aggregate}Request.java
+│   │   │   └── {Aggregate}Response.java
+│   │   ├── mapper/                     # Domain ↔ DTO mapping
+│   │   │   └── {Aggregate}Mapper.java
+│   │   └── command/                    # CQRS: Commands
+│   │       └── {Command}Command.java
 │   │
-│   └── infrastructure/                 # CAPA DE INFRAESTRUCTURA
-│       ├── controller/                 # ADAPTADOR: API REST
-│       │   └── {Agregado}Controller.java
-│       ├── persistence/                # ADAPTADOR: Acceso a Datos
-│       │   ├── {Agregado}JpaEntity.java
-│       │   ├── {Agregado}JpaRepository.java (Spring Data)
-│       │   └── {Agregado}RepositoryImpl.java (Implementación del puerto)
-│       ├── event/                      # ADAPTADOR: Publicación de eventos
-│       │   └── {Agregado}EventPublisher.java
-│       └── config/                     # Configuración del módulo
-│           └── {Agregado}Config.java
+│   └── infrastructure/                 # INFRASTRUCTURE LAYER
+│       ├── controller/                 # ADAPTER: REST API
+│       │   └── {Aggregate}Controller.java
+│       ├── persistence/                # ADAPTER: Data Access
+│       │   ├── {Aggregate}JpaEntity.java
+│       │   ├── {Aggregate}JpaRepository.java (Spring Data)
+│       │   └── {Aggregate}RepositoryImpl.java (Port implementation)
+│       ├── event/                      # ADAPTER: Event publishing
+│       │   └── {Aggregate}EventPublisher.java
+│       └── config/                     # Module configuration
+│           └── {Aggregate}Config.java
 │
 └── resources/
-    ├── application.yml                 # Configuración principal
+    ├── application.yml                 # Main configuration
     ├── application-dev.yml
     └── application-prod.yml
 ```
 
 ---
 
-## 🏗️ Conceptos Clave - DDD
+## Key DDD Concepts
 
-| Concepto | Descripción | Ubicación |
-|----------|-------------|-----------|
-| **Agregado** | Raíz de un Bounded Context con ciclo de vida completo | `domain/model/{Agregado}.java` |
-| **Value Object** | Objeto inmutable sin identidad propia | `domain/model/{VO}.java` |
-| **Entity** | Objeto con identidad única (dentro del agregado) | `domain/model/` |
-| **Repositorio (Puerto)** | Interfaz abstracta, sin detalles de persistencia | `domain/repository/` |
-| **Repositorio (Adaptador)** | Implementación concreta con JPA | `infrastructure/persistence/` |
-| **Domain Service** | Lógica de negocio pura (sin Spring) | `domain/service/` |
-| **Application Service / UseCase** | Orquestación de acciones, transacciones | `application/usecase/` |
-| **Evento de Dominio** | Suceso importante del negocio | `domain/event/` |
-| **DTO** | Objeto para transferir datos entre capas | `application/dto/` |
-| **Mapper** | Convertir entre entidades de dominio y DTOs | `application/mapper/` |
-
----
-
-## 🚀 Filosofía de Desarrollo
-
-### Iteración e Incrementalidad
-
-- **Versiones pequeñas y funcionales**: Mejor tener un feature simple que funciona que muchas características a medias
-- **Agregar dependencias bajo demanda**: Solo cuando realmente se necesitan, no "por si acaso"
-- **Refactorizar gradualmente**: Mejorar el diseño conforme crecen los requisitos
-- **Validar frecuentemente**: Compilar y testear regularmente para detectar problemas temprano
-- **Integración continua**: Los cambios se integran frecuentemente en `develop`
-
-### Principio YAGNI (You Aren't Gonna Need It)
-
-- ✅ Implementar solo lo que se necesita ahora
-- ✅ Diseñar para extensibilidad pero no sobre-ingenierizar
-- ✅ Agregar features cuando sean realmente solicitadas
-- ❌ No agregar código "por si acaso"
-- ❌ No usar patrones complejos si una solución simple funciona
-
-### Gestión de Dependencias
-
-- ✅ Agregar dependencias cuando se necesitan para una feature específica
-- ✅ Documentar por qué se agrega cada dependencia
-- ✅ Usar versiones estables y bien mantenidas
-- ✅ Revisar licencias y compatibilidad
-- ❌ No agregar librerías por "seguir tendencias"
-- ❌ No duplicar funcionalidad que ya existe en las dependencias actuales
+| Concept | Description | Location |
+|---------|-------------|----------|
+| **Aggregate** | Root of a Bounded Context with full lifecycle | `domain/model/{Aggregate}.java` |
+| **Value Object** | Immutable object with no own identity | `domain/model/{VO}.java` |
+| **Entity** | Object with unique identity (within the aggregate) | `domain/model/` |
+| **Repository (Port)** | Abstract interface, no persistence details | `domain/repository/` |
+| **Repository (Adapter)** | Concrete implementation with JPA | `infrastructure/persistence/` |
+| **Domain Service** | Pure business logic (no Spring) | `domain/service/` |
+| **Application Service / UseCase** | Action orchestration, transactions | `application/usecase/` |
+| **Domain Event** | Important business occurrence | `domain/event/` |
+| **DTO** | Object for transferring data between layers | `application/dto/` |
+| **Mapper** | Convert between domain entities and DTOs | `application/mapper/` |
 
 ---
 
-## 🚀 Despliegue con Gradle + Docker
+## Development Philosophy
 
-### Tareas Gradle disponibles
+### Iteration and Incrementality
 
-| Tarea | Comando | Descripción |
-|-------|---------|-------------|
-| `installFrontend` | (interna) | Ejecuta `npm install` en `frontend/` |
-| `buildFrontend` | (interna) | Ejecuta `npm run build` (produce `frontend/dist/`) |
-| `dockerRun` | `./gradlew dockerRun` | Perfil `local`: construye y levanta 2 contenedores |
-| `dockerRun (pro)` | `./gradlew dockerRun -Pprofile=pro` | Perfil `pro`: 3 contenedores con SSL |
-| `dockerStop` | `./gradlew dockerStop` | Para los contenedores activos |
-| `dockerStart` | `./gradlew dockerStart` | Reanuda contenedores ya creados |
+- **Small, working versions**: Better to have a simple feature that works than many half-done features
+- **Add dependencies on demand**: Only when truly needed, not "just in case"
+- **Refactor gradually**: Improve design as requirements grow
+- **Validate frequently**: Compile and test regularly to catch problems early
+- **Continuous integration**: Changes are integrated frequently into `develop`
 
-El task `build` depende de `buildFrontend`, por lo que compilar el backend ya incluye compilar el frontend.
+### YAGNI Principle (You Aren't Gonna Need It)
 
-### Perfiles de entorno
+- Implement only what is needed now
+- Design for extensibility but don't over-engineer
+- Add features only when explicitly requested
+- Don't add code "just in case"
+- Don't use complex patterns if a simple solution works
 
-| Perfil | Compose file | Contenedores | Acceso |
-|--------|-------------|--------------|--------|
-| `dev` | — | ninguno (procesos locales) | backend `:8080`, frontend `:5173` |
+### Dependency Management
+
+- Add dependencies when needed for a specific feature
+- Document why each dependency is added
+- Use stable, well-maintained versions
+- Review licenses and compatibility
+- Don't add libraries to "follow trends"
+- Don't duplicate functionality already present in current dependencies
+
+---
+
+## Deployment with Gradle + Docker
+
+### Available Gradle Tasks
+
+| Task | Command | Description |
+|------|---------|-------------|
+| `installFrontend` | (internal) | Runs `npm install` in `frontend/` |
+| `buildFrontend` | (internal) | Runs `npm run build` (produces `frontend/dist/`) |
+| `dockerRun` | `./gradlew dockerRun` | Profile `local`: builds and starts 2 containers |
+| `dockerRun (pro)` | `./gradlew dockerRun -Pprofile=pro` | Profile `pro`: 3 containers with SSL |
+| `dockerStop` | `./gradlew dockerStop` | Stops active containers |
+| `dockerStart` | `./gradlew dockerStart` | Resumes already-created containers |
+
+The `build` task depends on `buildFrontend`, so compiling the backend already includes compiling the frontend.
+
+### Environment Profiles
+
+| Profile | Compose file | Containers | Access |
+|---------|-------------|------------|--------|
+| `dev` | — | none (local processes) | backend `:8080`, frontend `:5173` |
 | `local` | `docker-compose.yml` | `frontend`, `backend` | `http://localhost` |
 | `pro` | `docker-compose.prod.yml` | `frontend`, `backend`, `certbot` | `https://<DOMAIN>` |
 
-### Estrategia de compose: base + override
+### Compose strategy: base + override
 
-`docker-compose.yml` es el archivo base (perfil `local`). Para `pro`, se aplica `docker-compose.prod.yml` encima con `-f` adicional, que añade/sobreescribe solo las diferencias:
-- Nginx añade puerto 443, volúmenes SSL y la config `nginx.prod.conf`
-- Backend fuerza `SPRING_PROFILES_ACTIVE: pro` y `restart: unless-stopped`
-- Se añade el servicio `certbot` (solo existe en `pro`)
-- Requiere variable `DOMAIN` en `.env` (actualmente `franbisquerra.dev`)
+`docker-compose.yml` is the base file (profile `local`). For `pro`, `docker-compose.prod.yml` is applied on top with an additional `-f`, adding/overriding only the differences:
+- Nginx adds port 443, SSL volumes and the `nginx.prod.conf` config
+- Backend forces `SPRING_PROFILES_ACTIVE: pro` and `restart: unless-stopped`
+- The `certbot` service is added (only exists in `pro`)
+- Requires `DOMAIN` variable in `.env` (currently `franbisquerra.dev`)
 
 ---
 
-## 🚫 RESTRICCIONES Y LINEAMIENTOS PARA IAs
+## AI RESTRICTIONS AND GUIDELINES
 
-### ⚠️ Restricciones Críticas
+### Critical Restrictions
 
 **GIT - COMMITS**:
-- **🔴 NO COMITEAR NADA SIN ORDEN EXPLÍCITA DEL USUARIO**
-- Antes de cualquier acción, informar al usuario del plan
-- Verificar siempre con `git status` antes de considerar cambios
-- Cuando se autorice, hacer commits atómicos con mensajes claros
-- Nunca hacer force-push
-- Nunca modificar historial de commits existentes
+- **DO NOT COMMIT ANYTHING WITHOUT EXPLICIT USER INSTRUCTION**
+- Before any action, inform the user of the plan
+- Always verify with `git status` before considering changes
+- When authorized, make atomic commits with clear messages
+- Never force-push
+- Never modify existing commit history
 
 **TESTS**:
-- **🔴 NO EJECUTAR `./gradlew test` A MENOS QUE SE INDIQUE EXPLÍCITAMENTE**
-- ✅ Sí compilar con `./gradlew build` para verificar errores de compilación
-- Si hay fallos de compilación, reportar al usuario EN VEZ DE commitear
-- Solo ejecutar tests cuando el usuario explícitamente lo pida
+- **DO NOT RUN `./gradlew test` UNLESS EXPLICITLY INSTRUCTED**
+- Compiling with `./gradlew build` to verify compilation errors is fine
+- If there are compilation failures, report to the user INSTEAD OF committing
+- Only run tests when the user explicitly requests it
 
-**CAMBIOS DE CÓDIGO**:
-- Antes de hacer cambios significativos, **informar al usuario del plan completo**
-- Esperar **confirmación explícita** antes de proceder
-- Si hay dudas sobre diseño o arquitectura, **preguntar primero**
-- No asumir preferencias del usuario
+**CODE CHANGES**:
+- Before making significant changes, **inform the user of the complete plan**
+- Wait for **explicit confirmation** before proceeding
+- If there are doubts about design or architecture, **ask first**
+- Do not assume user preferences
 
-### ✅ Buenas Prácticas
+### Best Practices
 
-- Mantener consistencia con la estructura propuesta
-- Crear archivos en las carpetas correctas siguiendo la convención
-- Escribir documentación clara en código (comentarios y docstrings)
-- Usar nombres descriptivos para variables, métodos y clases
-- Buscar documentación oficial antes de improvisar
-- Consultar la estructura existente antes de agregar cosas nuevas
-- Separar clara y estrictamente: **Dominio** (sin Spring), **Aplicación** (orquestación), **Infraestructura** (adaptadores)
-- Usar DTOs para exponer datos en APIs REST
-- Hacer Value Objects inmutables y validar en el constructor
+- Maintain consistency with the proposed structure
+- Create files in the correct folders following the convention
+- Write clear documentation in code (comments and docstrings)
+- Use descriptive names for variables, methods and classes
+- Look up official documentation before improvising
+- Check existing structure before adding new things
+- Clearly and strictly separate: **Domain** (no Spring), **Application** (orchestration), **Infrastructure** (adapters)
+- Use DTOs to expose data in REST APIs
+- Make Value Objects immutable and validate in the constructor
 
-### ❌ Evitar
+### Avoid
 
-- No comitear sin orden explícita
-- No ejecutar tests sin orden explícita
-- No mezclar lógica de negocio en controladores
-- No importar Spring en la capa de dominio (domain/ no debe tener @annotations)
-- No usar entidades JPA directamente en la lógica de negocio
-- No dejar código comentado o muerto
-- No hardcodear valores; usar `application.yml`
-- No crear nuevas capas/módulos sin documentar su propósito
-- No ignorar la separación de responsabilidades
+- Do not commit without explicit instruction
+- Do not run tests without explicit instruction
+- Do not mix business logic in controllers
+- Do not import Spring in the domain layer (`domain/` must have no `@annotations`)
+- Do not use JPA entities directly in business logic
+- Do not leave commented or dead code
+- Do not hardcode values; use `application.yml`
+- Do not create new layers/modules without documenting their purpose
+- Do not ignore separation of concerns
 
 ---
 
-## 🧪 Testing Unitario
+## Unit Testing
 
-### Estructura de Tests
+### Test Structure
 
 ```
 src/test/java/com/fbisquerra/aboutme/
 │
-└── {modulo}/
-    ├── domain/                         # Tests de lógica de dominio (sin Spring)
+└── {module}/
+    ├── domain/                         # Domain logic tests (no Spring)
     │   ├── model/
-    │   │   └── {Agregado}Test.java
+    │   │   └── {Aggregate}Test.java
     │   ├── service/
     │   │   └── {Feature}DomainServiceTest.java
     │   └── value/
     │       └── {VO}Test.java
     │
-    ├── application/                    # Tests de casos de uso
+    ├── application/                    # Use case tests
     │   └── usecase/
-    │       └── {Accion}UseCaseTest.java
+    │       └── {Action}UseCaseTest.java
     │
-    └── fixtures/                       # Datos de prueba reutilizables
-        └── {Entidad}Fixture.java
+    └── fixtures/                       # Reusable test data
+        └── {Entity}Fixture.java
 ```
 
-### Frameworks y Librerías
+### Frameworks and Libraries
 
 - **Testing**: JUnit 5 (Jupiter)
 - **Mocking**: Mockito
@@ -263,45 +263,45 @@ src/test/java/com/fbisquerra/aboutme/
 - **HTTP Testing**: MockMvc
 - **Fixtures**: Factory Methods Pattern
 
-### Principios de Testing
+### Testing Principles
 
-**Objetivo**: Asegurar consistencia, fiabilidad en CI/CD y mantenibilidad del código.
+**Goal**: Ensure consistency, CI/CD reliability and code maintainability.
 
 **Domain Layer Tests**:
-- ✅ Tests unitarios puros (sin @SpringBootTest)
-- ✅ Validar lógica de negocio y reglas de dominio
-- ✅ Testear Value Objects y sus validaciones
-- ✅ Testear comportamiento del Agregado
-- ✅ No mockear dependencias internas del dominio
-- ❌ No usar anotaciones de Spring
+- Pure unit tests (no `@SpringBootTest`)
+- Validate business logic and domain rules
+- Test Value Objects and their validations
+- Test Aggregate behavior
+- Do not mock internal domain dependencies
+- No Spring annotations
 
 **Application Layer Tests**:
-- ✅ Usar @ExtendWith(MockitoExtension.class)
-- ✅ Mockear repositorios y servicios de dominio
-- ✅ Testear orquestación de casos de uso
-- ✅ Validar mapeo de DTOs
-- ❌ No cargar contexto de Spring
+- Use `@ExtendWith(MockitoExtension.class)`
+- Mock repositories and domain services
+- Test use case orchestration
+- Validate DTO mapping
+- Do not load Spring context
 
-**Integration Tests** (con MockMvc):
-- ✅ Usar @SpringBootTest para cargar contexto
-- ✅ Usar MockMvc para testear controladores
-- ✅ Validar flujo completo request → response
-- ✅ Tests nombrados funcionalmente
-- ❌ No testear sin MockMvc
+**Integration Tests** (with MockMvc):
+- Use `@SpringBootTest` to load context
+- Use MockMvc to test controllers
+- Validate full request → response flow
+- Functionally named tests
+- Do not test without MockMvc
 
-### Estructura de Tests: Arrange-Act-Assert
+### Test Structure: Arrange-Act-Assert
 
-Todos los tests siguen el patrón AAA:
+All tests follow the AAA pattern:
 
 ```
-1. ARRANGE   → Preparar datos de prueba (fixtures)
-2. ACT       → Ejecutar la acción a testear
-3. ASSERT    → Validar resultados con Hamcrest
+1. ARRANGE   → Prepare test data (fixtures)
+2. ACT       → Execute the action to test
+3. ASSERT    → Validate results with Hamcrest
 ```
 
-### Nomenclatura de Tests
+### Test Naming
 
-**Nombres funcionales de alto nivel** (no técnicos):
+**High-level functional names** (not technical):
 
 ```
 shouldSuccessfullyRegisterUserWithValidEmail()
@@ -312,60 +312,60 @@ shouldReturnUnauthorizedWhenPasswordIsWrong()
 shouldReturnHttpCreatedStatusOnSuccessfulRegistration()
 ```
 
-**Ubicación de fixtures**:
+**Fixture location**:
 ```
-{Entidad}Fixture.java      # Factory Methods para crear datos de prueba
+{Entity}Fixture.java      # Factory Methods for creating test data
 ```
 
-### Convenciones de Testing
+### Testing Conventions
 
-- ✅ Un test por comportamiento esperado
-- ✅ Tests independientes (sin orden de ejecución)
-- ✅ Setup de datos mediante fixtures (Factory Methods)
-- ✅ Usar Hamcrest matchers para assertions legibles
-- ✅ Escribir tests como buena práctica (TDD recomendado)
-- ✅ Mantener tests simples y enfocados
-- ❌ No testear getters/setters triviales
-- ❌ No hardcodear valores mágicos (usar fixtures)
-- ❌ No usar `Thread.sleep()` en tests
-- ❌ No compartir estado entre tests
+- One test per expected behavior
+- Independent tests (no execution order dependency)
+- Data setup via fixtures (Factory Methods)
+- Use Hamcrest matchers for readable assertions
+- Write tests as good practice (TDD recommended)
+- Keep tests simple and focused
+- Do not test trivial getters/setters
+- Do not hardcode magic values (use fixtures)
+- Do not use `Thread.sleep()` in tests
+- Do not share state between tests
 
 ### Fixtures: Factory Methods
 
-Los fixtures proporcionan datos consistentes para tests mediante Factory Methods:
+Fixtures provide consistent data for tests via Factory Methods:
 
 ```
 UserFixture.java
-├── validUser()                    # Usuario válido con datos estándar
-├── userWithoutEmail()             # Usuario sin email
-├── adminUser()                    # Usuario con rol admin
-└── customUser(...)                # Factory method personalizado
+├── validUser()                    # Valid user with standard data
+├── userWithoutEmail()             # User without email
+├── adminUser()                    # User with admin role
+└── customUser(...)                # Custom factory method
 ```
 
-Ventajas:
-- ✅ Reutilización de datos de prueba
-- ✅ Fácil mantenimiento centralizado
-- ✅ Nombres descriptivos
-- ✅ Flexibilidad para crear variantes
+Benefits:
+- Test data reuse
+- Easy centralized maintenance
+- Descriptive names
+- Flexibility to create variants
 
-### Assertions con Hamcrest
+### Assertions with Hamcrest
 
-Usar matchers legibles y expresivos para validaciones.
+Use readable and expressive matchers for validations.
 
 ---
 
-## ⚙️ Configuración Técnica Actual
+## Current Technical Configuration
 
 **Backend (Spring Boot)**:
-- Versión: 4.0.4
+- Version: 4.0.4
 - Java: 26
-- Dependencias actuales:
+- Current dependencies:
   - `spring-boot-starter-web`
-- Dependencias pendientes (a añadir cuando se necesiten):
+- Pending dependencies (to add when needed):
   - `spring-boot-starter-data-jpa`
   - `spring-boot-starter-validation`
   - `spring-boot-starter-security`
-  - Database driver (PostgreSQL o H2)
+  - Database driver (PostgreSQL or H2)
 
 **Build**: Gradle 8.x
 
@@ -379,16 +379,16 @@ Usar matchers legibles y expresivos para validaciones.
 
 ---
 
-## 🔍 Dónde Buscar Información
+## Where to Find Information
 
-- **Documentación DDD**: Eric Evans - Domain Driven Design
+- **DDD Documentation**: Eric Evans - Domain Driven Design
 - **Hexagonal Architecture**: Alistair Cockburn
 - **Spring Boot**: https://spring.io/projects/spring-boot
 - **Spring Data JPA**: https://spring.io/projects/spring-data-jpa
-- **Configuración**: `src/main/resources/application.yml`
+- **Configuration**: `src/main/resources/application.yml`
 
 ---
 
-**Última actualización**: Migración a Vue 3 + herramientas de despliegue (2026-05-24)  
-**Versión**: 4.0  
-**Estado**: En desarrollo activo
+**Last updated**: Migration to Vue 3 + deployment tools (2026-05-24)
+**Version**: 4.0
+**Status**: Under active development
