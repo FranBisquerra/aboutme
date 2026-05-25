@@ -18,7 +18,7 @@ jobs:
       contains(github.event.head_commit.message, '#autodeploy')
     runs-on: ubuntu-latest
     env:
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GH_TOKEN: ${{ secrets.PAT_TOKEN }}
     steps:
       - uses: actions/checkout@v4
 
