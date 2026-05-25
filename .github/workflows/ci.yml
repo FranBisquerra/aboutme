@@ -38,9 +38,27 @@ jobs:
       - name: Run tests
         run: ./gradlew test
 
+  test-frontend:
+    name: Run frontend tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Run tests
+        working-directory: frontend
+        run: npm test
+
   create-pr:
     name: Create PR to develop
-    needs: test
     if: |
       github.ref_name != 'develop' &&
       (contains(github.event.head_commit.message, '#automerge') ||
