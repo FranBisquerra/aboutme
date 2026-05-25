@@ -1,11 +1,19 @@
-name: Manual Deploy
+name: Deploy
 
 on:
+  pull_request:
+    types: [closed]
+    branches:
+      - develop
   workflow_dispatch:
 
 jobs:
   deploy:
     name: Deploy to production
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.pull_request.merged == true &&
+       contains(github.event.pull_request.labels.*.name, 'autodeploy'))
     runs-on: ubuntu-latest
     steps:
       - name: Deploy via SSH

@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 jobs:
   test:
@@ -37,41 +38,31 @@ jobs:
       - name: Run tests
         run: ./gradlew test
 
-  automerge:
-    name: Merge to develop
+  create-pr:
+    name: Create PR to develop
     needs: test
     if: |
       github.ref_name != 'develop' &&
       (contains(github.event.head_commit.message, '#automerge') ||
        contains(github.event.head_commit.message, '#autodeploy'))
     runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Merge into develop
+      - name: Create PR and enable auto-merge
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git checkout develop
-          git merge origin/${{ github.ref_name }} --no-ff -m "Auto-merge: ${{ github.ref_name }}"
-          git push origin develop
+          LABELS=""
+          if echo "${{ github.event.head_commit.message }}" | grep -q "#autodeploy"; then
+            LABELS="--label autodeploy"
+          fi
 
-  deploy:
-    name: Deploy to production
-    needs: automerge
-    if: contains(github.event.head_commit.message, '#autodeploy')
-    runs-on: ubuntu-latest
-    steps:
-      - name: Deploy via SSH
-        uses: appleboy/ssh-action@v1
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            cd ~/Projects/aboutme
-            git pull origin develop
-            ./gradlew dockerRun -Pprofile=pro -x test
+          PR_URL=$(gh pr create \
+            --base develop \
+            --head ${{ github.ref_name }} \
+            --title "Auto-merge: ${{ github.ref_name }}" \
+            --body "Creado automáticamente desde el commit: \`${{ github.event.head_commit.message }}\`" \
+            $LABELS)
+
+          gh pr merge "$PR_URL" --auto --merge
