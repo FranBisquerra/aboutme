@@ -29,11 +29,17 @@ jobs:
             LABELS="--label autodeploy"
           fi
 
-          PR_URL=$(gh pr create \
-            --base develop \
-            --head ${{ github.ref_name }} \
-            --title "Auto-merge: ${{ github.ref_name }}" \
-            --body "Creado automáticamente desde el commit: \`${{ github.event.head_commit.message }}\`" \
-            $LABELS)
+          EXISTING_PR=$(gh pr list --head ${{ github.ref_name }} --base develop --json url --jq '.[0].url')
+
+          if [ -n "$EXISTING_PR" ]; then
+            PR_URL="$EXISTING_PR"
+          else
+            PR_URL=$(gh pr create \
+              --base develop \
+              --head ${{ github.ref_name }} \
+              --title "Auto-merge: ${{ github.ref_name }}" \
+              --body "Creado automáticamente desde el commit: \`${{ github.event.head_commit.message }}\`" \
+              $LABELS)
+          fi
 
           gh pr merge "$PR_URL" --auto --merge
