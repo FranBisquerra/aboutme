@@ -4,6 +4,10 @@ import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
   plugins: [tailwindcss(), vue()],
+  test: {
+    environment: 'happy-dom',
+    globals: true,
+  },
   server: {
     port: 5173,
     proxy: {

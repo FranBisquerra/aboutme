@@ -1,8 +1,8 @@
 <template>
-  <Navbar />
-  <Home />
-  <Experience />
-  <BackToTop />
+  <Navbar/>
+  <Home/>
+  <Experience/>
+  <BackToTop/>
 </template>
 
 <script setup lang="ts">
