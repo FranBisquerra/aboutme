@@ -1,13 +1,8 @@
 <template>
   <Navbar/>
-  <Home/>
-  <Experience/>
-  <BackToTop/>
+  <RouterView/>
 </template>
 
 <script setup lang="ts">
 import Navbar from './components/Navbar.vue'
-import Home from './components/Home.vue'
-import Experience from './components/Experience.vue'
-import BackToTop from './components/BackToTop.vue'
 </script>

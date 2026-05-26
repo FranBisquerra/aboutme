@@ -3,10 +3,10 @@
       class="fixed top-0 w-full bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border-b border-gray-100 dark:border-gray-800 z-50">
     <div class="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
       <span class="font-semibold text-gray-900 dark:text-white tracking-tight">
-        <a href="#about">franbisquerra</a>
+        <RouterLink to="/">franbisquerra</RouterLink>
       </span>
       <ul class="flex items-center gap-8 text-sm text-gray-600 dark:text-gray-400">
-        <li><a href="#about" class="hover:text-gray-900 dark:hover:text-white transition-colors">About</a></li>
+        <li><RouterLink to="/contact" class="hover:text-gray-900 dark:hover:text-white transition-colors">Contact me!</RouterLink></li>
         <li>
           <button
               @click="toggleDark"

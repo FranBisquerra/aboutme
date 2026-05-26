@@ -1,6 +1,33 @@
 import {beforeEach, describe, expect, it} from 'vitest'
 import {mount} from '@vue/test-utils'
+import {createRouter, createWebHistory} from 'vue-router'
 import Navbar from './Navbar.vue'
+
+const router = createRouter({
+    history: createWebHistory(),
+    routes: [{path: '/', component: {}}, {path: '/contact', component: {}}],
+})
+
+describe('Navbar', () => {
+    beforeEach(() => {
+        localStorage.clear()
+        document.documentElement.classList.remove('dark')
+    })
+
+    it('renders the logo link pointing to /', () => {
+        const wrapper = mount(Navbar, {global: {plugins: [router]}})
+        const link = wrapper.find('a[href="/"]')
+        expect(link.exists()).toBe(true)
+        expect(link.text()).toBe('franbisquerra')
+    })
+
+    it('renders the Contact me! link pointing to /contact', () => {
+        const wrapper = mount(Navbar, {global: {plugins: [router]}})
+        const link = wrapper.find('a[href="/contact"]')
+        expect(link.exists()).toBe(true)
+        expect(link.text()).toBe('Contact me!')
+    })
+})
 
 describe('Navbar dark mode', () => {
     beforeEach(() => {
