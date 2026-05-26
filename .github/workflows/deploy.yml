@@ -23,6 +23,7 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
+            source "$HOME/.sdkman/bin/sdkman-init.sh"
             cd ~/Projects/aboutme
             git pull origin develop
             ./gradlew dockerRun -Pprofile=pro -x test
