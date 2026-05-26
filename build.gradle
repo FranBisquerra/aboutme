@@ -35,19 +35,26 @@ tasks.named('test') {
     jvmArgs "-javaagent:${configurations.mockitoAgent.asPath}"
 }
 
+def executeNpm(Exec task, List<String> args) {
+    task.workingDir 'frontend'
+
+    def profile = project.findProperty('profile') ?: 'local'
+
+    if (profile == 'pro') {
+        task.environment 'PATH', System.getenv('PATH')
+        task.commandLine 'sh', '-c', "npm ${args.join(' ')}"
+    } else {
+        task.commandLine(['npm'] + args)
+    }
+}
+
 tasks.register('installFrontend', Exec) {
-    workingDir 'frontend'
-    commandLine 'npm', 'install'
+    executeNpm(it, ['install'])
 }
 
 tasks.register('buildFrontend', Exec) {
     dependsOn 'installFrontend'
-    workingDir 'frontend'
-    commandLine 'npm', 'run', 'build'
-}
-
-tasks.named('build') {
-    dependsOn 'buildFrontend'
+    executeNpm(it, ['run', 'build'])
 }
 
 def composeFiles(String profile) {
@@ -63,7 +70,7 @@ def composeFiles(String profile) {
 tasks.register('dockerRun', Exec) {
     def profile = project.findProperty('profile') ?: 'local'
 
-    dependsOn 'build'
+    dependsOn 'buildFrontend'
 
     def args = composeFiles(profile) + ['--env-file', '.env', 'up', '--build', '-d']
 
