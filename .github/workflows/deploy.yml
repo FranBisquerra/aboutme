@@ -24,6 +24,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             source "$HOME/.sdkman/bin/sdkman-init.sh"
+            export NVM_DIR="$HOME/.nvm" && source "$NVM_DIR/nvm.sh"
             cd ~/Projects/aboutme
             git pull origin develop
             ./gradlew dockerRun -Pprofile=pro -x test
