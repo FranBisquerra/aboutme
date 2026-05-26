@@ -2,7 +2,7 @@ name: Deploy
 
 on:
   pull_request:
-    types: [closed]
+    types: [ closed ]
     branches:
       - develop
   workflow_dispatch:
@@ -24,7 +24,14 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             source "$HOME/.sdkman/bin/sdkman-init.sh"
-            export NVM_DIR="$HOME/.nvm" && source "$NVM_DIR/nvm.sh" && export PATH="$NVM_DIR/versions/node/$(nvm current)/bin:$PATH"
+            export NVM_DIR="$HOME/.nvm" && source "$NVM_DIR/nvm.sh"
+            nvm use 24 || nvm install 24
+          
+            # 4. Verificación en los logs de GitHub Actions
+            echo "=== Verificando versiones en el entorno SSH ==="
+            node -v
+            npm -v
+            
             cd ~/Projects/aboutme
             git pull origin develop
             ./gradlew dockerRun -Pprofile=pro -x test
