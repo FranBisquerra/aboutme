@@ -38,7 +38,7 @@ jobs:
               --base develop \
               --head ${{ github.ref_name }} \
               --title "Auto-merge: ${{ github.ref_name }}" \
-              --body "Creado automáticamente desde el commit: \`${{ github.event.head_commit.message }}\`" \
+              --body "Automatically created from commit: \`${{ github.event.head_commit.message }}\`" \
               $LABELS)
           fi
 

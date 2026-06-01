@@ -23,15 +23,15 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
+            set -e
             source "$HOME/.sdkman/bin/sdkman-init.sh"
             export NVM_DIR="$HOME/.nvm" && source "$NVM_DIR/nvm.sh"
             nvm use 24 || nvm install 24
-          
-            # 4. Verificación en los logs de GitHub Actions
-            echo "=== Verificando versiones en el entorno SSH ==="
+
+            echo "=== Checking versions in SSH environment ==="
             node -v
             npm -v
-            
+
             cd ~/Projects/aboutme
             git pull origin develop
             ./gradlew dockerRun -Pprofile=pro -x test
