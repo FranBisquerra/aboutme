@@ -1,19 +1,16 @@
 package com.fbisquerra.aboutme.shared.infrastructure.config;
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
- * Configuración CORS (Cross-Origin Resource Sharing) para permitir
- * que el frontend en Vite (puerto 5173) pueda hacer requests al backend (puerto 8080).
- *
- * En desarrollo:
- * - Frontend corre en: http://localhost:5173
- * - Backend corre en: http://localhost:8080
- *
- * Sin esta configuración, el navegador bloquearía los requests por SOP (Same-Origin Policy).
+ * CORS config for dev only: allows the Vite dev server (localhost:5173) to call
+ * the backend (localhost:8080). In production, Nginx proxies both under the same
+ * origin so this is not needed.
  */
+@Profile("dev")
 @Configuration
 public class CorsConfig implements WebMvcConfigurer {
 
