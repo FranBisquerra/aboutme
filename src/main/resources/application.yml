@@ -1,6 +1,19 @@
 spring:
   application:
     name: aboutme
+  mail:
+    host: smtp.resend.com
+    port: 587
+    username: resend
+    password: ${RESEND_API_KEY}
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
 
 server:
   port: 8080
+
+app:
+  contact:
+    recipient-email: francesc.bisquerra@gmail.com
+    from-email: noreply@franbisquerra.dev

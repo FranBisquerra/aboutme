@@ -43,3 +43,6 @@ frontend/.vite/
 
 ### Node (root) ###
 node_modules/
+
+### Environment ###
+.env
