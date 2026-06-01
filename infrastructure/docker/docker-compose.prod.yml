@@ -2,6 +2,7 @@ services:
   backend:
     environment:
       SPRING_PROFILES_ACTIVE: pro
+      RESEND_API_KEY: ${RESEND_API_KEY}
     restart: unless-stopped
 
   frontend:

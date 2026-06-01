@@ -7,6 +7,7 @@ services:
       dockerfile: infrastructure/docker/backend/Dockerfile
     environment:
       SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-local}
+      RESEND_API_KEY: ${RESEND_API_KEY}
 
   frontend:
     build:
