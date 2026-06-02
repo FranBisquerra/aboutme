@@ -71,7 +71,7 @@ def composeFiles(String profile) {
 tasks.register('dockerRun', Exec) {
     def profile = project.findProperty('profile') ?: 'local'
 
-    dependsOn 'buildFrontend'
+    dependsOn 'bootJar', 'buildFrontend'
 
     def args = composeFiles(profile) + ['--env-file', '.env', 'up', '--build', '-d']
 
