@@ -251,6 +251,7 @@ Detailed workflow guides are available as slash commands:
 - `/it-test` — conventions and examples for integration tests (MockMvc, Spring Boot 4 setup)
 - `/new-module` — checklist for creating a new DDD module end-to-end
 - `/new-migration` — checklist for adding a Flyway database migration (naming, MariaDB SQL conventions, entity sync)
+- `/commit` — git commit conventions (ask first, atomic commits, English, `<Feature>: <Verb>` subject)
 
 ---
 

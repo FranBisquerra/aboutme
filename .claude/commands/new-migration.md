@@ -19,8 +19,10 @@ src/main/resources/db/migration/
 ## SQL conventions (MariaDB)
 
 - Table and column names in `snake_case`; tables singular (`profile`, `profile_skill`).
-- `id BIGINT NOT NULL AUTO_INCREMENT`, `CONSTRAINT pk_{table} PRIMARY KEY (id)`.
-- Explicit foreign keys: `CONSTRAINT fk_{child}_{parent} FOREIGN KEY (...) REFERENCES {parent} (id) ON DELETE CASCADE`.
+- `id BIGINT NOT NULL AUTO_INCREMENT`, `PRIMARY KEY (id)`.
+- **Do not name the PRIMARY KEY constraint** — MariaDB always names it `PRIMARY` and ignores
+  any custom name, warning with error 1280. Use a plain `PRIMARY KEY (id)` (FKs *can* be named).
+- Explicit, **named** foreign keys: `CONSTRAINT fk_{child}_{parent} FOREIGN KEY (...) REFERENCES {parent} (id) ON DELETE CASCADE`.
 - `ENGINE = InnoDB`.
 - Long free text → `TEXT`; short strings → `VARCHAR(n)`.
 - Escape single quotes in string literals by doubling them (`'you''ll'`).
