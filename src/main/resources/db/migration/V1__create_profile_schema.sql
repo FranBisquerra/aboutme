@@ -7,7 +7,7 @@ CREATE TABLE profile (
     linkedin VARCHAR(255) NOT NULL,
     github   VARCHAR(255) NOT NULL,
     bio      TEXT         NOT NULL,
-    CONSTRAINT pk_profile PRIMARY KEY (id)
+    PRIMARY KEY (id)
 ) ENGINE = InnoDB;
 
 CREATE TABLE profile_language (
@@ -15,7 +15,7 @@ CREATE TABLE profile_language (
     profile_id BIGINT       NOT NULL,
     name       VARCHAR(255) NOT NULL,
     level      VARCHAR(255) NOT NULL,
-    CONSTRAINT pk_profile_language PRIMARY KEY (id),
+    PRIMARY KEY (id),
     CONSTRAINT fk_profile_language_profile FOREIGN KEY (profile_id) REFERENCES profile (id) ON DELETE CASCADE
 ) ENGINE = InnoDB;
 
@@ -23,7 +23,7 @@ CREATE TABLE profile_skill (
     id         BIGINT       NOT NULL AUTO_INCREMENT,
     profile_id BIGINT       NOT NULL,
     skill      VARCHAR(255) NOT NULL,
-    CONSTRAINT pk_profile_skill PRIMARY KEY (id),
+    PRIMARY KEY (id),
     CONSTRAINT fk_profile_skill_profile FOREIGN KEY (profile_id) REFERENCES profile (id) ON DELETE CASCADE
 ) ENGINE = InnoDB;
 
@@ -35,7 +35,7 @@ CREATE TABLE profile_experience (
     start_date  VARCHAR(32)  NOT NULL,
     end_date    VARCHAR(32)  NULL,
     description TEXT         NOT NULL,
-    CONSTRAINT pk_profile_experience PRIMARY KEY (id),
+    PRIMARY KEY (id),
     CONSTRAINT fk_profile_experience_profile FOREIGN KEY (profile_id) REFERENCES profile (id) ON DELETE CASCADE
 ) ENGINE = InnoDB;
 
@@ -46,6 +46,6 @@ CREATE TABLE profile_education (
     degree      VARCHAR(255) NOT NULL,
     start_year  VARCHAR(32)  NOT NULL,
     end_year    VARCHAR(32)  NOT NULL,
-    CONSTRAINT pk_profile_education PRIMARY KEY (id),
+    PRIMARY KEY (id),
     CONSTRAINT fk_profile_education_profile FOREIGN KEY (profile_id) REFERENCES profile (id) ON DELETE CASCADE
 ) ENGINE = InnoDB;
