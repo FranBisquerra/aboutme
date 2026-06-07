@@ -1,4 +1,4 @@
-package com.fbisquerra.aboutme.profile.infrastructure.persistence;
+package com.fbisquerra.aboutme.profile.infrastructure.persistence.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -7,28 +7,23 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "profile_language")
-public class ProfileLanguageJpaEntity {
+@Table(name = "profile_skill")
+public class ProfileSkillJpaEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;
-    private String level;
+    private String skill;
 
-    protected ProfileLanguageJpaEntity() {
+    protected ProfileSkillJpaEntity() {
     }
 
     public Long getId() {
         return id;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public String getLevel() {
-        return level;
+    public String getSkill() {
+        return skill;
     }
 }

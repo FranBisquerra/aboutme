@@ -1,4 +1,4 @@
-package com.fbisquerra.aboutme.profile.infrastructure.persistence;
+package com.fbisquerra.aboutme.profile.infrastructure.persistence.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

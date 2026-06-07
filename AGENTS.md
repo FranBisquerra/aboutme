@@ -91,7 +91,8 @@ src/main/java/com/fbisquerra/aboutme/
 │       ├── controller/                 # ADAPTER: REST API
 │       │   └── {Aggregate}Controller.java
 │       ├── persistence/                # ADAPTER: Data Access
-│       │   ├── {Aggregate}JpaEntity.java
+│       │   ├── entity/                  # JPA @Entity classes (own subpackage)
+│       │   │   └── {Aggregate}JpaEntity.java
 │       │   ├── {Aggregate}JpaRepository.java (Spring Data)
 │       │   └── Jpa{Aggregate}Repository.java (Port adapter — named by technology, not "Impl")
 │       ├── event/                      # ADAPTER: Event publishing

@@ -2,6 +2,8 @@ package com.fbisquerra.aboutme.profile.infrastructure.persistence;
 
 import com.fbisquerra.aboutme.profile.domain.model.Profile;
 import com.fbisquerra.aboutme.profile.domain.repository.ProfileRepository;
+import com.fbisquerra.aboutme.profile.infrastructure.persistence.entity.ProfileJpaEntity;
+import com.fbisquerra.aboutme.profile.infrastructure.persistence.entity.ProfileSkillJpaEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 

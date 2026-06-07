@@ -29,7 +29,8 @@ src/main/java/com/fbisquerra/aboutme/{module}/
     ├── controller/
     │   └── {Aggregate}Controller.java  ← REST adapter
     └── persistence/
-        ├── {Aggregate}JpaEntity.java        ← JPA @Entity (separate from the domain model)
+        ├── entity/                          ← JPA @Entity classes live in their own subpackage
+        │   └── {Aggregate}JpaEntity.java    ← (separate from the domain model)
         ├── {Aggregate}JpaRepository.java    ← Spring Data interface (extends JpaRepository)
         └── Jpa{Aggregate}Repository.java    ← adapter: implements the domain PORT
 ```
