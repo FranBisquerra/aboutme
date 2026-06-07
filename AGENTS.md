@@ -93,7 +93,7 @@ src/main/java/com/fbisquerra/aboutme/
 │       ├── persistence/                # ADAPTER: Data Access
 │       │   ├── {Aggregate}JpaEntity.java
 │       │   ├── {Aggregate}JpaRepository.java (Spring Data)
-│       │   └── {Aggregate}RepositoryImpl.java (Port implementation)
+│       │   └── Jpa{Aggregate}Repository.java (Port adapter — named by technology, not "Impl")
 │       ├── event/                      # ADAPTER: Event publishing
 │       │   └── {Aggregate}EventPublisher.java
 │       └── config/                     # Module configuration
