@@ -42,6 +42,10 @@ dependencies {
 tasks.named('test') {
     useJUnitPlatform()
     jvmArgs "-javaagent:${configurations.mockitoAgent.asPath}"
+    testLogging {
+        events "passed", "skipped", "failed"
+        exceptionFormat "full"
+    }
 }
 
 def executeNpm(Exec task, List<String> args) {
