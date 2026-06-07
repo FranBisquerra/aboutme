@@ -36,8 +36,8 @@ class ProfileMapperTest {
         ProfileResponse response = ProfileMapper.toResponse(ProfileFixture.validProfile());
 
         assertThat(response.languages(), hasSize(2));
-        assertThat(response.languages().get(0).name(), is("Catalan"));
-        assertThat(response.languages().get(0).level(), is("Native"));
+        assertThat(response.languages().getFirst().name(), is("Catalan"));
+        assertThat(response.languages().getFirst().level(), is("Native"));
     }
 
     @Test
@@ -45,8 +45,8 @@ class ProfileMapperTest {
         ProfileResponse response = ProfileMapper.toResponse(ProfileFixture.validProfile());
 
         assertThat(response.experience(), hasSize(1));
-        assertThat(response.experience().get(0).company(), is("Travel Compositor"));
-        assertThat(response.experience().get(0).end(), is(nullValue()));
+        assertThat(response.experience().getFirst().company(), is("Travel Compositor"));
+        assertThat(response.experience().getFirst().end(), is(nullValue()));
     }
 
     @Test
@@ -54,6 +54,6 @@ class ProfileMapperTest {
         ProfileResponse response = ProfileMapper.toResponse(ProfileFixture.validProfile());
 
         assertThat(response.education(), hasSize(1));
-        assertThat(response.education().get(0).degree(), containsString("Computer Engineering"));
+        assertThat(response.education().getFirst().degree(), containsString("Computer Engineering"));
     }
 }
