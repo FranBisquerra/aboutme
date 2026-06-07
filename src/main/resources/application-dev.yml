@@ -1,8 +1,8 @@
 spring:
   datasource:
     url: ${DB_URL:jdbc:mariadb://localhost:3306/aboutme}
-    username: ${DB_USERNAME:aboutme}
-    password: ${DB_PASSWORD:aboutme}
+    username: ${DB_USERNAME:user}
+    password: ${DB_PASSWORD:pwd}
   jpa:
     show-sql: true
 
