@@ -1,5 +1,6 @@
 package com.fbisquerra.aboutme.profile.infrastructure.controller;
 
+import com.fbisquerra.aboutme.AbstractIntegrationTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +16,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
-class ProfileControllerTest {
+class ProfileControllerTest extends AbstractIntegrationTest {
 
     @Autowired
     private WebApplicationContext context;

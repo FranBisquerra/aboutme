@@ -2,7 +2,3 @@ services:
   db:
     ports:
       - "3306:3306"
-
-  backend:
-    ports:
-      - "8080:8080"

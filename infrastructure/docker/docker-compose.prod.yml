@@ -1,8 +1,14 @@
 services:
+  db:
+    restart: unless-stopped
+
   backend:
     environment:
       SPRING_PROFILES_ACTIVE: pro
       RESEND_API_KEY: ${RESEND_API_KEY}
+      DB_URL: jdbc:mariadb://db:3306/${MARIADB_DATABASE}
+      DB_USERNAME: ${MARIADB_USER}
+      DB_PASSWORD: ${MARIADB_PASSWORD}
     restart: unless-stopped
 
   frontend:
