@@ -24,8 +24,9 @@ aboutme/
 │       │   ├── domain/model/Profile.java
 │       │   ├── domain/repository/ProfileRepository.java
 │       │   ├── application/dto/ProfileResponse.java
+│       │   ├── application/mapper/ProfileMapper.java
 │       │   ├── application/usecase/GetProfileUseCase.java
-│       │   ├── infrastructure/persistence/JsonProfileRepository.java
+│       │   ├── infrastructure/persistence/    # JPA entities + JpaProfileRepository (adapter)
 │       │   └── infrastructure/controller/ProfileController.java
 │       └── shared/               # Shared configuration
 │           └── infrastructure/config/CorsConfig.java
