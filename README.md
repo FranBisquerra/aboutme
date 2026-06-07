@@ -7,6 +7,7 @@ Personal website built as a learning project. Implements a modern architecture w
 | Layer | Technology |
 |-------|-----------|
 | Backend | Java 26 · Spring Boot 4 · Gradle |
+| Persistence | MariaDB · Spring Data JPA · Flyway (migrations) |
 | Frontend | Vue 3 · Vite 5 · TypeScript · Axios · Tailwind CSS 4 · Pinia |
 | Server | Nginx (reverse proxy) |
 | Containerization | Docker · Docker Compose |
@@ -28,6 +29,8 @@ aboutme/
 │       │   └── infrastructure/controller/ProfileController.java
 │       └── shared/               # Shared configuration
 │           └── infrastructure/config/CorsConfig.java
+│   └── main/resources/
+│       └── db/migration/         # Flyway SQL migrations (V1__…, V2__…)
 ├── frontend/                     # Vue 3 + Vite + TypeScript frontend
 │   └── src/
 │       ├── App.vue
@@ -56,11 +59,19 @@ aboutme/
 
 | Profile | Use case | How to run |
 |---------|----------|------------|
-| `dev` | Development with hot reload | IntelliJ + `npm run dev` |
+| `dev` | Development with hot reload | `./gradlew dockerRun -Pprofile=dev` (MariaDB only) + IntelliJ + `npm run dev` |
 | `local` | Full production environment locally | `./gradlew dockerRun` |
 | `pro` | Production | `./gradlew dockerRun -Pprofile=pro` |
 
 ## Development (dev profile)
+
+The backend needs a MariaDB instance. In `dev` the backend runs as a local process,
+so start just the database container first (it listens on `localhost:3306`):
+
+```bash
+# Terminal 0 — database only (starts just the `db` container)
+./gradlew dockerRun -Pprofile=dev
+```
 
 ```bash
 # Terminal 1 — backend
@@ -71,6 +82,19 @@ cd frontend && npm run dev
 ```
 
 Vite proxies `/api/*` requests to `localhost:8080` during development.
+Flyway applies the schema and seed data (`src/main/resources/db/migration/`) on backend startup.
+
+### Database & environment
+
+The MariaDB connection is configured via environment variables (see `.env.example`):
+
+| Variable | Purpose |
+|----------|---------|
+| `MARIADB_DATABASE` / `MARIADB_USER` / `MARIADB_PASSWORD` / `MARIADB_ROOT_PASSWORD` | Credentials for the `db` container |
+| `DB_URL` / `DB_USERNAME` / `DB_PASSWORD` | Backend datasource (injected from compose; defaults target the `db` service) |
+
+Copy `.env.example` to `.env` and fill in the values. Schema changes are made with
+Flyway migrations — see the `/new-migration` guide.
 
 ## Local environment with Docker (local profile)
 
@@ -81,6 +105,7 @@ Vite proxies `/api/*` requests to `localhost:8080` during development.
 Builds the JAR and frontend, then starts:
 - `frontend` — Nginx at `http://localhost:80` (serves Vue + proxies `/api/*` → backend)
 - `backend` — Spring Boot at `:8080` (internal only)
+- `db` — MariaDB (exposed on `localhost:3306` for inspection)
 
 ## Production environment with Docker (pro profile)
 
@@ -91,6 +116,7 @@ Builds the JAR and frontend, then starts:
 Merges `docker-compose.yml` (base) with `docker-compose.prod.yml` (overrides), then starts:
 - `frontend` — Nginx at ports 80 (HTTP→HTTPS redirect) and 443 (HTTPS, SSL)
 - `backend` — Spring Boot at `:8080` (internal only)
+- `db` — MariaDB (internal only, persisted in the `db-data` volume)
 - `certbot` — Let's Encrypt SSL certificate automation with 12-hour renewal
 
 Requires `DOMAIN` set in `.env` (configured as `franbisquerra.dev`).
@@ -102,3 +128,6 @@ Requires `DOMAIN` set in `.env` (configured as `franbisquerra.dev`).
 ```bash
 ./gradlew test
 ```
+
+Integration tests (`@SpringBootTest`) start an ephemeral MariaDB via Testcontainers and
+apply the Flyway migrations, so **Docker must be running** to execute the test suite.

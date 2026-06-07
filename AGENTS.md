@@ -161,8 +161,9 @@ src/main/java/com/fbisquerra/aboutme/
 |------|---------|-------------|
 | `installFrontend` | (internal) | Runs `npm install` in `frontend/` |
 | `buildFrontend` | (internal) | Runs `npm run build` (produces `frontend/dist/`) |
-| `dockerRun` | `./gradlew dockerRun` | Profile `local`: builds and starts 2 containers |
-| `dockerRun (pro)` | `./gradlew dockerRun -Pprofile=pro` | Profile `pro`: 3 containers with SSL |
+| `dockerRun (dev)` | `./gradlew dockerRun -Pprofile=dev` | Profile `dev`: starts only the `db` (MariaDB) container, no build |
+| `dockerRun` | `./gradlew dockerRun` | Profile `local`: builds and starts 3 containers (`db`, `backend`, `frontend`) |
+| `dockerRun (pro)` | `./gradlew dockerRun -Pprofile=pro` | Profile `pro`: 4 containers with SSL (`db`, `backend`, `frontend`, `certbot`) |
 | `dockerStop` | `./gradlew dockerStop` | Stops active containers |
 | `dockerStart` | `./gradlew dockerStart` | Resumes already-created containers |
 
@@ -172,9 +173,9 @@ The `build` task depends on `buildFrontend`, so compiling the backend already in
 
 | Profile | Compose file | Containers | Access |
 |---------|-------------|------------|--------|
-| `dev` | — | none (local processes) | backend `:8080`, frontend `:5173` |
-| `local` | `docker-compose.yml` | `frontend`, `backend` | `http://localhost` |
-| `pro` | `docker-compose.prod.yml` | `frontend`, `backend`, `certbot` | `https://<DOMAIN>` |
+| `dev` | `docker-compose.dev.yml` | `db` only (backend/frontend run locally) | backend `:8080`, frontend `:5173`, db `:3306` |
+| `local` | `docker-compose.local.yml` | `db`, `frontend`, `backend` | `http://localhost` |
+| `pro` | `docker-compose.prod.yml` | `db`, `frontend`, `backend`, `certbot` | `https://<DOMAIN>` |
 
 ### Compose strategy: base + override
 
@@ -248,6 +249,7 @@ Detailed workflow guides are available as slash commands:
 - `/unit-test` — conventions and examples for backend unit tests (JUnit 5, Mockito, Hamcrest, fixtures)
 - `/it-test` — conventions and examples for integration tests (MockMvc, Spring Boot 4 setup)
 - `/new-module` — checklist for creating a new DDD module end-to-end
+- `/new-migration` — checklist for adding a Flyway database migration (naming, MariaDB SQL conventions, entity sync)
 
 ---
 
@@ -259,13 +261,21 @@ Detailed workflow guides are available as slash commands:
 - Current dependencies:
   - `spring-boot-starter-web`
   - `spring-boot-starter-json` (Jackson 3.x — required explicitly, not transitive in Spring Boot 4)
-- Pending dependencies (to add when needed):
+  - `spring-boot-starter-mail`
   - `spring-boot-starter-data-jpa`
+  - `mariadb-java-client` (JDBC driver)
+  - `flyway-core` + `flyway-mysql` (schema migrations)
+- Pending dependencies (to add when needed):
   - `spring-boot-starter-validation`
-  - `spring-boot-starter-security`
-  - Database driver (PostgreSQL or H2)
+  - `spring-boot-starter-security` (Phase 3: auth for the Profile backoffice)
 
-**Build**: Gradle 8.x
+**Database**: MariaDB (latest) via Docker. Schema owned by Flyway migrations in
+`src/main/resources/db/migration/`. `spring.jpa.hibernate.ddl-auto: validate` —
+Hibernate never mutates the schema. Profile data lives in normalized tables
+(`profile`, `profile_language`, `profile_skill`, `profile_experience`, `profile_education`).
+Integration tests use Testcontainers MariaDB (`AbstractIntegrationTest`).
+
+**Build**: Gradle 9.x
 
 **Package**: `com.fbisquerra.aboutme`
 
@@ -289,6 +299,6 @@ Detailed workflow guides are available as slash commands:
 
 ---
 
-**Last updated**: TypeScript migration + profile API (2026-05-24)
-**Version**: 4.0
+**Last updated**: Profile moved from JSON to MariaDB + Flyway (2026-06-07)
+**Version**: 4.1
 **Status**: Under active development

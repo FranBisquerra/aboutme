@@ -1,5 +1,6 @@
 package com.fbisquerra.aboutme.contact.infrastructure.controller;
 
+import com.fbisquerra.aboutme.AbstractIntegrationTest;
 import com.fbisquerra.aboutme.contact.domain.model.ContactMessage;
 import com.fbisquerra.aboutme.contact.domain.port.ContactEmailPort;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,7 +21,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(properties = "RESEND_API_KEY=test-key")
-class ContactControllerTest {
+class ContactControllerTest extends AbstractIntegrationTest {
 
     @Autowired
     private WebApplicationContext context;
