@@ -13,8 +13,6 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MariaDBDialect
-  flyway:
-    enabled: true
   mail:
     host: smtp.resend.com
     port: 587
