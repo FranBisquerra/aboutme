@@ -5,6 +5,8 @@ Conventions for creating git commits in this project.
 ## Golden rules
 
 - **Never commit unless explicitly told to.** Making changes is not permission to commit.
+- **Never `git push` unless EXPLICITLY told to.** Committing is never permission to push;
+  always wait for an explicit instruction to push.
 - **Always ask before committing**, even when changes look finished.
 - **Atomic, functional commits**: one logical change per commit. Split unrelated changes
   into separate commits; each commit should build/work on its own.
