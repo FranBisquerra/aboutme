@@ -29,3 +29,15 @@ app:
   contact:
     recipient-email: francesc.bisquerra@gmail.com
     from-email: noreply@franbisquerra.dev
+  security:
+    jwt:
+      # Override in production via JWT_SECRET (>= 32 bytes for HS256). The default is a
+      # dev/test-only fallback so the app boots without env configuration.
+      secret: ${JWT_SECRET:dev-insecure-secret-change-me-please-0123456789}
+      expiration: 3600   # access token lifetime in seconds
+    admin:
+      # Initial admin user, created on startup if absent. Left empty by default (no-op);
+      # set ADMIN_* in production / dev to provision it.
+      username: ${ADMIN_USERNAME:}
+      email: ${ADMIN_EMAIL:}
+      password: ${ADMIN_PASSWORD:}

@@ -231,6 +231,17 @@ The `build` task depends on `buildFrontend`, so compiling the backend already in
 - **Jackson como dependencia explícita**: `spring-boot-starter-json` debe declararse explícitamente en `build.gradle`
 - **Mockito como Java agent**: Java 26 no permite carga dinámica de agentes; Mockito debe configurarse como `-javaagent` vía configuración `mockitoAgent` en `build.gradle`
 
+### Code Style (Java)
+
+Idiomatic-style rules the project follows (documented here, not enforced by tooling).
+Apply them to new/changed code:
+
+- **Prefer `var` for local variables** when the type is evident from the right-hand side
+  (e.g. `var user = userRepository.findByUsername(...)`, `var users = new ArrayList<User>()`).
+  Keep the explicit type when it aids readability or the inferred type is not obvious
+  (e.g. a method returning a generic/raw type, ternaries, or `var x = null`). `var` is for
+  **local variables only** — never for fields, method parameters, or return types.
+
 ### Avoid
 
 - Do not commit without explicit instruction
@@ -265,11 +276,10 @@ Detailed workflow guides are available as slash commands:
   - `spring-boot-starter-json` (Jackson 3.x — required explicitly, not transitive in Spring Boot 4)
   - `spring-boot-starter-mail`
   - `spring-boot-starter-data-jpa`
+  - `spring-boot-starter-validation` (Bean Validation on request DTOs)
+  - `spring-boot-starter-security` + `spring-boot-starter-oauth2-resource-server` (JWT auth, HS256)
   - `mariadb-java-client` (JDBC driver)
   - `flyway-core` + `flyway-mysql` (schema migrations)
-- Pending dependencies (to add when needed):
-  - `spring-boot-starter-validation`
-  - `spring-boot-starter-security` (Phase 3: auth for the Profile backoffice)
 
 **Database**: MariaDB (latest) via Docker. Schema owned by Flyway migrations in
 `src/main/resources/db/migration/`. `spring.jpa.hibernate.ddl-auto: validate` —

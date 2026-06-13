@@ -2,6 +2,7 @@ package com.fbisquerra.aboutme.contact.infrastructure.controller;
 
 import com.fbisquerra.aboutme.contact.application.dto.ContactRequest;
 import com.fbisquerra.aboutme.contact.application.usecase.SendContactMessageUseCase;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,7 +20,7 @@ public class ContactController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> sendMessage(@RequestBody ContactRequest request) {
+    public ResponseEntity<Void> sendMessage(@Valid @RequestBody ContactRequest request) {
         sendContactMessageUseCase.execute(request);
         return ResponseEntity.noContent().build();
     }
