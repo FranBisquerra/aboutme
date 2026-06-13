@@ -6,6 +6,15 @@ spring:
   jpa:
     show-sql: true
 
+app:
+  security:
+    jwt:
+      secret: ${JWT_SECRET:dev-insecure-secret-change-me-please-0123456789}
+    admin:
+      username: ${ADMIN_USERNAME:admin}
+      email: ${ADMIN_EMAIL:admin@franbisquerra.dev}
+      password: ${ADMIN_PASSWORD:admin}
+
 logging:
   level:
     com.fbisquerra: DEBUG

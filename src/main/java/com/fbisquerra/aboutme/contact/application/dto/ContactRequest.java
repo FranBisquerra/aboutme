@@ -1,3 +1,9 @@
 package com.fbisquerra.aboutme.contact.application.dto;
 
-public record ContactRequest(String name, String email, String message) {}
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+
+public record ContactRequest(
+        @NotBlank String name,
+        @NotBlank @Email String email,
+        @NotBlank String message) {}
