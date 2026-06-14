@@ -261,6 +261,7 @@ Detailed workflow guides are available as slash commands:
 - `/unit-test` — conventions and examples for backend unit tests (JUnit 5, Mockito, Hamcrest, fixtures)
 - `/it-test` — conventions and examples for integration tests (MockMvc, Spring Boot 4 setup)
 - `/new-module` — checklist for creating a new DDD module end-to-end
+- `/new-page` — standard recipe for adding a Vue frontend page (smart pages + presentational components, store vs api, async state, tests)
 - `/new-migration` — checklist for adding a Flyway database migration (naming, MariaDB SQL conventions, entity sync)
 - `/commit` — git commit conventions (ask first, atomic commits, English, `<Feature>: <Verb>` subject)
 
