@@ -1,60 +1,42 @@
 <template>
   <div class="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-950 px-6">
     <div class="w-full max-w-lg">
-      <template v-if="status !== 'success'">
+      <template v-if="!isSuccess">
         <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Contact me</h1>
         <p class="text-gray-500 dark:text-gray-400 mb-8">Send me a message and I'll get back to you.</p>
       </template>
 
-      <form v-if="status !== 'success'" @submit.prevent="submit" class="flex flex-col gap-5" novalidate>
-        <div>
-          <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Name</label>
-          <input
-              id="name"
-              v-model="form.name"
-              type="text"
-              required
-              placeholder="Your name"
-              class="w-full px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          />
+      <Form v-if="!isSuccess" v-slot="$form" :resolver="resolver" :initial-values="initialValues" class="flex flex-col gap-5" @submit="onFormSubmit">
+        <div class="flex flex-col gap-1">
+          <label for="name" class="text-sm font-medium text-gray-700 dark:text-gray-300">Name</label>
+          <InputText id="name" name="name" type="text" placeholder="Your name" fluid/>
+          <Message v-if="$form.name?.invalid" severity="error" size="small" variant="simple">
+            {{ $form.name.error?.message }}
+          </Message>
         </div>
 
-        <div>
-          <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
-          <input
-              id="email"
-              v-model="form.email"
-              type="email"
-              required
-              placeholder="your@email.com"
-              class="w-full px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          />
+        <div class="flex flex-col gap-1">
+          <label for="email" class="text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
+          <InputText id="email" name="email" type="email" placeholder="your@email.com" fluid/>
+          <Message v-if="$form.email?.invalid" severity="error" size="small" variant="simple">
+            {{ $form.email.error?.message }}
+          </Message>
         </div>
 
-        <div>
-          <label for="message" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Message</label>
-          <textarea
-              id="message"
-              v-model="form.message"
-              required
-              rows="5"
-              placeholder="Your message..."
-              class="w-full px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
-          />
+        <div class="flex flex-col gap-1">
+          <label for="message" class="text-sm font-medium text-gray-700 dark:text-gray-300">Message</label>
+          <Textarea id="message" name="message" rows="5" placeholder="Your message..." fluid/>
+          <Message v-if="$form.message?.invalid" severity="error" size="small" variant="simple">
+            {{ $form.message.error?.message }}
+          </Message>
         </div>
 
-        <p v-if="status === 'error'" class="text-sm text-red-500">
+        <Message v-if="isError" severity="error" size="small" variant="simple">
           Something went wrong. Please try again.
-        </p>
+        </Message>
 
-        <button
-            type="submit"
-            :disabled="status === 'loading'"
-            class="px-6 py-3 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {{ status === 'loading' ? 'Sending...' : 'Send message' }}
-        </button>
-      </form>
+        <Button type="submit" label="Send message" :loading="isPending"/>
+      </Form>
 
       <div v-else class="text-center py-12">
         <p class="text-2xl font-semibold text-gray-900 dark:text-white mb-2">Message sent!</p>
@@ -68,21 +50,27 @@
 </template>
 
 <script setup lang="ts">
-import {reactive, ref} from 'vue'
+import {Form, type FormSubmitEvent} from '@primevue/forms'
+import {zodResolver} from '@primevue/forms/resolvers/zod'
+import InputText from 'primevue/inputtext'
+import Textarea from 'primevue/textarea'
+import Button from 'primevue/button'
+import Message from 'primevue/message'
+import {useMutation} from '@tanstack/vue-query'
 import {sendContactMessage} from '../api/contact'
+import {contactSchema} from '../schemas/contact'
+import type {ContactRequest} from '../types/contact'
 
-type Status = 'idle' | 'loading' | 'success' | 'error'
+const resolver = zodResolver(contactSchema)
+const initialValues = {name: '', email: '', message: ''}
 
-const status = ref<Status>('idle')
-const form = reactive({name: '', email: '', message: ''})
+const {mutate, isPending, isError, isSuccess} = useMutation({
+  mutationFn: (data: ContactRequest) => sendContactMessage(data),
+})
 
-async function submit() {
-  status.value = 'loading'
-  try {
-    await sendContactMessage(form)
-    status.value = 'success'
-  } catch {
-    status.value = 'error'
+function onFormSubmit({valid, values}: FormSubmitEvent) {
+  if (valid) {
+    mutate(values as ContactRequest)
   }
 }
 </script>
