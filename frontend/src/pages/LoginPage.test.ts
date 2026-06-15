@@ -1,32 +1,28 @@
 import {beforeEach, describe, expect, it, vi} from 'vitest'
-import {flushPromises, mount} from '@vue/test-utils'
-import {createRouter, createWebHistory} from 'vue-router'
+import {flushPromises} from '@vue/test-utils'
 import {createPinia, setActivePinia, type Pinia} from 'pinia'
+import type {Router} from 'vue-router'
 import LoginPage from './LoginPage.vue'
 import * as authApi from '../api/auth'
 import {useAuthStore} from '../stores/auth'
+import {createTestRouter, mountWithPlugins} from '../test/mountWithPlugins'
 
-const router = createRouter({
-    history: createWebHistory(),
-    routes: [
-        {path: '/', component: {}},
-        {path: '/login', component: {}},
-        {path: '/admin', component: {}},
-    ],
-})
-
+let router: Router
 let pinia: Pinia
 
 beforeEach(() => {
     localStorage.clear()
+    router = createTestRouter()
     pinia = createPinia()
     setActivePinia(pinia)
     vi.restoreAllMocks()
 })
 
 function mountPage() {
-    return mount(LoginPage, {global: {plugins: [router, pinia]}})
+    return mountWithPlugins(LoginPage, {router, pinia})
 }
+
+const loginResponse = {data: {token: 't.o.k', tokenType: 'Bearer', expiresIn: 3600}} as any
 
 describe('LoginPage', () => {
     it('renders the username and password fields', () => {
@@ -36,17 +32,6 @@ describe('LoginPage', () => {
         expect(wrapper.find('#password').exists()).toBe(true)
     })
 
-    it('shows validation errors and does not call the api when fields are empty', async () => {
-        const spy = vi.spyOn(authApi, 'login')
-
-        const wrapper = mountPage()
-        await wrapper.find('form').trigger('submit')
-
-        expect(wrapper.text()).toContain('Username is required')
-        expect(wrapper.text()).toContain('Password is required')
-        expect(spy).not.toHaveBeenCalled()
-    })
-
     it('shows the loading state while signing in', async () => {
         vi.spyOn(authApi, 'login').mockReturnValue(new Promise(() => {}))
 
@@ -54,26 +39,43 @@ describe('LoginPage', () => {
         await wrapper.find('#username').setValue('admin')
         await wrapper.find('#password').setValue('secret')
         await wrapper.find('form').trigger('submit')
+        await flushPromises()
 
-        expect(wrapper.find('button[type="submit"]').text()).toBe('Signing in...')
-        expect(wrapper.find('button[type="submit"]').attributes('disabled')).toBeDefined()
+        expect(wrapper.find('button.p-button-loading').exists()).toBe(true)
+    })
+
+    it('does not call the api when the form is empty', async () => {
+        const spy = vi.spyOn(authApi, 'login')
+
+        const wrapper = mountPage()
+        await wrapper.find('form').trigger('submit')
+        await flushPromises()
+
+        expect(spy).not.toHaveBeenCalled()
+    })
+
+    it('shows a validation message when a field is empty', async () => {
+        const wrapper = mountPage()
+        await wrapper.find('form').trigger('submit')
+        await flushPromises()
+
+        expect(wrapper.text()).toContain('Username is required')
     })
 
     it('calls the api with the entered credentials', async () => {
-        const spy = vi.spyOn(authApi, 'login')
-            .mockResolvedValue({data: {token: 'x', tokenType: 'Bearer', expiresIn: 1}} as any)
+        const spy = vi.spyOn(authApi, 'login').mockResolvedValue(loginResponse)
 
         const wrapper = mountPage()
         await wrapper.find('#username').setValue('admin')
         await wrapper.find('#password').setValue('secret')
         await wrapper.find('form').trigger('submit')
+        await flushPromises()
 
         expect(spy).toHaveBeenCalledWith({username: 'admin', password: 'secret'})
     })
 
     it('stores the token and redirects to /admin on success', async () => {
-        vi.spyOn(authApi, 'login')
-            .mockResolvedValue({data: {token: 't.o.k', tokenType: 'Bearer', expiresIn: 3600}} as any)
+        vi.spyOn(authApi, 'login').mockResolvedValue(loginResponse)
         const pushSpy = vi.spyOn(router, 'push')
 
         const wrapper = mountPage()

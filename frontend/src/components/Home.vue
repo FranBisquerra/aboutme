@@ -75,12 +75,7 @@
 </template>
 
 <script setup lang="ts">
-import {onMounted} from 'vue'
-import {storeToRefs} from 'pinia'
-import {useProfileStore} from '../stores/profile'
+import type {Profile} from '../types/profile'
 
-const store = useProfileStore()
-const {profile} = storeToRefs(store)
-
-onMounted(() => store.fetch())
+defineProps<{ profile: Profile | undefined }>()
 </script>

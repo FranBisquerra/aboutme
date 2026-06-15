@@ -1,32 +1,45 @@
-import {describe, expect, it} from 'vitest'
+import {beforeEach, describe, expect, it} from 'vitest'
+import {createPinia, setActivePinia} from 'pinia'
 import router from './index'
 import HomePage from '../pages/HomePage.vue'
 import ContactPage from '../pages/ContactPage.vue'
 import LoginPage from '../pages/LoginPage.vue'
 import AdminPage from '../pages/AdminPage.vue'
+import {useAuthStore} from '../stores/auth'
+
+function resolvedComponent() {
+    return router.currentRoute.value.matched[0]?.components?.default
+}
 
 describe('Router', () => {
+    beforeEach(() => {
+        localStorage.clear()
+        setActivePinia(createPinia())
+    })
+
     it('/ resolves to HomePage', async () => {
         await router.push('/')
-        const component = router.currentRoute.value.matched[0].components?.default
-        expect(component).toBe(HomePage)
+        expect(resolvedComponent()).toBe(HomePage)
     })
 
     it('/contact resolves to ContactPage', async () => {
         await router.push('/contact')
-        const component = router.currentRoute.value.matched[0].components?.default
-        expect(component).toBe(ContactPage)
+        expect(resolvedComponent()).toBe(ContactPage)
     })
 
     it('/login resolves to LoginPage', async () => {
         await router.push('/login')
-        const component = router.currentRoute.value.matched[0].components?.default
-        expect(component).toBe(LoginPage)
+        expect(resolvedComponent()).toBe(LoginPage)
     })
 
-    it('/admin resolves to AdminPage', async () => {
+    it('redirects /admin to /login when not authenticated', async () => {
         await router.push('/admin')
-        const component = router.currentRoute.value.matched[0].components?.default
-        expect(component).toBe(AdminPage)
+        expect(router.currentRoute.value.path).toBe('/login')
+    })
+
+    it('allows /admin when authenticated', async () => {
+        useAuthStore().setToken('a.token')
+        await router.push('/admin')
+        expect(resolvedComponent()).toBe(AdminPage)
     })
 })

@@ -6,7 +6,7 @@
 
 **Tech Stack**:
 - **Backend**: Spring Boot 4.0.4 (Java 26) with Hexagonal Architecture + DDD
-- **Frontend**: Vue 3.5.34 + Vite 5 + TypeScript + Tailwind CSS 4 + Axios + Pinia
+- **Frontend**: Vue 3.5.34 + Vite + TypeScript + Tailwind CSS 4 + PrimeVue + TanStack Query (vue-query) + Pinia + Axios + Zod
 - **Build**: Gradle (backend + Docker tasks), npm (frontend)
 - **Containerization**: Docker + Docker Compose (local and production)
 - **SSL/TLS**: Let's Encrypt (Certbot, automatic renewal)
@@ -24,10 +24,15 @@ frontend/
 │   ├── App.vue                    # Root component
 │   ├── main.ts                    # Entry point
 │   ├── index.css                  # Global styles + Tailwind
+│   ├── pages/                     # Route-level SMART components (orchestrate data + actions)
+│   ├── components/                # PRESENTATIONAL components (props in / emits out)
+│   ├── router/                    # vue-router routes
 │   ├── types/                     # TypeScript interfaces (contract with backend)
-│   ├── api/                       # HTTP clients (Axios)
-│   ├── stores/                    # Pinia stores (global state)
-│   └── components/                # UI components
+│   ├── api/                       # Thin axios functions over client.ts
+│   ├── schemas/                   # Zod schemas (form validation)
+│   ├── queries/                   # TanStack Query hooks (useQuery/useMutation)
+│   ├── stores/                    # Pinia stores — CLIENT state only (token, UI)
+│   └── test/                      # Test helpers (mountWithPlugins)
 ├── env.d.ts                       # Vite + Vue type declarations
 ├── tsconfig.json
 ├── index.html
@@ -35,13 +40,17 @@ frontend/
 └── package.json
 ```
 
-**Frontend conventions**:
+**Frontend conventions** (see the `/new-page` skill for the full recipe):
 - TypeScript in all `.ts` files and `<script setup lang="ts">` in components
 - Components in PascalCase with `.vue` extension
-- Styles with Tailwind CSS classes (no custom CSS except `index.css`)
-- HTTP calls centralized in `api/`
-- Global state in `stores/` (Pinia) — shared data fetched once, not per component
-- Backend contracts typed in `types/`
+- **UI components**: PrimeVue (theme Aura, dark mode via `.dark`); layout/spacing with Tailwind 4
+- **Pages (smart) vs components (presentational)**: pages orchestrate data and pass props down;
+  components receive props / emit events and never fetch
+- **Server state**: TanStack Query (`queries/`, `useQuery`/`useMutation`) over the axios `api/*`;
+  never store server data in Pinia, never hand-roll loading/error state
+- **Client state**: Pinia (`stores/`) only for non-server state (auth token, UI)
+- **Forms**: `@primevue/forms` + Zod schemas (`schemas/`)
+- HTTP calls centralized in `api/` (over `client.ts`); backend contracts typed in `types/`
 
 ---
 
@@ -294,11 +303,16 @@ Integration tests use Testcontainers MariaDB (`AbstractIntegrationTest`).
 
 **Frontend (Vue 3 + TypeScript)**:
 - Vue: 3.5.34
-- Vite: 5.4.11
+- Vite: 8.x
 - TypeScript: 6.x
-- Tailwind CSS: 4.3.0 (via plugin `@tailwindcss/vite`)
+- Tailwind CSS: 4.x (via plugin `@tailwindcss/vite`) + `tailwindcss-primeui`
+- PrimeVue: 4.5.x (+ `@primeuix/themes`, `primeicons`, `@primevue/forms`)
+- TanStack Query: `@tanstack/vue-query` 5.x
+- Zod: 4.x (form validation; note untouched fields are `null` → use `<Form :initial-values>`)
+- Pinia: 3.0.4 (client state only)
 - Axios: 1.7.9
-- Pinia: 3.0.4
+- Testing: Vitest + `@vue/test-utils` (happy-dom); `frontend/.npmrc` sets `legacy-peer-deps=true`
+  (vue-query's optional Vue-2 peer)
 
 ---
 
