@@ -8,7 +8,7 @@ Personal website built as a learning project. Implements a modern architecture w
 |-------|-----------|
 | Backend | Java 26 · Spring Boot 4 · Gradle |
 | Persistence | MariaDB · Spring Data JPA · Flyway (migrations) |
-| Frontend | Vue 3 · Vite 5 · TypeScript · Axios · Tailwind CSS 4 · Pinia |
+| Frontend | Vue 3 · Vite · TypeScript · Tailwind CSS 4 · PrimeVue · TanStack Query · Pinia · Axios · Zod |
 | Server | Nginx (reverse proxy) |
 | Containerization | Docker · Docker Compose |
 
@@ -18,33 +18,35 @@ Personal website built as a learning project. Implements a modern architecture w
 aboutme/
 ├── src/                          # Java backend (Hexagonal + DDD)
 │   └── main/java/com/fbisquerra/aboutme/
-│       ├── home/                 # Home module
-│       │   └── infrastructure/controller/HomeController.java
-│       ├── profile/              # Profile module
-│       │   ├── domain/model/Profile.java
-│       │   ├── domain/repository/ProfileRepository.java
-│       │   ├── application/dto/ProfileResponse.java
-│       │   ├── application/mapper/ProfileMapper.java
-│       │   ├── application/usecase/GetProfileUseCase.java
-│       │   ├── infrastructure/persistence/    # JPA entities + JpaProfileRepository (adapter)
-│       │   └── infrastructure/controller/ProfileController.java
+│       ├── profile/              # Profile module (read the CV/profile)
+│       │   ├── domain/            # Profile aggregate + ProfileRepository (port)
+│       │   ├── application/       # GetProfileUseCase, DTOs, ProfileMapper
+│       │   └── infrastructure/    # ProfileController + JPA persistence (adapter)
+│       ├── contact/              # Contact module (contact form → email via Resend)
+│       │   ├── domain/            # ContactMessage + ContactEmailPort (port)
+│       │   ├── application/       # SendContactMessageUseCase, DTOs
+│       │   └── infrastructure/    # ContactController + Resend email adapter
+│       ├── user/                 # User module (auth: login → JWT, roles ADMIN/USER)
+│       │   ├── domain/            # User, Role, PasswordHasher/AccessTokenIssuer (ports)
+│       │   ├── application/       # AuthenticateUserUseCase, login DTOs
+│       │   └── infrastructure/    # AuthController, Spring Security config, JPA persistence
 │       └── shared/               # Shared configuration
-│           └── infrastructure/config/CorsConfig.java
+│           └── infrastructure/    # CorsConfig, RequestLoggingFilter
 │   └── main/resources/
-│       └── db/migration/         # Flyway SQL migrations (V1__…, V2__…)
+│       └── db/migration/         # Flyway SQL migrations (V1 profile, V2 seed, V3 users)
 ├── frontend/                     # Vue 3 + Vite + TypeScript frontend
 │   └── src/
-│       ├── App.vue
-│       ├── main.ts
-│       ├── types/profile.ts      # TypeScript interfaces
-│       ├── api/client.ts
-│       ├── api/profile.ts
-│       ├── stores/profile.ts     # Pinia store
-│       └── components/
-│           ├── Home.vue
-│           ├── Navbar.vue
-│           ├── Experience.vue
-│           └── BackToTop.vue
+│       ├── App.vue               # Navbar + RouterView + Footer
+│       ├── main.ts               # PrimeVue + TanStack Query + Pinia + router setup
+│       ├── pages/                # Route-level SMART components (Home, Contact, Login, Admin)
+│       ├── components/           # Presentational + layout (Navbar, Footer, Home, Experience…)
+│       ├── router/              # vue-router routes + auth guard (/admin)
+│       ├── queries/              # TanStack Query hooks (useProfile)
+│       ├── schemas/              # Zod schemas (auth, contact) for form validation
+│       ├── stores/               # Pinia — client state only (auth token)
+│       ├── api/                  # axios client.ts + thin api functions
+│       ├── types/                # TS interfaces (backend contracts)
+│       └── test/                 # test helpers (mountWithPlugins)
 ├── infrastructure/
 │   └── docker/                   # Dockerfiles + Nginx + Compose
 │       ├── backend/Dockerfile

@@ -326,6 +326,7 @@ Integration tests use Testcontainers MariaDB (`AbstractIntegrationTest`).
 
 ---
 
-**Last updated**: Profile moved from JSON to MariaDB + Flyway (2026-06-07)
-**Version**: 4.1
+**Last updated**: JWT auth (`user` module) + frontend production stack
+(PrimeVue + TanStack Query + `@primevue/forms`/Zod), login/admin pages + auth guard (2026-07-05)
+**Version**: 4.2
 **Status**: Under active development
