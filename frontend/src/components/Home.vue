@@ -17,10 +17,10 @@
           <p class="text-xl text-indigo-200 font-medium mb-6">{{ profile.title }}</p>
           <p class="text-lg text-gray-100 max-w-xl leading-relaxed mb-10">{{ profile.bio }}</p>
           <div class="flex flex-wrap items-center gap-4 mb-12">
-            <a href="#experience"
+            <RouterLink to="/contact"
                class="px-6 py-3 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-500 transition-colors">
-              See experience
-            </a>
+              Contact me!
+            </RouterLink>
             <div class="flex items-center gap-3">
               <a :href="profile.github" target="_blank" rel="noopener" aria-label="GitHub"
                  class="p-2 rounded-full bg-white/10 border border-white/20 text-white hover:bg-white/25 transition-colors">

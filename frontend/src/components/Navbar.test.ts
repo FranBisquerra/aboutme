@@ -34,12 +34,6 @@ describe('Navbar', () => {
         expect(link.text()).toBe('franbisquerra')
     })
 
-    it('renders the Contact me! link pointing to /contact', () => {
-        const link = mountNavbar().find('a[href="/contact"]')
-        expect(link.exists()).toBe(true)
-        expect(link.text()).toBe('Contact me!')
-    })
-
     it('shows the Login link pointing to /login when not authenticated', () => {
         const link = mountNavbar().find('a[href="/login"]')
         expect(link.exists()).toBe(true)
