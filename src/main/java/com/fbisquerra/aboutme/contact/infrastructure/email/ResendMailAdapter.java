@@ -29,7 +29,7 @@ public class ResendMailAdapter implements ContactEmailPort {
         mail.setReplyTo(message.senderEmail());
         mail.setSubject("[Contact] Mensaje de " + message.name());
         mail.setText(
-                "Nombre: " + message.name() + "\n" +
+            "Nombre: " + message.name() + "\n" +
                 "Email: " + message.senderEmail() + "\n\n" +
                 message.message()
         );

@@ -4,13 +4,13 @@ Personal website built as a learning project. Implements a modern architecture w
 
 ## Stack
 
-| Layer | Technology |
-|-------|-----------|
-| Backend | Java 26 · Spring Boot 4 · Gradle |
-| Persistence | MariaDB · Spring Data JPA · Flyway (migrations) |
-| Frontend | Vue 3 · Vite · TypeScript · Tailwind CSS 4 · PrimeVue · TanStack Query · Pinia · Axios · Zod |
-| Server | Nginx (reverse proxy) |
-| Containerization | Docker · Docker Compose |
+| Layer            | Technology                                                                                   |
+|------------------|----------------------------------------------------------------------------------------------|
+| Backend          | Java 26 · Spring Boot 4 · Gradle                                                             |
+| Persistence      | MariaDB · Spring Data JPA · Flyway (migrations)                                              |
+| Frontend         | Vue 3 · Vite · TypeScript · Tailwind CSS 4 · PrimeVue · TanStack Query · Pinia · Axios · Zod |
+| Server           | Nginx (reverse proxy)                                                                        |
+| Containerization | Docker · Docker Compose                                                                      |
 
 ## Project Structure
 
@@ -60,11 +60,11 @@ aboutme/
 
 ## Profiles
 
-| Profile | Use case | How to run |
-|---------|----------|------------|
-| `dev` | Development with hot reload | `./gradlew dockerRun -Pprofile=dev` (MariaDB only) + IntelliJ + `npm run dev` |
-| `local` | Full production environment locally | `./gradlew dockerRun` |
-| `pro` | Production | `./gradlew dockerRun -Pprofile=pro` |
+| Profile | Use case                            | How to run                                                                    |
+|---------|-------------------------------------|-------------------------------------------------------------------------------|
+| `dev`   | Development with hot reload         | `./gradlew dockerRun -Pprofile=dev` (MariaDB only) + IntelliJ + `npm run dev` |
+| `local` | Full production environment locally | `./gradlew dockerRun`                                                         |
+| `pro`   | Production                          | `./gradlew dockerRun -Pprofile=pro`                                           |
 
 ## Development (dev profile)
 
@@ -91,10 +91,10 @@ Flyway applies the schema and seed data (`src/main/resources/db/migration/`) on 
 
 The MariaDB connection is configured via environment variables (see `.env.example`):
 
-| Variable | Purpose |
-|----------|---------|
-| `MARIADB_DATABASE` / `MARIADB_USER` / `MARIADB_PASSWORD` / `MARIADB_ROOT_PASSWORD` | Credentials for the `db` container |
-| `DB_URL` / `DB_USERNAME` / `DB_PASSWORD` | Backend datasource (injected from compose; defaults target the `db` service) |
+| Variable                                                                           | Purpose                                                                      |
+|------------------------------------------------------------------------------------|------------------------------------------------------------------------------|
+| `MARIADB_DATABASE` / `MARIADB_USER` / `MARIADB_PASSWORD` / `MARIADB_ROOT_PASSWORD` | Credentials for the `db` container                                           |
+| `DB_URL` / `DB_USERNAME` / `DB_PASSWORD`                                           | Backend datasource (injected from compose; defaults target the `db` service) |
 
 Copy `.env.example` to `.env` and fill in the values. Schema changes are made with
 Flyway migrations — see the `/new-migration` guide.
@@ -106,6 +106,7 @@ Flyway migrations — see the `/new-migration` guide.
 ```
 
 Builds the JAR and frontend, then starts:
+
 - `frontend` — Nginx at `http://localhost:80` (serves Vue + proxies `/api/*` → backend)
 - `backend` — Spring Boot at `:8080` (internal only)
 - `db` — MariaDB (exposed on `localhost:3306` for inspection)
@@ -117,6 +118,7 @@ Builds the JAR and frontend, then starts:
 ```
 
 Merges `docker-compose.yml` (base) with `docker-compose.prod.yml` (overrides), then starts:
+
 - `frontend` — Nginx at ports 80 (HTTP→HTTPS redirect) and 443 (HTTPS, SSL)
 - `backend` — Spring Boot at `:8080` (internal only)
 - `db` — MariaDB (internal only, persisted in the `db-data` volume)

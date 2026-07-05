@@ -1,0 +1,21 @@
+# EditorConfig — https://editorconfig.org
+# Respected by IntelliJ (backend) and VS Code (frontend) out of the box.
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 4
+max_line_length = 140
+
+# Frontend — Vue/Vite ecosystem convention is 2 spaces
+[*.{js,ts,vue,json,css,scss,html,yml,yaml}]
+indent_size = 2
+
+# Markdown — trailing spaces are meaningful (hard line breaks) and lines aren't wrapped
+[*.md]
+trim_trailing_whitespace = false
+max_line_length = off

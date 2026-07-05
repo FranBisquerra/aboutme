@@ -8,38 +8,38 @@ import AdminPage from '../pages/AdminPage.vue'
 import {useAuthStore} from '../stores/auth'
 
 function resolvedComponent() {
-    return router.currentRoute.value.matched[0]?.components?.default
+  return router.currentRoute.value.matched[0]?.components?.default
 }
 
 describe('Router', () => {
-    beforeEach(() => {
-        localStorage.clear()
-        setActivePinia(createPinia())
-    })
+  beforeEach(() => {
+    localStorage.clear()
+    setActivePinia(createPinia())
+  })
 
-    it('/ resolves to HomePage', async () => {
-        await router.push('/')
-        expect(resolvedComponent()).toBe(HomePage)
-    })
+  it('/ resolves to HomePage', async () => {
+    await router.push('/')
+    expect(resolvedComponent()).toBe(HomePage)
+  })
 
-    it('/contact resolves to ContactPage', async () => {
-        await router.push('/contact')
-        expect(resolvedComponent()).toBe(ContactPage)
-    })
+  it('/contact resolves to ContactPage', async () => {
+    await router.push('/contact')
+    expect(resolvedComponent()).toBe(ContactPage)
+  })
 
-    it('/login resolves to LoginPage', async () => {
-        await router.push('/login')
-        expect(resolvedComponent()).toBe(LoginPage)
-    })
+  it('/login resolves to LoginPage', async () => {
+    await router.push('/login')
+    expect(resolvedComponent()).toBe(LoginPage)
+  })
 
-    it('redirects /admin to /login when not authenticated', async () => {
-        await router.push('/admin')
-        expect(router.currentRoute.value.path).toBe('/login')
-    })
+  it('redirects /admin to /login when not authenticated', async () => {
+    await router.push('/admin')
+    expect(router.currentRoute.value.path).toBe('/login')
+  })
 
-    it('allows /admin when authenticated', async () => {
-        useAuthStore().setToken('a.token')
-        await router.push('/admin')
-        expect(resolvedComponent()).toBe(AdminPage)
-    })
+  it('allows /admin when authenticated', async () => {
+    useAuthStore().setToken('a.token')
+    await router.push('/admin')
+    expect(resolvedComponent()).toBe(AdminPage)
+  })
 })

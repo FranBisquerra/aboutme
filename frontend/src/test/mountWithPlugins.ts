@@ -8,21 +8,21 @@ import type {Component} from 'vue'
 const stub = {template: '<div/>'}
 
 export function createTestRouter(): Router {
-    return createRouter({
-        history: createWebHistory(),
-        routes: [
-            {path: '/', component: stub},
-            {path: '/login', component: stub},
-            {path: '/admin', component: stub},
-            {path: '/contact', component: stub},
-        ],
-    })
+  return createRouter({
+    history: createWebHistory(),
+    routes: [
+      {path: '/', component: stub},
+      {path: '/login', component: stub},
+      {path: '/admin', component: stub},
+      {path: '/contact', component: stub},
+    ],
+  })
 }
 
 interface MountOptions {
-    router?: Router
-    pinia?: Pinia
-    props?: Record<string, unknown>
+  router?: Router
+  pinia?: Pinia
+  props?: Record<string, unknown>
 }
 
 /**
@@ -31,16 +31,16 @@ interface MountOptions {
  * to spy on navigation or read a store.
  */
 export function mountWithPlugins(component: Component, options: MountOptions = {}) {
-    const router = options.router ?? createTestRouter()
-    const pinia = options.pinia ?? createPinia()
-    const queryClient = new QueryClient({
-        defaultOptions: {queries: {retry: false}, mutations: {retry: false}},
-    })
+  const router = options.router ?? createTestRouter()
+  const pinia = options.pinia ?? createPinia()
+  const queryClient = new QueryClient({
+    defaultOptions: {queries: {retry: false}, mutations: {retry: false}},
+  })
 
-    return mount(component, {
-        props: options.props,
-        global: {
-            plugins: [router, pinia, PrimeVue, [VueQueryPlugin, {queryClient}]],
-        },
-    })
+  return mount(component, {
+    props: options.props,
+    global: {
+      plugins: [router, pinia, PrimeVue, [VueQueryPlugin, {queryClient}]],
+    },
+  })
 }

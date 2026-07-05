@@ -7,7 +7,8 @@ VALUES ('Francesc Bisquerra Castell',
         'https://github.com/FranBisquerra',
         'Passionate software engineer who loves learning, sharing knowledge and taking on new challenges. Outside of tech, you''ll find me in the mountains, catching waves or exploring the outdoors. I thrive in dynamic environments and value the human side of work — being close to people and building great teams.');
 
-SET @profile_id = LAST_INSERT_ID();
+SET
+@profile_id = LAST_INSERT_ID();
 
 INSERT INTO profile_language (profile_id, name, level)
 VALUES (@profile_id, 'Catalan', 'Native'),

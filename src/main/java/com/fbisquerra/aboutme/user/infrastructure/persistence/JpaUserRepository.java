@@ -32,21 +32,21 @@ public class JpaUserRepository implements UserRepository {
 
     private User toDomain(UserJpaEntity entity) {
         return new User(
-                entity.getId(),
-                entity.getUsername(),
-                entity.getEmail(),
-                entity.getPasswordHash(),
-                entity.getRole()
+            entity.getId(),
+            entity.getUsername(),
+            entity.getEmail(),
+            entity.getPasswordHash(),
+            entity.getRole()
         );
     }
 
     private UserJpaEntity toEntity(User user) {
         return new UserJpaEntity(
-                user.id(),
-                user.username(),
-                user.email(),
-                user.passwordHash(),
-                user.role()
+            user.id(),
+            user.username(),
+            user.email(),
+            user.passwordHash(),
+            user.role()
         );
     }
 }

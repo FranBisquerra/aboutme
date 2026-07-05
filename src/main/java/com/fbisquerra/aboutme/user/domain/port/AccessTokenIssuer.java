@@ -6,5 +6,6 @@ public interface AccessTokenIssuer {
 
     IssuedToken issue(User user);
 
-    record IssuedToken(String token, long expiresInSeconds) {}
+    record IssuedToken(String token, long expiresInSeconds) {
+    }
 }

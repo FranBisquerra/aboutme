@@ -39,29 +39,29 @@ class ContactControllerTest extends AbstractIntegrationTest {
     @Test
     void shouldReturn204OnValidRequest() throws Exception {
         mockMvc.perform(post("/api/contact")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                                {
-                                  "name": "John Doe",
-                                  "email": "john@example.com",
-                                  "message": "Hello!"
-                                }
-                                """))
-                .andExpect(status().isNoContent());
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                    {
+                      "name": "John Doe",
+                      "email": "john@example.com",
+                      "message": "Hello!"
+                    }
+                    """))
+            .andExpect(status().isNoContent());
     }
 
     @Test
     void shouldForwardCorrectDataToEmailPort() throws Exception {
         mockMvc.perform(post("/api/contact")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                                {
-                                  "name": "John Doe",
-                                  "email": "john@example.com",
-                                  "message": "Hello!"
-                                }
-                                """))
-                .andExpect(status().isNoContent());
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                    {
+                      "name": "John Doe",
+                      "email": "john@example.com",
+                      "message": "Hello!"
+                    }
+                    """))
+            .andExpect(status().isNoContent());
 
         ArgumentCaptor<ContactMessage> captor = ArgumentCaptor.forClass(ContactMessage.class);
         verify(contactEmailPort).send(captor.capture());

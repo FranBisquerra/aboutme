@@ -13,7 +13,7 @@
                 <span class="text-gray-400 mx-2">·</span>
                 <span class="text-gray-600 dark:text-gray-400">{{ job.company }}</span>
               </div>
-              <span class="text-sm text-gray-400 shrink-0">{{ formatDate(job.start) }} – {{formatDate(job.end)}}</span>
+              <span class="text-sm text-gray-400 shrink-0">{{ formatDate(job.start) }} – {{ formatDate(job.end) }}</span>
             </div>
             <p class="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">{{ job.description }}</p>
           </div>
