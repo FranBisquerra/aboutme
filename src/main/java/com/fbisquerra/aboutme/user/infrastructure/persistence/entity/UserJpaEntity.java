@@ -1,14 +1,7 @@
 package com.fbisquerra.aboutme.user.infrastructure.persistence.entity;
 
 import com.fbisquerra.aboutme.user.domain.model.Role;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "app_user")

@@ -19,9 +19,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class AuthenticateUserUseCaseTest {
@@ -57,7 +55,7 @@ class AuthenticateUserUseCaseTest {
         when(userRepository.findByUsername(UserFixture.USERNAME)).thenReturn(Optional.empty());
 
         assertThrows(InvalidCredentialsException.class,
-                () -> authenticateUserUseCase.execute(UserFixture.validLogin()));
+            () -> authenticateUserUseCase.execute(UserFixture.validLogin()));
 
         verify(accessTokenIssuer, never()).issue(any());
     }
@@ -69,7 +67,7 @@ class AuthenticateUserUseCaseTest {
         when(passwordHasher.matches(UserFixture.RAW_PASSWORD, admin.passwordHash())).thenReturn(false);
 
         assertThrows(InvalidCredentialsException.class,
-                () -> authenticateUserUseCase.execute(UserFixture.validLogin()));
+            () -> authenticateUserUseCase.execute(UserFixture.validLogin()));
 
         verify(accessTokenIssuer, never()).issue(any());
     }

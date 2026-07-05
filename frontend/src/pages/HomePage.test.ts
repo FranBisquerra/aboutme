@@ -6,30 +6,30 @@ import type {Profile} from '../types/profile'
 import {mountWithPlugins} from '../test/mountWithPlugins'
 
 const mockProfile: Profile = {
-    name: 'Fran Bisquerra',
-    title: 'Software Engineer',
-    location: 'Barcelona',
-    email: 'fran@example.com',
-    linkedin: 'https://linkedin.com/in/fran',
-    github: 'https://github.com/fran',
-    bio: 'Developer',
-    languages: [],
-    skills: ['Java', 'Vue'],
-    experience: [],
-    education: [],
+  name: 'Fran Bisquerra',
+  title: 'Software Engineer',
+  location: 'Barcelona',
+  email: 'fran@example.com',
+  linkedin: 'https://linkedin.com/in/fran',
+  github: 'https://github.com/fran',
+  bio: 'Developer',
+  languages: [],
+  skills: ['Java', 'Vue'],
+  experience: [],
+  education: [],
 }
 
 beforeEach(() => {
-    vi.restoreAllMocks()
+  vi.restoreAllMocks()
 })
 
 describe('HomePage', () => {
-    it('renders the profile fetched via useProfile', async () => {
-        vi.spyOn(profileApi, 'getProfile').mockResolvedValue({data: mockProfile} as any)
+  it('renders the profile fetched via useProfile', async () => {
+    vi.spyOn(profileApi, 'getProfile').mockResolvedValue({data: mockProfile} as any)
 
-        const wrapper = mountWithPlugins(HomePage)
-        await flushPromises()
+    const wrapper = mountWithPlugins(HomePage)
+    await flushPromises()
 
-        expect(wrapper.text()).toContain('Fran Bisquerra')
-    })
+    expect(wrapper.text()).toContain('Fran Bisquerra')
+  })
 })

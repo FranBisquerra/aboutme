@@ -6,7 +6,8 @@
         <p class="text-gray-500 dark:text-gray-400 mb-8">Send me a message and I'll get back to you.</p>
       </template>
 
-      <Form v-if="!isSuccess" v-slot="$form" :resolver="resolver" :initial-values="initialValues" class="flex flex-col gap-5" @submit="onFormSubmit">
+      <Form v-if="!isSuccess" v-slot="$form" :resolver="resolver" :initial-values="initialValues" class="flex flex-col gap-5"
+            @submit="onFormSubmit">
         <div class="flex flex-col gap-1">
           <label for="name" class="text-sm font-medium text-gray-700 dark:text-gray-300">Name</label>
           <InputText id="name" name="name" type="text" placeholder="Your name" fluid/>

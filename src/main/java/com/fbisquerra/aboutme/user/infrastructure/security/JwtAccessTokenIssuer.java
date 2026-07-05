@@ -27,11 +27,11 @@ public class JwtAccessTokenIssuer implements AccessTokenIssuer {
     public IssuedToken issue(User user) {
         var now = Instant.now();
         var claims = JwtClaimsSet.builder()
-                .subject(user.username())
-                .issuedAt(now)
-                .expiresAt(now.plusSeconds(expirationSeconds))
-                .claim("role", user.role().name())
-                .build();
+            .subject(user.username())
+            .issuedAt(now)
+            .expiresAt(now.plusSeconds(expirationSeconds))
+            .claim("role", user.role().name())
+            .build();
 
         var header = JwsHeader.with(MacAlgorithm.HS256).build();
         var token = jwtEncoder.encode(JwtEncoderParameters.from(header, claims)).getTokenValue();

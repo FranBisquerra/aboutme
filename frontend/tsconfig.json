@@ -5,10 +5,18 @@
     "moduleResolution": "bundler",
     "strict": true,
     "jsx": "preserve",
-    "lib": ["ESNext", "DOM"],
+    "lib": [
+      "ESNext",
+      "DOM"
+    ],
     "skipLibCheck": true,
     "noEmit": true
   },
-  "include": ["src/**/*", "env.d.ts"],
-  "exclude": ["node_modules"]
+  "include": [
+    "src/**/*",
+    "env.d.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }

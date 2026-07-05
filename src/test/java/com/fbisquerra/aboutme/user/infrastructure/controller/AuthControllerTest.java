@@ -20,10 +20,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(properties = {
-        "JWT_SECRET=test-secret-test-secret-test-secret-0123456789",
-        "ADMIN_USERNAME=admin",
-        "ADMIN_EMAIL=admin@test.dev",
-        "ADMIN_PASSWORD=admin"
+    "JWT_SECRET=test-secret-test-secret-test-secret-0123456789",
+    "ADMIN_USERNAME=admin",
+    "ADMIN_EMAIL=admin@test.dev",
+    "ADMIN_PASSWORD=admin"
 })
 class AuthControllerTest extends AbstractIntegrationTest {
 
@@ -38,47 +38,47 @@ class AuthControllerTest extends AbstractIntegrationTest {
     @BeforeEach
     void setup() {
         mockMvc = MockMvcBuilders.webAppContextSetup(context)
-                .apply(springSecurity())
-                .build();
+            .apply(springSecurity())
+            .build();
     }
 
     @Test
     void shouldReturnTokenOnValidLogin() throws Exception {
         mockMvc.perform(post("/api/auth/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                                { "username": "admin", "password": "admin" }
-                                """))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.token").exists())
-                .andExpect(jsonPath("$.tokenType").value("Bearer"))
-                .andExpect(jsonPath("$.expiresIn").value(3600));
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                    { "username": "admin", "password": "admin" }
+                    """))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.token").exists())
+            .andExpect(jsonPath("$.tokenType").value("Bearer"))
+            .andExpect(jsonPath("$.expiresIn").value(3600));
     }
 
     @Test
     void shouldReturn401OnInvalidCredentials() throws Exception {
         mockMvc.perform(post("/api/auth/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                                { "username": "admin", "password": "wrong" }
-                                """))
-                .andExpect(status().isUnauthorized());
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                    { "username": "admin", "password": "wrong" }
+                    """))
+            .andExpect(status().isUnauthorized());
     }
 
     @Test
     void shouldReturn400OnMissingCredentials() throws Exception {
         mockMvc.perform(post("/api/auth/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                                { "username": "admin", "password": "" }
-                                """))
-                .andExpect(status().isBadRequest());
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                    { "username": "admin", "password": "" }
+                    """))
+            .andExpect(status().isBadRequest());
     }
 
     @Test
     void shouldReturn401OnProtectedRouteWithoutToken() throws Exception {
         mockMvc.perform(post("/api/profile"))
-                .andExpect(status().isUnauthorized());
+            .andExpect(status().isUnauthorized());
     }
 
     @Test
@@ -87,13 +87,13 @@ class AuthControllerTest extends AbstractIntegrationTest {
         String token = accessTokenIssuer.issue(plainUser).token();
 
         mockMvc.perform(post("/api/profile")
-                        .header("Authorization", "Bearer " + token))
-                .andExpect(status().isForbidden());
+                .header("Authorization", "Bearer " + token))
+            .andExpect(status().isForbidden());
     }
 
     @Test
     void shouldKeepProfileReadPublic() throws Exception {
         mockMvc.perform(get("/api/profile"))
-                .andExpect(status().isOk());
+            .andExpect(status().isOk());
     }
 }

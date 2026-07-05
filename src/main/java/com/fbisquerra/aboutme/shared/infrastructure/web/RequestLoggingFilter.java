@@ -22,7 +22,7 @@ public class RequestLoggingFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-            throws ServletException, IOException {
+        throws ServletException, IOException {
         long start = System.currentTimeMillis();
         try {
             filterChain.doFilter(request, response);
@@ -30,7 +30,7 @@ public class RequestLoggingFilter extends OncePerRequestFilter {
             long durationMs = System.currentTimeMillis() - start;
             String query = request.getQueryString() != null ? "?" + request.getQueryString() : "";
             log.info("{} {}{} -> {} ({} ms)",
-                    request.getMethod(), request.getRequestURI(), query, response.getStatus(), durationMs);
+                request.getMethod(), request.getRequestURI(), query, response.getStatus(), durationMs);
         }
     }
 }

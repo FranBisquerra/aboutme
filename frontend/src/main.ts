@@ -9,19 +9,19 @@ import './index.css'
 import App from './App.vue'
 
 createApp(App)
-    .use(createPinia())
-    .use(router)
-    .use(PrimeVue, {
-        theme: {
-            preset: Aura,
-            options: {
-                darkModeSelector: '.dark',
-                cssLayer: {
-                    name: 'primevue',
-                    order: 'theme, base, primevue',
-                },
-            },
+  .use(createPinia())
+  .use(router)
+  .use(PrimeVue, {
+    theme: {
+      preset: Aura,
+      options: {
+        darkModeSelector: '.dark',
+        cssLayer: {
+          name: 'primevue',
+          order: 'theme, base, primevue',
         },
-    })
-    .use(VueQueryPlugin)
-    .mount('#root')
+      },
+    },
+  })
+  .use(VueQueryPlugin)
+  .mount('#root')

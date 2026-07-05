@@ -3,7 +3,6 @@ package com.fbisquerra.aboutme.user.application.usecase;
 import com.fbisquerra.aboutme.user.application.dto.LoginRequest;
 import com.fbisquerra.aboutme.user.application.dto.LoginResponse;
 import com.fbisquerra.aboutme.user.domain.exception.InvalidCredentialsException;
-import com.fbisquerra.aboutme.user.domain.model.User;
 import com.fbisquerra.aboutme.user.domain.port.AccessTokenIssuer;
 import com.fbisquerra.aboutme.user.domain.port.PasswordHasher;
 import com.fbisquerra.aboutme.user.domain.repository.UserRepository;
@@ -26,7 +25,7 @@ public class AuthenticateUserUseCase {
 
     public LoginResponse execute(LoginRequest request) {
         var user = userRepository.findByUsername(request.username())
-                .orElseThrow(InvalidCredentialsException::new);
+            .orElseThrow(InvalidCredentialsException::new);
 
         if (!passwordHasher.matches(request.password(), user.passwordHash())) {
             throw new InvalidCredentialsException();

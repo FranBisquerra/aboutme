@@ -20,24 +20,24 @@ class ContactMessageTest {
     @Test
     void shouldRejectBlankName() {
         assertThrows(IllegalArgumentException.class,
-                () -> new ContactMessage("", "john@example.com", "Hello!"));
+            () -> new ContactMessage("", "john@example.com", "Hello!"));
     }
 
     @Test
     void shouldRejectNullName() {
         assertThrows(IllegalArgumentException.class,
-                () -> new ContactMessage(null, "john@example.com", "Hello!"));
+            () -> new ContactMessage(null, "john@example.com", "Hello!"));
     }
 
     @Test
     void shouldRejectBlankEmail() {
         assertThrows(IllegalArgumentException.class,
-                () -> new ContactMessage("John", "", "Hello!"));
+            () -> new ContactMessage("John", "", "Hello!"));
     }
 
     @Test
     void shouldRejectBlankMessage() {
         assertThrows(IllegalArgumentException.class,
-                () -> new ContactMessage("John", "john@example.com", "  "));
+            () -> new ContactMessage("John", "john@example.com", "  "));
     }
 }

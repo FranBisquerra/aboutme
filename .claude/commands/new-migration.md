@@ -42,8 +42,8 @@ If the migration adds/changes a table that the domain reads or writes:
 
 - [ ] Migration file created under `db/migration/` with the next `V{n}` number
 - [ ] JPA entity in `{module}/infrastructure/persistence/` matches the new columns
-      (`@Column(name = "...")` for snake_case columns)
+  (`@Column(name = "...")` for snake_case columns)
 - [ ] Repository / adapter mapping updated (entity ↔ domain)
 - [ ] Integration test runs against the real schema (Testcontainers MariaDB applies
-      the migration automatically) — see `/it-test`
+  the migration automatically) — see `/it-test`
 - [ ] `./gradlew build` passes (Hibernate `validate` confirms entities match the schema)

@@ -5,6 +5,7 @@
 **Goal**: Create a personal "About Me" page with multiple technical features implemented as a learning exercise.
 
 **Tech Stack**:
+
 - **Backend**: Spring Boot 4.0.4 (Java 26) with Hexagonal Architecture + DDD
 - **Frontend**: Vue 3.5.34 + Vite + TypeScript + Tailwind CSS 4 + PrimeVue + TanStack Query (vue-query) + Pinia + Axios + Zod
 - **Build**: Gradle (backend + Docker tasks), npm (frontend)
@@ -41,6 +42,7 @@ frontend/
 ```
 
 **Frontend conventions** (see the `/new-page` skill for the full recipe):
+
 - TypeScript in all `.ts` files and `<script setup lang="ts">` in components
 - Components in PascalCase with `.vue` extension
 - **UI components**: PrimeVue (theme Aura, dark mode via `.dark`); layout/spacing with Tailwind 4
@@ -119,18 +121,18 @@ src/main/java/com/fbisquerra/aboutme/
 
 ## Key DDD Concepts
 
-| Concept | Description | Location |
-|---------|-------------|----------|
-| **Aggregate** | Root of a Bounded Context with full lifecycle | `domain/model/{Aggregate}.java` |
-| **Value Object** | Immutable object with no own identity | `domain/model/{VO}.java` |
-| **Entity** | Object with unique identity (within the aggregate) | `domain/model/` |
-| **Repository (Port)** | Abstract interface, no persistence details | `domain/repository/` |
-| **Repository (Adapter)** | Concrete implementation with JPA | `infrastructure/persistence/` |
-| **Domain Service** | Pure business logic (no Spring) | `domain/service/` |
-| **Application Service / UseCase** | Action orchestration, transactions | `application/usecase/` |
-| **Domain Event** | Important business occurrence | `domain/event/` |
-| **DTO** | Object for transferring data between layers | `application/dto/` |
-| **Mapper** | Convert between domain entities and DTOs | `application/mapper/` |
+| Concept                           | Description                                        | Location                        |
+|-----------------------------------|----------------------------------------------------|---------------------------------|
+| **Aggregate**                     | Root of a Bounded Context with full lifecycle      | `domain/model/{Aggregate}.java` |
+| **Value Object**                  | Immutable object with no own identity              | `domain/model/{VO}.java`        |
+| **Entity**                        | Object with unique identity (within the aggregate) | `domain/model/`                 |
+| **Repository (Port)**             | Abstract interface, no persistence details         | `domain/repository/`            |
+| **Repository (Adapter)**          | Concrete implementation with JPA                   | `infrastructure/persistence/`   |
+| **Domain Service**                | Pure business logic (no Spring)                    | `domain/service/`               |
+| **Application Service / UseCase** | Action orchestration, transactions                 | `application/usecase/`          |
+| **Domain Event**                  | Important business occurrence                      | `domain/event/`                 |
+| **DTO**                           | Object for transferring data between layers        | `application/dto/`              |
+| **Mapper**                        | Convert between domain entities and DTOs           | `application/mapper/`           |
 
 ---
 
@@ -167,29 +169,30 @@ src/main/java/com/fbisquerra/aboutme/
 
 ### Available Gradle Tasks
 
-| Task | Command | Description |
-|------|---------|-------------|
-| `installFrontend` | (internal) | Runs `npm install` in `frontend/` |
-| `buildFrontend` | (internal) | Runs `npm run build` (produces `frontend/dist/`) |
-| `dockerRun (dev)` | `./gradlew dockerRun -Pprofile=dev` | Profile `dev`: starts only the `db` (MariaDB) container, no build |
-| `dockerRun` | `./gradlew dockerRun` | Profile `local`: builds and starts 3 containers (`db`, `backend`, `frontend`) |
+| Task              | Command                             | Description                                                                   |
+|-------------------|-------------------------------------|-------------------------------------------------------------------------------|
+| `installFrontend` | (internal)                          | Runs `npm install` in `frontend/`                                             |
+| `buildFrontend`   | (internal)                          | Runs `npm run build` (produces `frontend/dist/`)                              |
+| `dockerRun (dev)` | `./gradlew dockerRun -Pprofile=dev` | Profile `dev`: starts only the `db` (MariaDB) container, no build             |
+| `dockerRun`       | `./gradlew dockerRun`               | Profile `local`: builds and starts 3 containers (`db`, `backend`, `frontend`) |
 | `dockerRun (pro)` | `./gradlew dockerRun -Pprofile=pro` | Profile `pro`: 4 containers with SSL (`db`, `backend`, `frontend`, `certbot`) |
-| `dockerStop` | `./gradlew dockerStop` | Stops active containers |
-| `dockerStart` | `./gradlew dockerStart` | Resumes already-created containers |
+| `dockerStop`      | `./gradlew dockerStop`              | Stops active containers                                                       |
+| `dockerStart`     | `./gradlew dockerStart`             | Resumes already-created containers                                            |
 
 The `build` task depends on `buildFrontend`, so compiling the backend already includes compiling the frontend.
 
 ### Environment Profiles
 
-| Profile | Compose file | Containers | Access |
-|---------|-------------|------------|--------|
-| `dev` | `docker-compose.dev.yml` | `db` only (backend/frontend run locally) | backend `:8080`, frontend `:5173`, db `:3306` |
-| `local` | `docker-compose.local.yml` | `db`, `frontend`, `backend` | `http://localhost` |
-| `pro` | `docker-compose.prod.yml` | `db`, `frontend`, `backend`, `certbot` | `https://<DOMAIN>` |
+| Profile | Compose file               | Containers                               | Access                                        |
+|---------|----------------------------|------------------------------------------|-----------------------------------------------|
+| `dev`   | `docker-compose.dev.yml`   | `db` only (backend/frontend run locally) | backend `:8080`, frontend `:5173`, db `:3306` |
+| `local` | `docker-compose.local.yml` | `db`, `frontend`, `backend`              | `http://localhost`                            |
+| `pro`   | `docker-compose.prod.yml`  | `db`, `frontend`, `backend`, `certbot`   | `https://<DOMAIN>`                            |
 
 ### Compose strategy: base + override
 
 `docker-compose.yml` is the base file (profile `local`). For `pro`, `docker-compose.prod.yml` is applied on top with an additional `-f`, adding/overriding only the differences:
+
 - Nginx adds port 443, SSL volumes and the `nginx.prod.conf` config
 - Backend forces `SPRING_PROFILES_ACTIVE: pro` and `restart: unless-stopped`
 - The `certbot` service is added (only exists in `pro`)
@@ -202,6 +205,7 @@ The `build` task depends on `buildFrontend`, so compiling the backend already in
 ### Critical Restrictions
 
 **GIT - COMMITS**:
+
 - **DO NOT COMMIT ANYTHING WITHOUT EXPLICIT USER INSTRUCTION**
 - Before any action, inform the user of the plan
 - Always verify with `git status` before considering changes
@@ -210,12 +214,14 @@ The `build` task depends on `buildFrontend`, so compiling the backend already in
 - Never modify existing commit history
 
 **TESTS**:
+
 - **DO NOT RUN `./gradlew test` UNLESS EXPLICITLY INSTRUCTED**
 - Compiling with `./gradlew build` to verify compilation errors is fine
 - If there are compilation failures, report to the user INSTEAD OF committing
 - Only run tests when the user explicitly requests it
 
 **CODE CHANGES**:
+
 - Before making significant changes, **inform the user of the complete plan**
 - Wait for **explicit confirmation** before proceeding
 - If there are doubts about design or architecture, **ask first**
@@ -279,17 +285,18 @@ Detailed workflow guides are available as slash commands:
 ## Current Technical Configuration
 
 **Backend (Spring Boot)**:
+
 - Version: 4.0.4
 - Java: 26
 - Current dependencies:
-  - `spring-boot-starter-web`
-  - `spring-boot-starter-json` (Jackson 3.x — required explicitly, not transitive in Spring Boot 4)
-  - `spring-boot-starter-mail`
-  - `spring-boot-starter-data-jpa`
-  - `spring-boot-starter-validation` (Bean Validation on request DTOs)
-  - `spring-boot-starter-security` + `spring-boot-starter-oauth2-resource-server` (JWT auth, HS256)
-  - `mariadb-java-client` (JDBC driver)
-  - `flyway-core` + `flyway-mysql` (schema migrations)
+    - `spring-boot-starter-web`
+    - `spring-boot-starter-json` (Jackson 3.x — required explicitly, not transitive in Spring Boot 4)
+    - `spring-boot-starter-mail`
+    - `spring-boot-starter-data-jpa`
+    - `spring-boot-starter-validation` (Bean Validation on request DTOs)
+    - `spring-boot-starter-security` + `spring-boot-starter-oauth2-resource-server` (JWT auth, HS256)
+    - `mariadb-java-client` (JDBC driver)
+    - `flyway-core` + `flyway-mysql` (schema migrations)
 
 **Database**: MariaDB (latest) via Docker. Schema owned by Flyway migrations in
 `src/main/resources/db/migration/`. `spring.jpa.hibernate.ddl-auto: validate` —
@@ -302,6 +309,7 @@ Integration tests use Testcontainers MariaDB (`AbstractIntegrationTest`).
 **Package**: `com.fbisquerra.aboutme`
 
 **Frontend (Vue 3 + TypeScript)**:
+
 - Vue: 3.5.34
 - Vite: 8.x
 - TypeScript: 6.x

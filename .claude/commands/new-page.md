@@ -37,6 +37,7 @@ frontend/src/
 5. **HTTP only through `api/*.ts`** (over `client`). Types in `types/*.ts`, never inline.
 
 ### ⚠️ Two gotchas (bit us already)
+
 - **Destructure TanStack Query results** — its fields are refs; destructuring (`const {data, isPending} = useQuery(...)`) is the intended usage and lets templates auto-unwrap them. Using `q.isPending` in a template fails type-checking.
 - **Give `<Form>` `:initial-values`** with empty strings for every field. Untouched fields are `null`, and `z.string()` fails with "expected string, received null" *before* your `.min(1, 'X is required')` message. `initialValues: { field: '' }` makes the custom messages show.
 
@@ -109,6 +110,7 @@ export function useDomain() {
     return useQuery({queryKey: ['{domain}'], queryFn: () => getDomain().then(r => r.data)})
 }
 ```
+
 ```ts
 import {z} from 'zod'
 export const someSchema = z.object({username: z.string().min(1, 'Username is required')})

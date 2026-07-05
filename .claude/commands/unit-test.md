@@ -25,11 +25,13 @@ src/test/java/com/fbisquerra/aboutme/
 ## Rules by layer
 
 **Domain layer** (`domain/`):
+
 - No `@SpringBootTest`, no Spring annotations whatsoever
 - Do not mock internal domain dependencies
 - Test business rules, Value Object validations, Aggregate behavior
 
 **Application layer** (`application/usecase/`):
+
 - Use `@ExtendWith(MockitoExtension.class)`
 - Mock repositories and domain services
 - Use `doReturn(...).when(mock).method()` syntax — NOT `when(...).thenReturn(...)`
