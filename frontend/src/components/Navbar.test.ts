@@ -1,30 +1,35 @@
-import {beforeEach, describe, expect, it} from 'vitest'
-import {mount} from '@vue/test-utils'
-import {createRouter, createWebHistory} from 'vue-router'
+import {afterEach, beforeEach, describe, expect, it} from 'vitest'
+import {flushPromises} from '@vue/test-utils'
 import {createPinia, setActivePinia, type Pinia} from 'pinia'
 import Navbar from './Navbar.vue'
 import {useAuthStore} from '../stores/auth'
-
-const router = createRouter({
-    history: createWebHistory(),
-    routes: [
-        {path: '/', component: {}},
-        {path: '/contact', component: {}},
-        {path: '/login', component: {}},
-    ],
-})
+import {mountWithPlugins} from '../test/mountWithPlugins'
 
 let pinia: Pinia
 
 beforeEach(() => {
     localStorage.clear()
-    document.documentElement.classList.remove('dark')
     pinia = createPinia()
     setActivePinia(pinia)
 })
 
+afterEach(() => {
+    // PrimeVue Menu popup teleports into <body>; clear it between tests.
+    document.body.innerHTML = ''
+})
+
 function mountNavbar() {
-    return mount(Navbar, {global: {plugins: [router, pinia]}})
+    return mountWithPlugins(Navbar, {pinia})
+}
+
+async function openMenu(wrapper: ReturnType<typeof mountNavbar>) {
+    await wrapper.find('button[aria-label="Account menu"]').trigger('click')
+    await flushPromises()
+}
+
+function menuItem(label: string): HTMLElement | undefined {
+    return [...document.body.querySelectorAll('.p-menu-item-link')]
+        .find(el => el.textContent?.includes(label)) as HTMLElement | undefined
 }
 
 describe('Navbar', () => {
@@ -34,30 +39,38 @@ describe('Navbar', () => {
         expect(link.text()).toBe('franbisquerra')
     })
 
-    it('shows the Login link pointing to /login when not authenticated', () => {
-        const link = mountNavbar().find('a[href="/login"]')
-        expect(link.exists()).toBe(true)
-        expect(link.text()).toBe('Login')
+    it('renders the account menu trigger', () => {
+        expect(mountNavbar().find('button[aria-label="Account menu"]').exists()).toBe(true)
     })
 
-    it('hides the Login link when authenticated', () => {
+    it('shows a Login item when not authenticated', async () => {
+        const wrapper = mountNavbar()
+        await openMenu(wrapper)
+
+        expect(menuItem('Login')).toBeDefined()
+        expect(menuItem('Admin')).toBeUndefined()
+        expect(menuItem('Logout')).toBeUndefined()
+    })
+
+    it('shows Admin and Logout items when authenticated', async () => {
         useAuthStore().setToken('a.token')
-        expect(mountNavbar().find('a[href="/login"]').exists()).toBe(false)
+        const wrapper = mountNavbar()
+        await openMenu(wrapper)
+
+        expect(menuItem('Admin')).toBeDefined()
+        expect(menuItem('Logout')).toBeDefined()
+        expect(menuItem('Login')).toBeUndefined()
     })
 
-    it('shows a Logout button when authenticated', () => {
-        useAuthStore().setToken('a.token')
-        expect(mountNavbar().find('button[aria-label="Logout"]').exists()).toBe(true)
-    })
-
-    it('clicking Logout clears the token and reveals the Login link again', async () => {
+    it('clicking Logout clears the token', async () => {
         const auth = useAuthStore()
         auth.setToken('a.token')
         const wrapper = mountNavbar()
+        await openMenu(wrapper)
 
-        await wrapper.find('button[aria-label="Logout"]').trigger('click')
+        menuItem('Logout')!.click()
+        await flushPromises()
 
         expect(auth.token).toBeNull()
-        expect(wrapper.find('a[href="/login"]').exists()).toBe(true)
     })
 })

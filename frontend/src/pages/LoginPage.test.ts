@@ -74,7 +74,7 @@ describe('LoginPage', () => {
         expect(spy).toHaveBeenCalledWith({username: 'admin', password: 'secret'})
     })
 
-    it('stores the token and redirects to /admin on success', async () => {
+    it('stores the token and redirects to the home on success', async () => {
         vi.spyOn(authApi, 'login').mockResolvedValue(loginResponse)
         const pushSpy = vi.spyOn(router, 'push')
 
@@ -85,7 +85,7 @@ describe('LoginPage', () => {
         await flushPromises()
 
         expect(useAuthStore().token).toBe('t.o.k')
-        expect(pushSpy).toHaveBeenCalledWith('/admin')
+        expect(pushSpy).toHaveBeenCalledWith('/')
     })
 
     it('shows an error and keeps no token when login fails', async () => {

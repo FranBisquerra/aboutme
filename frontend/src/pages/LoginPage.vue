@@ -55,7 +55,7 @@ const {mutate: loginMutate, isPending, isError} = useMutation({
   mutationFn: (data: LoginRequest) => login(data),
   onSuccess: ({data}) => {
     auth.setToken(data.token)
-    router.push('/admin')
+    router.push('/')
   },
 })
 
