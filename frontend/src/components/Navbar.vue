@@ -6,7 +6,6 @@
         <RouterLink to="/">franbisquerra</RouterLink>
       </span>
       <ul class="flex items-center gap-8 text-sm text-gray-600 dark:text-gray-400">
-        <li><RouterLink to="/contact" class="hover:text-gray-900 dark:hover:text-white transition-colors">Contact me!</RouterLink></li>
         <li v-if="!isAuthenticated">
           <RouterLink
               to="/login"
