@@ -1,5 +1,4 @@
-CREATE TABLE profile
-(
+CREATE TABLE profile (
     id       BIGINT       NOT NULL AUTO_INCREMENT,
     name     VARCHAR(255) NOT NULL,
     title    VARCHAR(255) NOT NULL,
@@ -11,8 +10,7 @@ CREATE TABLE profile
     PRIMARY KEY (id)
 ) ENGINE = InnoDB;
 
-CREATE TABLE profile_language
-(
+CREATE TABLE profile_language (
     id         BIGINT       NOT NULL AUTO_INCREMENT,
     profile_id BIGINT       NOT NULL,
     name       VARCHAR(255) NOT NULL,
@@ -21,8 +19,7 @@ CREATE TABLE profile_language
     CONSTRAINT fk_profile_language_profile FOREIGN KEY (profile_id) REFERENCES profile (id) ON DELETE CASCADE
 ) ENGINE = InnoDB;
 
-CREATE TABLE profile_skill
-(
+CREATE TABLE profile_skill (
     id         BIGINT       NOT NULL AUTO_INCREMENT,
     profile_id BIGINT       NOT NULL,
     skill      VARCHAR(255) NOT NULL,
@@ -30,21 +27,19 @@ CREATE TABLE profile_skill
     CONSTRAINT fk_profile_skill_profile FOREIGN KEY (profile_id) REFERENCES profile (id) ON DELETE CASCADE
 ) ENGINE = InnoDB;
 
-CREATE TABLE profile_experience
-(
+CREATE TABLE profile_experience (
     id          BIGINT       NOT NULL AUTO_INCREMENT,
     profile_id  BIGINT       NOT NULL,
     company     VARCHAR(255) NOT NULL,
     role        VARCHAR(255) NOT NULL,
     start_date  VARCHAR(32)  NOT NULL,
-    end_date    VARCHAR(32) NULL,
+    end_date    VARCHAR(32)  NULL,
     description TEXT         NOT NULL,
     PRIMARY KEY (id),
     CONSTRAINT fk_profile_experience_profile FOREIGN KEY (profile_id) REFERENCES profile (id) ON DELETE CASCADE
 ) ENGINE = InnoDB;
 
-CREATE TABLE profile_education
-(
+CREATE TABLE profile_education (
     id          BIGINT       NOT NULL AUTO_INCREMENT,
     profile_id  BIGINT       NOT NULL,
     institution VARCHAR(255) NOT NULL,
