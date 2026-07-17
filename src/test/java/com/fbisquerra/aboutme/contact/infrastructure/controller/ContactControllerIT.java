@@ -21,7 +21,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(properties = "RESEND_API_KEY=test-key")
-class ContactControllerTest extends AbstractIntegrationTest {
+class ContactControllerIT extends AbstractIntegrationTest {
 
     @Autowired
     private WebApplicationContext context;

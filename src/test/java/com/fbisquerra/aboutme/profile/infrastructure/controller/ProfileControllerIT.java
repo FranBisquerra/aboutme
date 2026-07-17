@@ -14,7 +14,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
-class ProfileControllerTest extends AbstractIntegrationTest {
+class ProfileControllerIT extends AbstractIntegrationTest {
 
     @Autowired
     private WebApplicationContext context;
