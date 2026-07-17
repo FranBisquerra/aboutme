@@ -4,12 +4,13 @@ import router from './index'
 import HomePage from '../pages/HomePage.vue'
 import ContactPage from '../pages/ContactPage.vue'
 import LoginPage from '../pages/LoginPage.vue'
-import AdminPage from '../pages/AdminPage.vue'
+import AdminHomePage from '../pages/AdminHomePage.vue'
+import AdminProfilePage from '../pages/AdminProfilePage.vue'
 import {useAuthStore} from '../stores/auth'
 import {useFlashStore} from '../stores/flash'
 
 function resolvedComponent() {
-  return router.currentRoute.value.matched[0]?.components?.default
+  return router.currentRoute.value.matched.at(-1)?.components?.default
 }
 
 describe('Router', () => {
@@ -42,6 +43,19 @@ describe('Router', () => {
   it('allows /admin when authenticated', async () => {
     useAuthStore().setToken('a.token')
     await router.push('/admin')
-    expect(resolvedComponent()).toBe(AdminPage)
+    expect(resolvedComponent()).toBe(AdminHomePage)
+  })
+
+  it('allows /admin/profile when authenticated', async () => {
+    useAuthStore().setToken('a.token')
+    await router.push('/admin/profile')
+    expect(resolvedComponent()).toBe(AdminProfilePage)
+  })
+
+  it('redirects /admin/profile to / with a warn flash when not authenticated', async () => {
+    await router.push('/') // move away first: pushing the current route skips the guard
+    await router.push('/admin/profile')
+    expect(router.currentRoute.value.path).toBe('/')
+    expect(useFlashStore().message).toMatchObject({severity: 'warn', summary: 'Access denied'})
   })
 })

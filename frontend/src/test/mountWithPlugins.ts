@@ -15,6 +15,7 @@ export function createTestRouter(): Router {
       {path: '/', component: stub},
       {path: '/login', component: stub},
       {path: '/admin', component: stub},
+      {path: '/admin/profile', component: stub},
       {path: '/contact', component: stub},
     ],
   })

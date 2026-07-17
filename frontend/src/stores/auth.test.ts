@@ -33,6 +33,22 @@ describe('useAuthStore', () => {
     expect(localStorage.getItem('auth.token')).toBeNull()
   })
 
+  it('exposes the username from the JWT sub claim', () => {
+    const payload = btoa(JSON.stringify({sub: 'admin', role: 'ADMIN'}))
+    const store = useAuthStore()
+    store.setToken(`header.${payload}.signature`)
+
+    expect(store.username).toBe('admin')
+  })
+
+  it('username is null without token or with a malformed one', () => {
+    const store = useAuthStore()
+    expect(store.username).toBeNull()
+
+    store.setToken('not-a-jwt')
+    expect(store.username).toBeNull()
+  })
+
   it('initializes the token from localStorage', () => {
     localStorage.setItem('auth.token', 'persisted')
     setActivePinia(createPinia())

@@ -3,7 +3,8 @@ import {flushPromises} from '@vue/test-utils'
 import {createPinia, type Pinia, setActivePinia} from 'pinia'
 import Navbar from './Navbar.vue'
 import {useAuthStore} from '../stores/auth'
-import {mountWithPlugins} from '../test/mountWithPlugins'
+import {useSidebarStore} from '../stores/sidebar'
+import {createTestRouter, mountWithPlugins} from '../test/mountWithPlugins'
 
 let pinia: Pinia
 
@@ -52,25 +53,34 @@ describe('Navbar', () => {
     expect(menuItem('Logout')).toBeUndefined()
   })
 
-  it('shows Admin and Logout items when authenticated', async () => {
+  it('shows only an Admin item when authenticated (logout lives in the admin sidebar)', async () => {
     useAuthStore().setToken('a.token')
     const wrapper = mountNavbar()
     await openMenu(wrapper)
 
     expect(menuItem('Admin')).toBeDefined()
-    expect(menuItem('Logout')).toBeDefined()
+    expect(menuItem('Logout')).toBeUndefined()
     expect(menuItem('Login')).toBeUndefined()
   })
 
-  it('clicking Logout clears the token', async () => {
-    const auth = useAuthStore()
-    auth.setToken('a.token')
-    const wrapper = mountNavbar()
-    await openMenu(wrapper)
+  it('hides the account menu on admin routes', async () => {
+    useAuthStore().setToken('a.token')
+    const router = createTestRouter()
+    await router.push('/admin')
+    const wrapper = mountWithPlugins(Navbar, {pinia, router})
 
-    menuItem('Logout')!.click()
-    await flushPromises()
+    expect(wrapper.find('button[aria-label="Account menu"]').exists()).toBe(false)
+  })
 
-    expect(auth.token).toBeNull()
+  it('shows the sidebar toggle only on admin routes and it flips the store', async () => {
+    expect(mountNavbar().find('button[aria-label="Toggle admin sidebar"]').exists()).toBe(false)
+
+    const router = createTestRouter()
+    await router.push('/admin')
+    const wrapper = mountWithPlugins(Navbar, {pinia, router})
+    const sidebar = useSidebarStore()
+
+    await wrapper.find('button[aria-label="Toggle admin sidebar"]').trigger('click')
+    expect(sidebar.collapsed).toBe(true)
   })
 })
