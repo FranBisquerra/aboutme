@@ -1,9 +1,9 @@
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {flushPromises} from '@vue/test-utils'
 import HomePage from './HomePage.vue'
-import * as profileApi from '../api/profile'
-import type {Profile} from '../types/profile'
-import {mountWithPlugins} from '../test/mountWithPlugins'
+import * as profileApi from '../../../api/profile'
+import type {Profile} from '../../../types/profile'
+import {mountWithPlugins} from '../../../test/mountWithPlugins'
 
 const mockProfile: Profile = {
   name: 'Fran Bisquerra',

@@ -56,7 +56,9 @@ Full structure, naming and checklist: `/new-module`.
 **Database**: MariaDB. Schema owned by Flyway migrations (`src/main/resources/db/migration/`);
 `spring.jpa.hibernate.ddl-auto: validate` — Hibernate never mutates the schema. See `/new-migration`.
 
-**Frontend** (Vue 3 + TypeScript): smart pages / presentational components; server state in
+**Frontend** (Vue 3 + TypeScript): smart pages / presentational components, grouped by domain
+then feature (`pages/front/*`, `pages/backoffice/*`) with per-route layouts (`DefaultLayout`
+public / `AdminLayout` admin dashboard) selected via `meta.layout`; server state in
 TanStack Query, client state in Pinia; UI with **Nuxt UI** (auto-imported `U*` components,
 Tailwind 4, lucide icons) — chosen over PrimeVue when v5 went commercial; forms with `UForm`
 + Zod; HTTP centralized in `api/` over `client.ts`. Full recipe: `/new-page`.

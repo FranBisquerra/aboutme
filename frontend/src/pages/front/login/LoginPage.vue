@@ -26,10 +26,10 @@ import {reactive} from 'vue'
 import type {FormSubmitEvent} from '@nuxt/ui'
 import {useMutation} from '@tanstack/vue-query'
 import {useRouter} from 'vue-router'
-import {login} from '../api/auth'
-import {useAuthStore} from '../stores/auth'
-import {loginSchema} from '../schemas/auth'
-import type {LoginRequest} from '../types/auth'
+import {login} from '../../../api/auth'
+import {useAuthStore} from '../../../stores/auth'
+import {loginSchema} from '../../../schemas/auth'
+import type {LoginRequest} from '../../../types/auth'
 
 const router = useRouter()
 const auth = useAuthStore()

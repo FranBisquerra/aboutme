@@ -39,9 +39,9 @@
 import {reactive} from 'vue'
 import type {FormSubmitEvent} from '@nuxt/ui'
 import {useMutation} from '@tanstack/vue-query'
-import {sendContactMessage} from '../api/contact'
-import {contactSchema} from '../schemas/contact'
-import type {ContactRequest} from '../types/contact'
+import {sendContactMessage} from '../../../api/contact'
+import {contactSchema} from '../../../schemas/contact'
+import type {ContactRequest} from '../../../types/contact'
 
 const state = reactive({name: '', email: '', message: ''})
 

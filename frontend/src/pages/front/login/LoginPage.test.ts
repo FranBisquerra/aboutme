@@ -3,9 +3,9 @@ import {flushPromises} from '@vue/test-utils'
 import {createPinia, type Pinia, setActivePinia} from 'pinia'
 import type {Router} from 'vue-router'
 import LoginPage from './LoginPage.vue'
-import * as authApi from '../api/auth'
-import {useAuthStore} from '../stores/auth'
-import {createTestRouter, mountWithPlugins} from '../test/mountWithPlugins'
+import * as authApi from '../../../api/auth'
+import {useAuthStore} from '../../../stores/auth'
+import {createTestRouter, mountWithPlugins} from '../../../test/mountWithPlugins'
 
 let router: Router
 let pinia: Pinia

@@ -2,9 +2,8 @@ import {afterEach, beforeEach, describe, expect, it} from 'vitest'
 import {flushPromises} from '@vue/test-utils'
 import {createPinia, type Pinia, setActivePinia} from 'pinia'
 import Navbar from './Navbar.vue'
-import {useAuthStore} from '../stores/auth'
-import {useSidebarStore} from '../stores/sidebar'
-import {createTestRouter, mountWithPlugins} from '../test/mountWithPlugins'
+import {useAuthStore} from '../../../stores/auth'
+import {mountWithPlugins} from '../../../test/mountWithPlugins'
 
 let pinia: Pinia
 
@@ -63,26 +62,5 @@ describe('Navbar', () => {
     expect(menuItem('Admin')).toBeDefined()
     expect(menuItem('Logout')).toBeUndefined()
     expect(menuItem('Login')).toBeUndefined()
-  })
-
-  it('hides the account menu on admin routes', async () => {
-    useAuthStore().setToken('a.token')
-    const router = createTestRouter()
-    await router.push('/admin')
-    const wrapper = mountWithPlugins(Navbar, {pinia, router})
-
-    expect(wrapper.find('button[aria-label="Account menu"]').exists()).toBe(false)
-  })
-
-  it('shows the sidebar toggle only on admin routes and it flips the store', async () => {
-    expect(mountNavbar().find('button[aria-label="Toggle admin sidebar"]').exists()).toBe(false)
-
-    const router = createTestRouter()
-    await router.push('/admin')
-    const wrapper = mountWithPlugins(Navbar, {pinia, router})
-    const sidebar = useSidebarStore()
-
-    await wrapper.find('button[aria-label="Toggle admin sidebar"]').trigger('click')
-    expect(sidebar.collapsed).toBe(true)
   })
 })

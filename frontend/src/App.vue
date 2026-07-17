@@ -1,17 +1,21 @@
 <template>
   <UApp :toaster="{position: 'top-right'}">
-    <Navbar/>
-    <RouterView/>
-    <Footer/>
+    <component :is="layout">
+      <RouterView/>
+    </component>
   </UApp>
 </template>
 
 <script setup lang="ts">
-import {watch} from 'vue'
+import {computed, watch} from 'vue'
 import {storeToRefs} from 'pinia'
-import Navbar from './components/Navbar.vue'
-import Footer from './components/Footer.vue'
+import {useRoute} from 'vue-router'
+import DefaultLayout from './layouts/DefaultLayout.vue'
+import AdminLayout from './layouts/AdminLayout.vue'
 import {type FlashMessage, useFlashStore} from './stores/flash'
+
+const route = useRoute()
+const layout = computed(() => (route.meta.layout === 'admin' ? AdminLayout : DefaultLayout))
 
 const toast = useToast()
 const flash = useFlashStore()

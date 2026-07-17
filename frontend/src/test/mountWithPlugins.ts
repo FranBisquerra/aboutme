@@ -24,10 +24,11 @@ interface MountOptions {
   router?: Router
   pinia?: Pinia
   props?: Record<string, unknown>
+  slots?: Record<string, string>
 }
 
 /**
- * Mounts a page/component with the plugins the app uses: router, Pinia, PrimeVue and
+ * Mounts a page/component with the plugins the app uses: router, Pinia, Nuxt UI and
  * TanStack Query (with retries disabled). Pass your own router/pinia when the test needs
  * to spy on navigation or read a store.
  */
@@ -40,6 +41,7 @@ export function mountWithPlugins(component: Component, options: MountOptions = {
 
   return mount(component, {
     props: options.props,
+    slots: options.slots,
     global: {
       plugins: [router, pinia, ui, [VueQueryPlugin, {queryClient}]],
     },

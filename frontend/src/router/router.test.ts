@@ -1,16 +1,16 @@
 import {beforeEach, describe, expect, it} from 'vitest'
 import {createPinia, setActivePinia} from 'pinia'
 import router from './index'
-import HomePage from '../pages/HomePage.vue'
-import ContactPage from '../pages/ContactPage.vue'
-import LoginPage from '../pages/LoginPage.vue'
-import AdminHomePage from '../pages/AdminHomePage.vue'
-import AdminProfilePage from '../pages/AdminProfilePage.vue'
+import HomePage from '../pages/front/home/HomePage.vue'
+import ContactPage from '../pages/front/contact/ContactPage.vue'
+import LoginPage from '../pages/front/login/LoginPage.vue'
+import AdminHomePage from '../pages/backoffice/home/AdminHomePage.vue'
+import AdminProfilePage from '../pages/backoffice/profile/AdminProfilePage.vue'
 import {useAuthStore} from '../stores/auth'
 import {useFlashStore} from '../stores/flash'
 
 function resolvedComponent() {
-  return router.currentRoute.value.matched.at(-1)?.components?.default
+  return router.currentRoute.value.matched[0]?.components?.default
 }
 
 describe('Router', () => {

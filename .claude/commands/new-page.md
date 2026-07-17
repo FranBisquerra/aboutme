@@ -11,18 +11,40 @@ Standard recipe for adding a page to the Vue 3 frontend. The stack is fixed:
 
 ## Folder structure & naming
 
+Pages are grouped by **domain** (`front` public / `backoffice` admin) then **feature**.
+The feature folder holds the page, its test, and its feature-owned presentational
+components together. Cross-cutting layers stay flat under `src/`.
+
 ```
 frontend/src/
-├── pages/{Name}Page.vue        ← route-level SMART component (orchestrates data + actions)
-├── components/{Name}.vue       ← PRESENTATIONAL component (props in / emits out, no fetching)
-├── router/index.ts             ← register { path, component } (+ case in router.test.ts)
-├── api/{domain}.ts             ← thin axios functions ( client.get/post<T> )
-├── types/{domain}.ts           ← TS interfaces mirroring the backend DTOs
-├── schemas/{domain}.ts         ← Zod schemas (form validation, mirror backend validation)
-├── queries/{domain}.ts         ← TanStack Query hooks ( useQuery / useMutation wrappers )
-├── stores/{domain}.ts          ← Pinia store — CLIENT state only (token, UI)
-└── test/mountWithPlugins.ts    ← test helper (mounts with router+pinia+Nuxt UI+VueQuery)
+├── pages/
+│   ├── front/                        ← public site
+│   │   ├── components/               ← shared front chrome (Navbar, Footer, BackToTop)
+│   │   └── {feature}/                ← e.g. home/, contact/, login/
+│   │       ├── {Name}Page.vue        ← SMART page (orchestrates data + actions)
+│   │       ├── {Name}Page.test.ts
+│   │       └── {Child}.vue           ← feature-owned PRESENTATIONAL components (props in / emits out)
+│   └── backoffice/                   ← admin area (guarded, admin layout)
+│       └── {feature}/                ← e.g. home/, profile/
+├── layouts/                          ← DefaultLayout (front) · AdminLayout (admin dashboard)
+├── router/index.ts                   ← { path, component, meta:{requiresAuth?, layout?} } (+ case in router.test.ts)
+├── api/{domain}.ts                   ← thin axios functions ( client.get/post<T> )
+├── types/{domain}.ts                 ← TS interfaces mirroring the backend DTOs
+├── schemas/{domain}.ts               ← Zod schemas (form validation, mirror backend validation)
+├── queries/{domain}.ts               ← TanStack Query hooks ( useQuery / useMutation wrappers )
+├── stores/{domain}.ts                ← Pinia store — CLIENT state only (token, UI)
+└── test/mountWithPlugins.ts          ← test helper (router+pinia+Nuxt UI+VueQuery; accepts `slots`)
 ```
+
+**Placement & layouts:**
+- Public page → `pages/front/{feature}/`. Admin page → `pages/backoffice/{feature}/`,
+  registered with `meta: {requiresAuth: true, layout: 'admin'}`.
+- Pages **don't render Navbar/Footer** — `App.vue` wraps the route in a layout
+  (`DefaultLayout` unless `meta.layout === 'admin'` → `AdminLayout`).
+- Feature-owned presentational components live in the feature folder (import as `./{Child}.vue`).
+  Only genuinely front-wide UI goes in `pages/front/components/`.
+- **Import depth**: no path alias — from a feature folder reach `src/` layers with `../../../`
+  (e.g. `../../../api/{domain}`), siblings with `./`.
 
 ## Rules
 
@@ -66,9 +88,9 @@ frontend/src/
 import {reactive} from 'vue'
 import type {FormSubmitEvent} from '@nuxt/ui'
 import {useMutation} from '@tanstack/vue-query'
-import {someAction} from '../api/{domain}'
-import {someSchema} from '../schemas/{domain}'
-import type {SomeRequest} from '../types/{domain}'
+import {someAction} from '../../../api/{domain}'
+import {someSchema} from '../../../schemas/{domain}'
+import type {SomeRequest} from '../../../types/{domain}'
 
 const state = reactive({username: ''})
 
@@ -91,8 +113,8 @@ function onSubmit(event: FormSubmitEvent<SomeRequest>) {
 </template>
 
 <script setup lang="ts">
-import {useDomain} from '../queries/{domain}'
-import SomeView from '../components/SomeView.vue'
+import {useDomain} from '../../../queries/{domain}'
+import SomeView from './SomeView.vue'   // feature-owned, colocated in the feature folder
 
 const {data} = useDomain()        // page orchestrates; child is presentational
 </script>
@@ -118,7 +140,7 @@ export const someSchema = z.object({username: z.string().min(1, 'Username is req
 
 ```vue
 <script setup lang="ts">
-import type {Domain} from '../types/{domain}'
+import type {Domain} from '../../../types/{domain}'
 defineProps<{ data: Domain | undefined }>()
 </script>
 ```
@@ -129,8 +151,8 @@ defineProps<{ data: Domain | undefined }>()
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {flushPromises} from '@vue/test-utils'
 import MyPage from './MyPage.vue'
-import * as domainApi from '../api/{domain}'
-import {mountWithPlugins} from '../test/mountWithPlugins'
+import * as domainApi from '../../../api/{domain}'
+import {mountWithPlugins} from '../../../test/mountWithPlugins'
 
 beforeEach(() => vi.restoreAllMocks())
 
@@ -146,10 +168,10 @@ it('calls the api with the form data', async () => {
 
 - `mountWithPlugins` installs router + Pinia + Nuxt UI + VueQuery (retries off).
 - Need to spy navigation or read a store? Pass your own: `mountWithPlugins(MyPage, {router, pinia})`
-  with `createTestRouter()` + `createPinia()` + `setActivePinia(pinia)` (see `LoginPage.test.ts`).
+  with `createTestRouter()` + `createPinia()` + `setActivePinia(pinia)` (see `pages/front/login/LoginPage.test.ts`).
 - Always `await flushPromises()` after a submit (mutation/query resolve on a microtask).
 - Overlays (dropdowns, toasts) **teleport into `<body>`** — query `document.body`
-  (e.g. `[role="menuitem"]`) and clear it in `afterEach` (see `Navbar.test.ts`). Opening a
+  (e.g. `[role="menuitem"]`) and clear it in `afterEach` (see `pages/front/components/Navbar.test.ts`). Opening a
   Reka-based dropdown needs `trigger('pointerdown')` + `trigger('click')`.
 - `UIcon` renders an `<svg>`; a loading `UButton` sets `disabled`.
 
@@ -157,7 +179,8 @@ it('calls the api with the form data', async () => {
 
 ## Checklist
 
-- [ ] Page in `pages/{Name}Page.vue`; route in `router/index.ts` (+ case in `router.test.ts`)
+- [ ] Page in `pages/{front|backoffice}/{feature}/{Name}Page.vue`; route in `router/index.ts`
+      (+ `meta.layout: 'admin'` for backoffice; + case in `router.test.ts`)
 - [ ] Server data via TanStack Query (`queries/{domain}.ts`); client state via Pinia only
 - [ ] Forms via `UForm` + Zod schema (`schemas/{domain}.ts`) with a `reactive` state
 - [ ] New components are presentational (props/emits, no fetching)

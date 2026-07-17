@@ -75,7 +75,7 @@
 </template>
 
 <script setup lang="ts">
-import type {Profile} from '../types/profile'
+import type {Profile} from '../../../types/profile'
 
 defineProps<{ profile: Profile | undefined }>()
 </script>
