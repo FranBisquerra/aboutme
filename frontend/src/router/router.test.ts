@@ -6,6 +6,7 @@ import ContactPage from '../pages/ContactPage.vue'
 import LoginPage from '../pages/LoginPage.vue'
 import AdminPage from '../pages/AdminPage.vue'
 import {useAuthStore} from '../stores/auth'
+import {useFlashStore} from '../stores/flash'
 
 function resolvedComponent() {
   return router.currentRoute.value.matched[0]?.components?.default
@@ -32,9 +33,10 @@ describe('Router', () => {
     expect(resolvedComponent()).toBe(LoginPage)
   })
 
-  it('redirects /admin to /login when not authenticated', async () => {
+  it('redirects /admin to / with a warn flash when not authenticated', async () => {
     await router.push('/admin')
-    expect(router.currentRoute.value.path).toBe('/login')
+    expect(router.currentRoute.value.path).toBe('/')
+    expect(useFlashStore().message).toMatchObject({severity: 'warn', summary: 'Access denied'})
   })
 
   it('allows /admin when authenticated', async () => {

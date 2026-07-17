@@ -2,6 +2,7 @@ import {mount} from '@vue/test-utils'
 import {createRouter, createWebHistory, type Router} from 'vue-router'
 import {createPinia, type Pinia} from 'pinia'
 import PrimeVue from 'primevue/config'
+import ToastService from 'primevue/toastservice'
 import {QueryClient, VueQueryPlugin} from '@tanstack/vue-query'
 import type {Component} from 'vue'
 
@@ -40,7 +41,7 @@ export function mountWithPlugins(component: Component, options: MountOptions = {
   return mount(component, {
     props: options.props,
     global: {
-      plugins: [router, pinia, PrimeVue, [VueQueryPlugin, {queryClient}]],
+      plugins: [router, pinia, PrimeVue, ToastService, [VueQueryPlugin, {queryClient}]],
     },
   })
 }
