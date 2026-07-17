@@ -24,12 +24,14 @@ function mountNavbar() {
 }
 
 async function openMenu(wrapper: ReturnType<typeof mountNavbar>) {
-  await wrapper.find('button[aria-label="Account menu"]').trigger('click')
+  const trigger = wrapper.find('button[aria-label="Account menu"]')
+  await trigger.trigger('pointerdown')
+  await trigger.trigger('click')
   await flushPromises()
 }
 
 function menuItem(label: string): HTMLElement | undefined {
-  return [...document.body.querySelectorAll('.p-menu-item-link')]
+  return [...document.body.querySelectorAll('[role="menuitem"]')]
     .find(el => el.textContent?.includes(label)) as HTMLElement | undefined
 }
 

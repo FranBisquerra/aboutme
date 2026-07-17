@@ -4,40 +4,26 @@
       <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Admin login</h1>
       <p class="text-gray-500 dark:text-gray-400 mb-8">Sign in to access the backoffice.</p>
 
-      <Form v-slot="$form" :resolver="resolver" :initial-values="initialValues" class="flex flex-col gap-5" @submit="onFormSubmit">
-        <div class="flex flex-col gap-1">
-          <label for="username" class="text-sm font-medium text-gray-700 dark:text-gray-300">Username</label>
-          <InputText id="username" name="username" type="text" placeholder="admin" fluid/>
-          <Message v-if="$form.username?.invalid" severity="error" size="small" variant="simple">
-            {{ $form.username.error?.message }}
-          </Message>
-        </div>
+      <UForm :schema="loginSchema" :state="state" class="flex flex-col gap-5" @submit="onSubmit">
+        <UFormField label="Username" name="username">
+          <UInput id="username" v-model="state.username" placeholder="admin" class="w-full"/>
+        </UFormField>
 
-        <div class="flex flex-col gap-1">
-          <label for="password" class="text-sm font-medium text-gray-700 dark:text-gray-300">Password</label>
-          <Password input-id="password" name="password" placeholder="••••••••" :feedback="false" toggle-mask fluid/>
-          <Message v-if="$form.password?.invalid" severity="error" size="small" variant="simple">
-            {{ $form.password.error?.message }}
-          </Message>
-        </div>
+        <UFormField label="Password" name="password">
+          <UInput id="password" v-model="state.password" type="password" placeholder="••••••••" class="w-full"/>
+        </UFormField>
 
-        <Message v-if="isError" severity="error" size="small" variant="simple">
-          Invalid username or password.
-        </Message>
+        <UAlert v-if="isError" color="error" variant="subtle" title="Invalid username or password."/>
 
-        <Button type="submit" label="Sign in" :loading="isPending"/>
-      </Form>
+        <UButton type="submit" label="Sign in" :loading="isPending" block/>
+      </UForm>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import {Form, type FormSubmitEvent} from '@primevue/forms'
-import {zodResolver} from '@primevue/forms/resolvers/zod'
-import InputText from 'primevue/inputtext'
-import Password from 'primevue/password'
-import Button from 'primevue/button'
-import Message from 'primevue/message'
+import {reactive} from 'vue'
+import type {FormSubmitEvent} from '@nuxt/ui'
 import {useMutation} from '@tanstack/vue-query'
 import {useRouter} from 'vue-router'
 import {login} from '../api/auth'
@@ -48,8 +34,7 @@ import type {LoginRequest} from '../types/auth'
 const router = useRouter()
 const auth = useAuthStore()
 
-const resolver = zodResolver(loginSchema)
-const initialValues = {username: '', password: ''}
+const state = reactive({username: '', password: ''})
 
 const {mutate: loginMutate, isPending, isError} = useMutation({
   mutationFn: (data: LoginRequest) => login(data),
@@ -59,9 +44,7 @@ const {mutate: loginMutate, isPending, isError} = useMutation({
   },
 })
 
-function onFormSubmit({valid, values}: FormSubmitEvent) {
-  if (valid) {
-    loginMutate(values as LoginRequest)
-  }
+function onSubmit(event: FormSubmitEvent<LoginRequest>) {
+  loginMutate(event.data)
 }
 </script>

@@ -34,8 +34,8 @@ describe('AdminPage', () => {
     const sidebar = wrapper.find('aside')
     expect(sidebar.text()).not.toContain('Profile')
     expect(sidebar.text()).not.toContain('Logout')
-    expect(sidebar.find('a[aria-label="Profile"] i.pi-user').exists()).toBe(true)
-    expect(sidebar.find('button[aria-label="Logout"] i.pi-sign-out').exists()).toBe(true)
+    expect(sidebar.find('a[aria-label="Profile"] svg').exists()).toBe(true)
+    expect(sidebar.find('button[aria-label="Logout"] svg').exists()).toBe(true)
   })
 
   it('logout from the sidebar clears the token', async () => {

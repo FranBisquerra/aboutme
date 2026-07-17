@@ -42,7 +42,7 @@ describe('LoginPage', () => {
     await wrapper.find('form').trigger('submit')
     await flushPromises()
 
-    expect(wrapper.find('button.p-button-loading').exists()).toBe(true)
+    expect(wrapper.find('button[type="submit"]').attributes('disabled')).toBeDefined()
   })
 
   it('does not call the api when the form is empty', async () => {

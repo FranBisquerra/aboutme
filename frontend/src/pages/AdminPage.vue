@@ -5,7 +5,7 @@
       class="shrink-0 sticky top-16 h-[calc(100vh-4rem)] flex flex-col bg-white dark:bg-gray-900 border-r border-gray-100 dark:border-gray-800 transition-all duration-200"
     >
       <div class="flex items-center gap-3 px-4 py-4" :class="collapsed && 'justify-center px-0'">
-        <Avatar icon="pi pi-user" shape="circle"/>
+        <UAvatar icon="i-lucide-user" class="shrink-0"/>
         <span v-if="!collapsed" class="font-semibold text-gray-900 dark:text-white truncate">{{ username }}</span>
       </div>
 
@@ -20,7 +20,7 @@
           :class="[route.path === item.to && 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white', collapsed && 'justify-center px-0']"
           :aria-label="item.label"
         >
-          <i :class="item.icon"/>
+          <UIcon :name="item.icon" class="shrink-0"/>
           <span v-if="!collapsed">{{ item.label }}</span>
         </RouterLink>
       </nav>
@@ -33,7 +33,7 @@
           :class="collapsed && 'justify-center px-0'"
           @click="logout"
         >
-          <i class="pi pi-sign-out"/>
+          <UIcon name="i-lucide-log-out" class="shrink-0"/>
           <span v-if="!collapsed">Logout</span>
         </button>
       </div>
@@ -50,7 +50,6 @@
 <script setup lang="ts">
 import {storeToRefs} from 'pinia'
 import {useRoute, useRouter} from 'vue-router'
-import Avatar from 'primevue/avatar'
 import {useAuthStore} from '../stores/auth'
 import {useSidebarStore} from '../stores/sidebar'
 
@@ -61,7 +60,7 @@ const {username} = storeToRefs(auth)
 const {collapsed} = storeToRefs(useSidebarStore())
 
 const navItems = [
-  {label: 'Profile', icon: 'pi pi-user', to: '/admin/profile'},
+  {label: 'Profile', icon: 'i-lucide-user', to: '/admin/profile'},
 ]
 
 function logout() {

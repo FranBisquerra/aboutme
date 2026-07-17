@@ -14,7 +14,9 @@
   },
   "include": [
     "src/**/*",
-    "env.d.ts"
+    "env.d.ts",
+    "auto-imports.d.ts",
+    "components.d.ts"
   ],
   "exclude": [
     "node_modules"

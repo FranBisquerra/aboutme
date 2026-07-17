@@ -1,27 +1,33 @@
 <template>
-  <Navbar/>
-  <RouterView/>
-  <Footer/>
-  <Toast position="top-right"/>
+  <UApp :toaster="{position: 'top-right'}">
+    <Navbar/>
+    <RouterView/>
+    <Footer/>
+  </UApp>
 </template>
 
 <script setup lang="ts">
 import {watch} from 'vue'
 import {storeToRefs} from 'pinia'
-import {useToast} from 'primevue/usetoast'
-import Toast from 'primevue/toast'
 import Navbar from './components/Navbar.vue'
 import Footer from './components/Footer.vue'
-import {useFlashStore} from './stores/flash'
+import {type FlashMessage, useFlashStore} from './stores/flash'
 
 const toast = useToast()
 const flash = useFlashStore()
 const {message} = storeToRefs(flash)
 
-// Turn flash messages (set from outside a component context, e.g. the router guard) into a Toast.
+const colorBySeverity: Record<FlashMessage['severity'], 'success' | 'info' | 'warning' | 'error'> = {
+  success: 'success',
+  info: 'info',
+  warn: 'warning',
+  error: 'error',
+}
+
+// Turn flash messages (set from outside a component context, e.g. the router guard) into a toast.
 watch(message, (value) => {
   if (value) {
-    toast.add({...value, life: 4000})
+    toast.add({title: value.summary, description: value.detail, color: colorBySeverity[value.severity]})
     flash.clear()
   }
 })
