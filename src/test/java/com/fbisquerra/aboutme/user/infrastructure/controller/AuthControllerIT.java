@@ -25,7 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
     "ADMIN_EMAIL=admin@test.dev",
     "ADMIN_PASSWORD=admin"
 })
-class AuthControllerTest extends AbstractIntegrationTest {
+class AuthControllerIT extends AbstractIntegrationTest {
 
     @Autowired
     private WebApplicationContext context;

@@ -8,9 +8,8 @@ Guide for writing unit tests in the Java backend following project conventions.
 src/test/java/com/fbisquerra/aboutme/
 └── {module}/
     ├── domain/
-    │   ├── model/       → {Aggregate}Test.java
-    │   ├── service/     → {Feature}DomainServiceTest.java
-    │   └── value/       → {VO}Test.java
+    │   ├── model/       → {Aggregate}Test.java, {VO}Test.java
+    │   └── service/     → {Feature}DomainServiceTest.java
     ├── application/
     │   └── usecase/     → {Action}UseCaseTest.java
     └── fixtures/        → {Entity}Fixture.java

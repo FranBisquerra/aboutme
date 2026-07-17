@@ -2,13 +2,29 @@
 
 Guide for writing integration tests (full HTTP request → response) using MockMvc.
 
-## Key Spring Boot 4 constraint
+## Location & naming
 
-`@AutoConfigureMockMvc` does not exist in Spring Boot 4. MockMvc must be set up manually:
+```
+src/test/java/com/fbisquerra/aboutme/
+└── {module}/infrastructure/controller/{Aggregate}ControllerIT.java
+```
+
+Integration tests end in `IT`; unit tests end in `Test`.
+
+## Setup — the three pieces every IT needs
+
+1. **Extend `AbstractIntegrationTest`** — starts a singleton Testcontainers MariaDB
+   (shared across all IT classes) and points the datasource at it. Flyway applies the
+   real migrations, so tests run against the production schema. **Docker must be running.**
+2. **`@SpringBootTest`** — full Spring context.
+3. **Manual MockMvc** — `@AutoConfigureMockMvc` does not exist in Spring Boot 4.
+   Add `.apply(springSecurity())` — without it the security filter chain is not applied,
+   and every endpoint is protected by default (`anyRequest().hasRole("ADMIN")`), so tests
+   would pass against security behavior that doesn't exist in production.
 
 ```java
 @SpringBootTest
-class ProfileControllerIT {
+class ProfileControllerIT extends AbstractIntegrationTest {
 
     @Autowired
     private WebApplicationContext context;
@@ -17,19 +33,11 @@ class ProfileControllerIT {
 
     @BeforeEach
     void setUp() {
-        mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
+        mockMvc = MockMvcBuilders.webAppContextSetup(context)
+            .apply(springSecurity())
+            .build();
     }
 }
-```
-
-## Test structure
-
-```
-src/test/java/com/fbisquerra/aboutme/
-└── {module}/
-    └── infrastructure/
-        └── controller/
-            └── {Aggregate}ControllerIT.java
 ```
 
 ## Example
@@ -44,11 +52,13 @@ void shouldReturnProfileWithHttpOk() throws Exception {
 }
 ```
 
+For a protected endpoint, authenticate the request (e.g. `.with(jwt().authorities(new SimpleGrantedAuthority("ROLE_ADMIN")))`
+from `SecurityMockMvcRequestPostProcessors`) and also assert the unauthenticated call returns 401/403.
+
 ## Rules
 
-- Use `@SpringBootTest` — loads the full Spring context
 - Always go through HTTP (MockMvc) — never call use cases or repositories directly
 - Validate the full request → response flow: status code, response body shape
+- For protected endpoints, test both the authenticated and unauthenticated paths
 - Test naming follows the same functional convention as unit tests
-- Use `MockMvcResultMatchers` (status, jsonPath, content)
 - Keep IT tests focused on the HTTP contract, not business logic (that belongs in unit tests)

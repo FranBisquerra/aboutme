@@ -1,6 +1,6 @@
 # About Me
 
-Personal website built as a learning project. Implements a modern architecture with Spring Boot (Hexagonal + DDD) on the backend and Vue 3 on the frontend, deployed with Docker.
+Personal website running in production at [franbisquerra.dev](https://franbisquerra.dev). Spring Boot (Hexagonal + DDD) on the backend, Vue 3 on the frontend, deployed with Docker behind Nginx with automated SSL. Built to evolve feature by feature into a full product.
 
 ## Stack
 
@@ -16,47 +16,16 @@ Personal website built as a learning project. Implements a modern architecture w
 
 ```
 aboutme/
-├── src/                          # Java backend (Hexagonal + DDD)
-│   └── main/java/com/fbisquerra/aboutme/
-│       ├── profile/              # Profile module (read the CV/profile)
-│       │   ├── domain/            # Profile aggregate + ProfileRepository (port)
-│       │   ├── application/       # GetProfileUseCase, DTOs, ProfileMapper
-│       │   └── infrastructure/    # ProfileController + JPA persistence (adapter)
-│       ├── contact/              # Contact module (contact form → email via Resend)
-│       │   ├── domain/            # ContactMessage + ContactEmailPort (port)
-│       │   ├── application/       # SendContactMessageUseCase, DTOs
-│       │   └── infrastructure/    # ContactController + Resend email adapter
-│       ├── user/                 # User module (auth: login → JWT, roles ADMIN/USER)
-│       │   ├── domain/            # User, Role, PasswordHasher/AccessTokenIssuer (ports)
-│       │   ├── application/       # AuthenticateUserUseCase, login DTOs
-│       │   └── infrastructure/    # AuthController, Spring Security config, JPA persistence
-│       └── shared/               # Shared configuration
-│           └── infrastructure/    # CorsConfig, RequestLoggingFilter
-│   └── main/resources/
-│       └── db/migration/         # Flyway SQL migrations (V1 profile, V2 seed, V3 users)
-├── frontend/                     # Vue 3 + Vite + TypeScript frontend
-│   └── src/
-│       ├── App.vue               # Navbar + RouterView + Footer
-│       ├── main.ts               # PrimeVue + TanStack Query + Pinia + router setup
-│       ├── pages/                # Route-level SMART components (Home, Contact, Login, Admin)
-│       ├── components/           # Presentational + layout (Navbar, Footer, Home, Experience…)
-│       ├── router/              # vue-router routes + auth guard (/admin)
-│       ├── queries/              # TanStack Query hooks (useProfile)
-│       ├── schemas/              # Zod schemas (auth, contact) for form validation
-│       ├── stores/               # Pinia — client state only (auth token)
-│       ├── api/                  # axios client.ts + thin api functions
-│       ├── types/                # TS interfaces (backend contracts)
-│       └── test/                 # test helpers (mountWithPlugins)
-├── infrastructure/
-│   └── docker/                   # Dockerfiles + Nginx + Compose
-│       ├── backend/Dockerfile
-│       ├── frontend/Dockerfile
-│       ├── frontend/nginx.conf
-│       ├── frontend/nginx.prod.conf
-│       ├── docker-compose.yml
-│       └── docker-compose.prod.yml
-└── build.gradle                  # Backend + frontend + Docker build tasks
+├── src/                     # Java backend — one Hexagonal+DDD module per aggregate
+│                            #   (profile, contact, user, shared) with domain/application/infrastructure
+│                            #   + Flyway migrations in main/resources/db/migration/
+├── frontend/                # Vue 3 + Vite + TypeScript SPA
+├── infrastructure/docker/   # Dockerfiles, Nginx configs, docker-compose (base + prod override)
+└── build.gradle             # Backend build + frontend + Docker tasks
 ```
+
+Architecture conventions and detailed structure: see `AGENTS.md` and its skills
+(`/new-module`, `/new-page`, `/new-migration`).
 
 ## Profiles
 
@@ -125,8 +94,6 @@ Merges `docker-compose.yml` (base) with `docker-compose.prod.yml` (overrides), t
 - `certbot` — Let's Encrypt SSL certificate automation with 12-hour renewal
 
 Requires `DOMAIN` set in `.env` (configured as `franbisquerra.dev`).
-
-<!-- API documented via Swagger (pending) -->
 
 ## Tests
 
