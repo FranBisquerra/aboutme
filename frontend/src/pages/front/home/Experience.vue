@@ -38,8 +38,8 @@
 </template>
 
 <script setup lang="ts">
-import type {Profile} from '../types/profile'
-import {formatDate} from '../utils/formatDate'
+import type {Profile} from '../../../types/profile'
+import {formatDate} from '../../../utils/formatDate'
 
 defineProps<{ profile: Profile | undefined }>()
 </script>

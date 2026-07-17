@@ -1,10 +1,11 @@
 import {beforeEach, describe, expect, it} from 'vitest'
 import {createPinia, setActivePinia} from 'pinia'
 import router from './index'
-import HomePage from '../pages/HomePage.vue'
-import ContactPage from '../pages/ContactPage.vue'
-import LoginPage from '../pages/LoginPage.vue'
-import AdminPage from '../pages/AdminPage.vue'
+import HomePage from '../pages/front/home/HomePage.vue'
+import ContactPage from '../pages/front/contact/ContactPage.vue'
+import LoginPage from '../pages/front/login/LoginPage.vue'
+import AdminHomePage from '../pages/backoffice/home/AdminHomePage.vue'
+import AdminProfilePage from '../pages/backoffice/profile/AdminProfilePage.vue'
 import {useAuthStore} from '../stores/auth'
 import {useFlashStore} from '../stores/flash'
 
@@ -42,6 +43,19 @@ describe('Router', () => {
   it('allows /admin when authenticated', async () => {
     useAuthStore().setToken('a.token')
     await router.push('/admin')
-    expect(resolvedComponent()).toBe(AdminPage)
+    expect(resolvedComponent()).toBe(AdminHomePage)
+  })
+
+  it('allows /admin/profile when authenticated', async () => {
+    useAuthStore().setToken('a.token')
+    await router.push('/admin/profile')
+    expect(resolvedComponent()).toBe(AdminProfilePage)
+  })
+
+  it('redirects /admin/profile to / with a warn flash when not authenticated', async () => {
+    await router.push('/') // move away first: pushing the current route skips the guard
+    await router.push('/admin/profile')
+    expect(router.currentRoute.value.path).toBe('/')
+    expect(useFlashStore().message).toMatchObject({severity: 'warn', summary: 'Access denied'})
   })
 })

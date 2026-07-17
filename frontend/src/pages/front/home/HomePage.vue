@@ -5,9 +5,9 @@
 </template>
 
 <script setup lang="ts">
-import {useProfile} from '../queries/profile'
-import Home from '../components/Home.vue'
-import Experience from '../components/Experience.vue'
+import {useProfile} from '../../../queries/profile'
+import Home from './Home.vue'
+import Experience from './Experience.vue'
 import BackToTop from '../components/BackToTop.vue'
 
 const {data: profile} = useProfile()

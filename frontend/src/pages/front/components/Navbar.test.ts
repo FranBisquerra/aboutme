@@ -2,8 +2,8 @@ import {afterEach, beforeEach, describe, expect, it} from 'vitest'
 import {flushPromises} from '@vue/test-utils'
 import {createPinia, type Pinia, setActivePinia} from 'pinia'
 import Navbar from './Navbar.vue'
-import {useAuthStore} from '../stores/auth'
-import {mountWithPlugins} from '../test/mountWithPlugins'
+import {useAuthStore} from '../../../stores/auth'
+import {mountWithPlugins} from '../../../test/mountWithPlugins'
 
 let pinia: Pinia
 
@@ -23,12 +23,14 @@ function mountNavbar() {
 }
 
 async function openMenu(wrapper: ReturnType<typeof mountNavbar>) {
-  await wrapper.find('button[aria-label="Account menu"]').trigger('click')
+  const trigger = wrapper.find('button[aria-label="Account menu"]')
+  await trigger.trigger('pointerdown')
+  await trigger.trigger('click')
   await flushPromises()
 }
 
 function menuItem(label: string): HTMLElement | undefined {
-  return [...document.body.querySelectorAll('.p-menu-item-link')]
+  return [...document.body.querySelectorAll('[role="menuitem"]')]
     .find(el => el.textContent?.includes(label)) as HTMLElement | undefined
 }
 
@@ -52,25 +54,13 @@ describe('Navbar', () => {
     expect(menuItem('Logout')).toBeUndefined()
   })
 
-  it('shows Admin and Logout items when authenticated', async () => {
+  it('shows only an Admin item when authenticated (logout lives in the admin sidebar)', async () => {
     useAuthStore().setToken('a.token')
     const wrapper = mountNavbar()
     await openMenu(wrapper)
 
     expect(menuItem('Admin')).toBeDefined()
-    expect(menuItem('Logout')).toBeDefined()
+    expect(menuItem('Logout')).toBeUndefined()
     expect(menuItem('Login')).toBeUndefined()
-  })
-
-  it('clicking Logout clears the token', async () => {
-    const auth = useAuthStore()
-    auth.setToken('a.token')
-    const wrapper = mountNavbar()
-    await openMenu(wrapper)
-
-    menuItem('Logout')!.click()
-    await flushPromises()
-
-    expect(auth.token).toBeNull()
   })
 })

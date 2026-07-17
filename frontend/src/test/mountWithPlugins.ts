@@ -1,8 +1,7 @@
 import {mount} from '@vue/test-utils'
 import {createRouter, createWebHistory, type Router} from 'vue-router'
 import {createPinia, type Pinia} from 'pinia'
-import PrimeVue from 'primevue/config'
-import ToastService from 'primevue/toastservice'
+import ui from '@nuxt/ui/vue-plugin'
 import {QueryClient, VueQueryPlugin} from '@tanstack/vue-query'
 import type {Component} from 'vue'
 
@@ -15,6 +14,7 @@ export function createTestRouter(): Router {
       {path: '/', component: stub},
       {path: '/login', component: stub},
       {path: '/admin', component: stub},
+      {path: '/admin/profile', component: stub},
       {path: '/contact', component: stub},
     ],
   })
@@ -24,10 +24,11 @@ interface MountOptions {
   router?: Router
   pinia?: Pinia
   props?: Record<string, unknown>
+  slots?: Record<string, string>
 }
 
 /**
- * Mounts a page/component with the plugins the app uses: router, Pinia, PrimeVue and
+ * Mounts a page/component with the plugins the app uses: router, Pinia, Nuxt UI and
  * TanStack Query (with retries disabled). Pass your own router/pinia when the test needs
  * to spy on navigation or read a store.
  */
@@ -40,8 +41,9 @@ export function mountWithPlugins(component: Component, options: MountOptions = {
 
   return mount(component, {
     props: options.props,
+    slots: options.slots,
     global: {
-      plugins: [router, pinia, PrimeVue, ToastService, [VueQueryPlugin, {queryClient}]],
+      plugins: [router, pinia, ui, [VueQueryPlugin, {queryClient}]],
     },
   })
 }

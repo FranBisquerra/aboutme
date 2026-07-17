@@ -8,7 +8,7 @@ Personal website running in production at [franbisquerra.dev](https://franbisque
 |------------------|----------------------------------------------------------------------------------------------|
 | Backend          | Java 26 · Spring Boot 4 · Gradle                                                             |
 | Persistence      | MariaDB · Spring Data JPA · Flyway (migrations)                                              |
-| Frontend         | Vue 3 · Vite · TypeScript · Tailwind CSS 4 · PrimeVue · TanStack Query · Pinia · Axios · Zod |
+| Frontend         | Vue 3 · Vite · TypeScript · Tailwind CSS 4 · Nuxt UI · TanStack Query · Pinia · Axios · Zod |
 | Server           | Nginx (reverse proxy)                                                                        |
 | Containerization | Docker · Docker Compose                                                                      |
 

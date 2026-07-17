@@ -1,8 +1,8 @@
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {flushPromises} from '@vue/test-utils'
 import ContactPage from './ContactPage.vue'
-import * as contactApi from '../api/contact'
-import {mountWithPlugins} from '../test/mountWithPlugins'
+import * as contactApi from '../../../api/contact'
+import {mountWithPlugins} from '../../../test/mountWithPlugins'
 
 beforeEach(() => {
   vi.restoreAllMocks()

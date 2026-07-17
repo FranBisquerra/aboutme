@@ -2,26 +2,49 @@
 
 Standard recipe for adding a page to the Vue 3 frontend. The stack is fixed:
 
-- **PrimeVue** — UI components (theme Aura, dark mode via `.dark`). Coexists with Tailwind 4.
-- **@primevue/forms + Zod** — form state + validation.
+- **Nuxt UI** — UI components (`U*`, auto-imported by the vite plugin; dark mode via `.dark`;
+  primary color `indigo`, icons `i-lucide-*`). Layout/spacing with Tailwind 4.
+- **UForm + Zod** — form state + validation (`:schema` takes the Zod schema directly).
 - **TanStack Query** (`@tanstack/vue-query`) — server state (loading/error/cache) over the axios `api/*`.
 - **Pinia** — client state only (e.g. the auth token). Not for server data.
 - **axios** (`api/client.ts`) — transport. Wrapped by TanStack Query, never called raw in a page.
 
 ## Folder structure & naming
 
+Pages are grouped by **domain** (`front` public / `backoffice` admin) then **feature**.
+The feature folder holds the page, its test, and its feature-owned presentational
+components together. Cross-cutting layers stay flat under `src/`.
+
 ```
 frontend/src/
-├── pages/{Name}Page.vue        ← route-level SMART component (orchestrates data + actions)
-├── components/{Name}.vue       ← PRESENTATIONAL component (props in / emits out, no fetching)
-├── router/index.ts             ← register { path, component } (+ case in router.test.ts)
-├── api/{domain}.ts             ← thin axios functions ( client.get/post<T> )
-├── types/{domain}.ts           ← TS interfaces mirroring the backend DTOs
-├── schemas/{domain}.ts         ← Zod schemas (form validation, mirror backend validation)
-├── queries/{domain}.ts         ← TanStack Query hooks ( useQuery / useMutation wrappers )
-├── stores/{domain}.ts          ← Pinia store — CLIENT state only (token, UI)
-└── test/mountWithPlugins.ts    ← test helper (mounts with router+pinia+PrimeVue+VueQuery)
+├── pages/
+│   ├── front/                        ← public site
+│   │   ├── components/               ← shared front chrome (Navbar, Footer, BackToTop)
+│   │   └── {feature}/                ← e.g. home/, contact/, login/
+│   │       ├── {Name}Page.vue        ← SMART page (orchestrates data + actions)
+│   │       ├── {Name}Page.test.ts
+│   │       └── {Child}.vue           ← feature-owned PRESENTATIONAL components (props in / emits out)
+│   └── backoffice/                   ← admin area (guarded, admin layout)
+│       └── {feature}/                ← e.g. home/, profile/
+├── layouts/                          ← DefaultLayout (front) · AdminLayout (admin dashboard)
+├── router/index.ts                   ← { path, component, meta:{requiresAuth?, layout?} } (+ case in router.test.ts)
+├── api/{domain}.ts                   ← thin axios functions ( client.get/post<T> )
+├── types/{domain}.ts                 ← TS interfaces mirroring the backend DTOs
+├── schemas/{domain}.ts               ← Zod schemas (form validation, mirror backend validation)
+├── queries/{domain}.ts               ← TanStack Query hooks ( useQuery / useMutation wrappers )
+├── stores/{domain}.ts                ← Pinia store — CLIENT state only (token, UI)
+└── test/mountWithPlugins.ts          ← test helper (router+pinia+Nuxt UI+VueQuery; accepts `slots`)
 ```
+
+**Placement & layouts:**
+- Public page → `pages/front/{feature}/`. Admin page → `pages/backoffice/{feature}/`,
+  registered with `meta: {requiresAuth: true, layout: 'admin'}`.
+- Pages **don't render Navbar/Footer** — `App.vue` wraps the route in a layout
+  (`DefaultLayout` unless `meta.layout === 'admin'` → `AdminLayout`).
+- Feature-owned presentational components live in the feature folder (import as `./{Child}.vue`).
+  Only genuinely front-wide UI goes in `pages/front/components/`.
+- **Import depth**: no path alias — from a feature folder reach `src/` layers with `../../../`
+  (e.g. `../../../api/{domain}`), siblings with `./`.
 
 ## Rules
 
@@ -32,55 +55,52 @@ frontend/src/
 3. **Page (smart) vs component (presentational).** The page calls the query/mutation and passes
    data **down as props**. Components receive props / emit events — no `useQuery`, no `api/*`,
    no `onMounted` fetch.
-4. **Forms → `@primevue/forms` + Zod.** `<Form :resolver="zodResolver(schema)">`, PrimeVue inputs
-   with a `name`, `Message` for per-field errors. Validation comes from the Zod schema.
+4. **Forms → `UForm` + Zod.** `<UForm :schema="schema" :state="state">` with a `reactive` state
+   object, `UFormField name="..."` per field (renders label + error automatically),
+   `@submit` receives `FormSubmitEvent<T>` with validated `event.data`.
 5. **HTTP only through `api/*.ts`** (over `client`). Types in `types/*.ts`, never inline.
 
-### ⚠️ Two gotchas (bit us already)
+### ⚠️ Gotchas (bit us already)
 
 - **Destructure TanStack Query results** — its fields are refs; destructuring (`const {data, isPending} = useQuery(...)`) is the intended usage and lets templates auto-unwrap them. Using `q.isPending` in a template fails type-checking.
-- **Give `<Form>` `:initial-values`** with empty strings for every field. Untouched fields are `null`, and `z.string()` fails with "expected string, received null" *before* your `.min(1, 'X is required')` message. `initialValues: { field: '' }` makes the custom messages show.
+- **`U*` components and composables (`useToast`) are auto-imported** — no import lines; types come from the generated `auto-imports.d.ts`/`components.d.ts` (gitignored, created on dev/build/test).
+- **Toasts**: `useToast().add({title, description, color})` — needs the `<UApp>` wrapper (already in `App.vue`).
 
 ---
 
 ## Templates
 
-### A) Form page — `@primevue/forms` + Zod + `useMutation` (login, contact, any write)
+### A) Form page — `UForm` + Zod + `useMutation` (login, contact, any write)
 
 ```vue
 <template>
-  <Form v-slot="$form" :resolver="resolver" :initial-values="initialValues" @submit="onFormSubmit">
-    <InputText id="username" name="username" type="text" fluid/>
-    <Message v-if="$form.username?.invalid" severity="error" size="small" variant="simple">
-      {{ $form.username.error?.message }}
-    </Message>
+  <UForm :schema="someSchema" :state="state" class="flex flex-col gap-5" @submit="onSubmit">
+    <UFormField label="Username" name="username">
+      <UInput id="username" v-model="state.username" class="w-full"/>
+    </UFormField>
 
-    <Message v-if="isError" severity="error" size="small" variant="simple">Something went wrong.</Message>
-    <Button type="submit" label="Submit" :loading="isPending"/>
-  </Form>
+    <UAlert v-if="isError" color="error" variant="subtle" title="Something went wrong."/>
+    <UButton type="submit" label="Submit" :loading="isPending" block/>
+  </UForm>
 </template>
 
 <script setup lang="ts">
-import {Form, type FormSubmitEvent} from '@primevue/forms'
-import {zodResolver} from '@primevue/forms/resolvers/zod'
-import InputText from 'primevue/inputtext'
-import Button from 'primevue/button'
-import Message from 'primevue/message'
+import {reactive} from 'vue'
+import type {FormSubmitEvent} from '@nuxt/ui'
 import {useMutation} from '@tanstack/vue-query'
-import {someAction} from '../api/{domain}'
-import {someSchema} from '../schemas/{domain}'
-import type {SomeRequest} from '../types/{domain}'
+import {someAction} from '../../../api/{domain}'
+import {someSchema} from '../../../schemas/{domain}'
+import type {SomeRequest} from '../../../types/{domain}'
 
-const resolver = zodResolver(someSchema)
-const initialValues = {username: ''}            // every field, empty string (gotcha above)
+const state = reactive({username: ''})
 
 const {mutate, isPending, isError} = useMutation({
   mutationFn: (data: SomeRequest) => someAction(data),
   onSuccess: ({data}) => { /* store token, redirect, etc. */ },
 })
 
-function onFormSubmit({valid, values}: FormSubmitEvent) {
-  if (valid) mutate(values as SomeRequest)
+function onSubmit(event: FormSubmitEvent<SomeRequest>) {
+  mutate(event.data)
 }
 </script>
 ```
@@ -93,8 +113,8 @@ function onFormSubmit({valid, values}: FormSubmitEvent) {
 </template>
 
 <script setup lang="ts">
-import {useDomain} from '../queries/{domain}'
-import SomeView from '../components/SomeView.vue'
+import {useDomain} from '../../../queries/{domain}'
+import SomeView from './SomeView.vue'   // feature-owned, colocated in the feature folder
 
 const {data} = useDomain()        // page orchestrates; child is presentational
 </script>
@@ -120,7 +140,7 @@ export const someSchema = z.object({username: z.string().min(1, 'Username is req
 
 ```vue
 <script setup lang="ts">
-import type {Domain} from '../types/{domain}'
+import type {Domain} from '../../../types/{domain}'
 defineProps<{ data: Domain | undefined }>()
 </script>
 ```
@@ -131,8 +151,8 @@ defineProps<{ data: Domain | undefined }>()
 import {beforeEach, describe, expect, it, vi} from 'vitest'
 import {flushPromises} from '@vue/test-utils'
 import MyPage from './MyPage.vue'
-import * as domainApi from '../api/{domain}'
-import {mountWithPlugins} from '../test/mountWithPlugins'
+import * as domainApi from '../../../api/{domain}'
+import {mountWithPlugins} from '../../../test/mountWithPlugins'
 
 beforeEach(() => vi.restoreAllMocks())
 
@@ -146,18 +166,23 @@ it('calls the api with the form data', async () => {
 })
 ```
 
-- `mountWithPlugins` installs router + Pinia + PrimeVue + VueQuery (retries off).
+- `mountWithPlugins` installs router + Pinia + Nuxt UI + VueQuery (retries off).
 - Need to spy navigation or read a store? Pass your own: `mountWithPlugins(MyPage, {router, pinia})`
-  with `createTestRouter()` + `createPinia()` + `setActivePinia(pinia)` (see `LoginPage.test.ts`).
+  with `createTestRouter()` + `createPinia()` + `setActivePinia(pinia)` (see `pages/front/login/LoginPage.test.ts`).
 - Always `await flushPromises()` after a submit (mutation/query resolve on a microtask).
+- Overlays (dropdowns, toasts) **teleport into `<body>`** — query `document.body`
+  (e.g. `[role="menuitem"]`) and clear it in `afterEach` (see `pages/front/components/Navbar.test.ts`). Opening a
+  Reka-based dropdown needs `trigger('pointerdown')` + `trigger('click')`.
+- `UIcon` renders an `<svg>`; a loading `UButton` sets `disabled`.
 
 ---
 
 ## Checklist
 
-- [ ] Page in `pages/{Name}Page.vue`; route in `router/index.ts` (+ case in `router.test.ts`)
+- [ ] Page in `pages/{front|backoffice}/{feature}/{Name}Page.vue`; route in `router/index.ts`
+      (+ `meta.layout: 'admin'` for backoffice; + case in `router.test.ts`)
 - [ ] Server data via TanStack Query (`queries/{domain}.ts`); client state via Pinia only
-- [ ] Forms via `@primevue/forms` + Zod schema (`schemas/{domain}.ts`) with `:initial-values`
+- [ ] Forms via `UForm` + Zod schema (`schemas/{domain}.ts`) with a `reactive` state
 - [ ] New components are presentational (props/emits, no fetching)
 - [ ] `api/{domain}.ts` + `types/{domain}.ts` for any new endpoint
 - [ ] Test with `mountWithPlugins`; api spied with `vi.spyOn`
@@ -168,4 +193,4 @@ it('calls the api with the form data', async () => {
 - Presentational components never call `api/*`, `useQuery`/`useMutation`, nor fetch.
 - Server data lives in TanStack Query, **not** in Pinia.
 - Every HTTP call goes through `api/*.ts` over `client` — never raw `axios` in a page.
-- Destructure TanStack Query return values; give `<Form>` `:initial-values`.
+- Destructure TanStack Query return values.

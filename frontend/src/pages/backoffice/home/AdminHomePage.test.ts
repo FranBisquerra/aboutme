@@ -1,10 +1,10 @@
 import {describe, expect, it} from 'vitest'
 import {mount} from '@vue/test-utils'
-import AdminPage from './AdminPage.vue'
+import AdminHomePage from './AdminHomePage.vue'
 
-describe('AdminPage', () => {
+describe('AdminHomePage', () => {
   it('renders the admin heading', () => {
-    const wrapper = mount(AdminPage)
+    const wrapper = mount(AdminHomePage)
 
     expect(wrapper.text()).toContain('Admin')
   })
