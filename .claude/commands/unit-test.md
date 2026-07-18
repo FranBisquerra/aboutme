@@ -43,15 +43,18 @@ src/test/java/com/fbisquerra/aboutme/
 void shouldLoadProfileSuccessfully() {
     // ARRANGE
     var profile = ProfileFixture.validProfile();
-    doReturn(Optional.of(profile)).when(profileRepository).findById(profile.getId());
+    doReturn(profile).when(profileRepository).get();
 
     // ACT
-    var result = getProfileUseCase.execute(profile.getId());
+    var result = getProfileUseCase.execute();
 
     // ASSERT
-    assertThat(result.name(), is(profile.getName()));
+    assertThat(result.name(), is(profile.name()));
 }
 ```
+
+To assert what a use case passes to a mocked port, capture it:
+`var captor = ArgumentCaptor.forClass(Profile.class); verify(profileRepository).save(captor.capture());`
 
 ## Naming — functional, not technical
 

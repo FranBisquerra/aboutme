@@ -54,28 +54,56 @@ public class ProfileJpaEntity {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public String getTitle() {
         return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getLocation() {
         return location;
     }
 
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
     public String getEmail() {
         return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getLinkedin() {
         return linkedin;
     }
 
+    public void setLinkedin(String linkedin) {
+        this.linkedin = linkedin;
+    }
+
     public String getGithub() {
         return github;
     }
 
+    public void setGithub(String github) {
+        this.github = github;
+    }
+
     public String getBio() {
         return bio;
+    }
+
+    public void setBio(String bio) {
+        this.bio = bio;
     }
 
     public List<ProfileLanguageJpaEntity> getLanguages() {

@@ -5,4 +5,6 @@ import com.fbisquerra.aboutme.profile.domain.model.Profile;
 public interface ProfileRepository {
 
     Profile get();
+
+    void save(Profile profile);
 }

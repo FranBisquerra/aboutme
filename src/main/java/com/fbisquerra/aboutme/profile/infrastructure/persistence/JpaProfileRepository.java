@@ -19,10 +19,28 @@ public class JpaProfileRepository implements ProfileRepository {
     @Override
     @Transactional(readOnly = true)
     public Profile get() {
-        ProfileJpaEntity entity = profileJpaRepository.findAll().stream()
+        return toDomain(findEntity());
+    }
+
+    // Only the basic fields are persisted; the lists stay untouched until they become editable.
+    @Override
+    @Transactional
+    public void save(Profile profile) {
+        var entity = findEntity();
+        entity.setName(profile.name());
+        entity.setTitle(profile.title());
+        entity.setLocation(profile.location());
+        entity.setEmail(profile.email());
+        entity.setLinkedin(profile.linkedin());
+        entity.setGithub(profile.github());
+        entity.setBio(profile.bio());
+        profileJpaRepository.save(entity);
+    }
+
+    private ProfileJpaEntity findEntity() {
+        return profileJpaRepository.findAll().stream()
             .findFirst()
             .orElseThrow(() -> new IllegalStateException("No profile found in the database"));
-        return toDomain(entity);
     }
 
     private Profile toDomain(ProfileJpaEntity entity) {

@@ -100,4 +100,5 @@ Tailwind 4, lucide icons) — chosen over PrimeVue when v5 went commercial; form
 - `/new-module` — checklist for a new DDD module end-to-end
 - `/new-page` — recipe for a new Vue page (smart/presentational, TanStack Query, forms)
 - `/new-migration` — Flyway migration (naming, MariaDB conventions, entity sync)
+- `/verify-e2e` — smoke-test a backend change against the real app (second instance on `:8082`)
 - `/commit` — commit conventions (ask first, atomic, `<Feature>: <Verb>` subject)
