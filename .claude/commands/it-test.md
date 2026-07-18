@@ -52,12 +52,29 @@ void shouldReturnProfileWithHttpOk() throws Exception {
 }
 ```
 
-For a protected endpoint, authenticate the request (e.g. `.with(jwt().authorities(new SimpleGrantedAuthority("ROLE_ADMIN")))`
-from `SecurityMockMvcRequestPostProcessors`) and also assert the unauthenticated call returns 401/403.
+For a protected endpoint, issue a real token through the domain port and send it as a header —
+this exercises the actual JWT decoding path instead of mocking the authentication:
+
+```java
+@Autowired
+private AccessTokenIssuer accessTokenIssuer;
+
+private String adminToken() {
+    User admin = new User(null, "admin", "admin@test.dev", "irrelevant-hash", Role.ADMIN);
+    return accessTokenIssuer.issue(admin).token();
+}
+
+// .header("Authorization", "Bearer " + adminToken())
+```
+
+Also assert the unauthenticated call returns 401 and (if relevant) a non-admin token returns 403.
 
 ## Rules
 
 - Always go through HTTP (MockMvc) — never call use cases or repositories directly
+- **The MariaDB container is shared across all IT classes** (singleton pattern) and Flyway
+  seeds it once. A test that mutates seed data must restore it (e.g. in a `finally` block,
+  PUT-ing the original values back) or it breaks sibling tests depending on execution order
 - Validate the full request → response flow: status code, response body shape
 - For protected endpoints, test both the authenticated and unauthenticated paths
 - Test naming follows the same functional convention as unit tests

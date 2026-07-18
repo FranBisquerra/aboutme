@@ -105,6 +105,39 @@ function onSubmit(event: FormSubmitEvent<SomeRequest>) {
 </script>
 ```
 
+### A2) Edit form — prefill from a query, mutate updating the cache (admin profile, any edit)
+
+Same as A, plus: the state starts empty and a `watch` copies the queried entity into it
+(never bind `v-model` to query data directly), and the mutation lives in `queries/{domain}.ts`
+so it can refresh the cache — the page only adds UI feedback via the per-call `onSuccess`.
+
+```ts
+const {data: entity} = useDomain()
+const {mutate, isPending, isError} = useUpdateDomain()
+
+const state = reactive<UpdateRequest>({name: '', /* … */})
+
+watch(entity, current => {
+  if (!current) return
+  state.name = current.name          // copy field by field — the entity may have extra fields
+}, {immediate: true})
+
+function onSubmit(event: FormSubmitEvent<UpdateRequest>) {
+  mutate(event.data, {onSuccess: () => useToast().add({title: 'Saved', color: 'success'})})
+}
+```
+
+```ts
+// queries/{domain}.ts — the endpoint returns the updated entity, so write it straight into the cache
+export function useUpdateDomain() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (data: UpdateRequest) => updateDomain(data).then(r => r.data),
+    onSuccess: updated => queryClient.setQueryData(['{domain}'], updated),
+  })
+}
+```
+
 ### B) Data page — `useQuery` + pass props to presentational components
 
 ```vue
