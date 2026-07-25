@@ -25,7 +25,6 @@ export const useAuthStore = defineStore('auth', () => {
 
   const isAuthenticated = computed(() => token.value !== null && !isExpired.value)
 
-  // Username from the JWT `sub` claim (display only — the backend validates the token).
   const username = computed(() => {
     const sub = payload.value?.sub
     return typeof sub === 'string' ? sub : null

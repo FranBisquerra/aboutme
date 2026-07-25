@@ -7,11 +7,8 @@ export interface FlashMessage {
   detail?: string
 }
 
-/**
- * One-shot UI notifications ("flash" messages). Written from places without a component
- * context (e.g. router guards) and consumed once by App.vue, which turns them into a
- * PrimeVue Toast and calls clear().
- */
+// Lets code outside a component context (e.g. router guards) raise a notification,
+// which App.vue then turns into a toast — a toast can't be created from there directly.
 export const useFlashStore = defineStore('flash', () => {
   const message = ref<FlashMessage | null>(null)
 

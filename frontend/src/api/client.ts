@@ -9,7 +9,6 @@ const client = axios.create({
   },
 })
 
-// Attach the JWT (when present) to every request so protected endpoints receive it.
 client.interceptors.request.use((config) => {
   const token = useAuthStore().token
   if (token) {

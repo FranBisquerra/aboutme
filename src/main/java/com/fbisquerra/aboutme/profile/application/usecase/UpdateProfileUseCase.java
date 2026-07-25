@@ -16,7 +16,6 @@ public class UpdateProfileUseCase {
         this.profileRepository = profileRepository;
     }
 
-    // Only the basic fields are editable for now; lists are carried over unchanged.
     public ProfileResponse execute(UpdateProfileRequest request) {
         var current = profileRepository.get();
         var updated = new Profile(

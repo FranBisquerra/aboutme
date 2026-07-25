@@ -4,13 +4,11 @@
     class="relative min-h-screen flex items-center bg-cover bg-center bg-gray-900"
     style="background-image: url('/images/hero4.jpg')"
   >
-    <!-- overlay -->
     <div class="absolute inset-0 bg-black/50"/>
 
     <section v-if="profile" class="relative z-10 w-full max-w-5xl mx-auto px-6 pt-24 pb-20">
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
 
-        <!-- text -->
         <div>
           <p class="text-sm font-medium text-indigo-300 mb-4 tracking-wide uppercase">Hi, I'm</p>
           <h1 class="text-5xl font-bold text-white mb-4 leading-tight">{{ profile.name }}</h1>
@@ -57,7 +55,6 @@
           </div>
         </div>
 
-        <!-- profile photo -->
         <div class="hidden lg:flex justify-end">
           <div
             class="w-64 h-64 lg:w-80 lg:h-80 rounded-full overflow-hidden border-4 border-white/20 shadow-2xl bg-gray-700">

@@ -17,11 +17,11 @@ public class CorsConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry
-            .addMapping("/api/**")                           // Permitir CORS en todos los endpoints /api/**
-            .allowedOrigins("http://localhost:5173")        // Origen permitido: Vite dev server
-            .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")  // Métodos HTTP permitidos
-            .allowedHeaders("*")                            // Headers permitidos
-            .allowCredentials(true)                         // Permitir cookies/credenciales
-            .maxAge(3600);                                  // Cache del preflight por 1 hora
+            .addMapping("/api/**")
+            .allowedOrigins("http://localhost:5173")
+            .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+            .allowedHeaders("*")
+            .allowCredentials(true)
+            .maxAge(3600);
     }
 }
