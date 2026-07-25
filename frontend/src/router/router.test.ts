@@ -52,6 +52,19 @@ describe('Router', () => {
     expect(resolvedComponent()).toBe(AdminProfilePage)
   })
 
+  it('redirects /admin to / and clears an expired token with a session-expired flash', async () => {
+    const exp = Math.floor(Date.now() / 1000) - 1
+    const payload = btoa(JSON.stringify({sub: 'admin', exp}))
+    const auth = useAuthStore()
+    auth.setToken(`header.${payload}.signature`)
+
+    await router.push('/admin')
+
+    expect(router.currentRoute.value.path).toBe('/')
+    expect(auth.token).toBeNull()
+    expect(useFlashStore().message).toMatchObject({severity: 'warn', summary: 'Session expired'})
+  })
+
   it('redirects /admin/profile to / with a warn flash when not authenticated', async () => {
     await router.push('/') // move away first: pushing the current route skips the guard
     await router.push('/admin/profile')
