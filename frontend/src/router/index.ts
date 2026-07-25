@@ -13,8 +13,8 @@ const router = createRouter({
     {path: '/', component: HomePage},
     {path: '/contact', component: ContactPage},
     {path: '/login', component: LoginPage},
-    {path: '/admin', component: AdminHomePage, meta: {requiresAuth: true, layout: 'admin'}},
-    {path: '/admin/profile', component: AdminProfilePage, meta: {requiresAuth: true, layout: 'admin'}},
+    {path: '/admin', component: AdminHomePage, meta: {requiresAuth: true, layout: 'admin', title: 'Home'}},
+    {path: '/admin/profile', component: AdminProfilePage, meta: {requiresAuth: true, layout: 'admin', title: 'Profile'}},
   ],
 })
 
