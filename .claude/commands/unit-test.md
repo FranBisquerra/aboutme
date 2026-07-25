@@ -38,20 +38,24 @@ src/test/java/com/fbisquerra/aboutme/
 
 ## Test structure: Arrange-Act-Assert
 
+Structure every test in three phases — arrange, act, assert — but express them as
+**blocks separated by a blank line**, not with literal `// ARRANGE` / `// ACT` / `// ASSERT`
+markers. The separation should be visual; the phases are obvious from the code.
+
 ```java
 @Test
 void shouldLoadProfileSuccessfully() {
-    // ARRANGE
     var profile = ProfileFixture.validProfile();
     doReturn(profile).when(profileRepository).get();
 
-    // ACT
     var result = getProfileUseCase.execute();
 
-    // ASSERT
     assertThat(result.name(), is(profile.name()));
 }
 ```
+
+Add a comment only to explain something the code cannot show (a non-obvious setup, a
+gotcha) — never just to label a phase.
 
 To assert what a use case passes to a mocked port, capture it:
 `var captor = ArgumentCaptor.forClass(Profile.class); verify(profileRepository).save(captor.capture());`

@@ -28,17 +28,14 @@ class UpdateProfileUseCaseTest {
 
     @Test
     void shouldSaveBasicFieldsAndPreserveLists() {
-        // ARRANGE
         Profile current = ProfileFixture.validProfile();
         doReturn(current).when(profileRepository).get();
         UpdateProfileRequest request = new UpdateProfileRequest(
             "New Name", "New Title", "New Location", "new@email.dev",
             "https://www.linkedin.com/in/new", "https://github.com/new", "New bio");
 
-        // ACT
         ProfileResponse response = updateProfileUseCase.execute(request);
 
-        // ASSERT
         ArgumentCaptor<Profile> captor = ArgumentCaptor.forClass(Profile.class);
         verify(profileRepository).save(captor.capture());
         Profile saved = captor.getValue();
