@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.json.JsonCompareMode;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -22,16 +23,24 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 class ProfileControllerIT extends AbstractIntegrationTest {
 
-    // Mirrors V2__seed_profile.sql — used to leave the shared database as the seed left it.
-    private static final String SEED_PROFILE_JSON = """
+    private static final String VALID_PROFILE_JSON = """
         {
-          "name": "Francesc Bisquerra Castell",
-          "title": "Software Engineer",
-          "location": "Palma de Mallorca",
-          "email": "francesc.bisquerra@gmail.com",
-          "linkedin": "https://www.linkedin.com/in/franbisquerra",
-          "github": "https://github.com/FranBisquerra",
-          "bio": "Passionate software engineer who loves learning, sharing knowledge and taking on new challenges. Outside of tech, you'll find me in the mountains, catching waves or exploring the outdoors. I thrive in dynamic environments and value the human side of work — being close to people and building great teams."
+          "name": "Updated Name",
+          "title": "Updated Title",
+          "location": "Updated Location",
+          "email": "updated@email.dev",
+          "linkedin": "https://www.linkedin.com/in/updated",
+          "github": "https://github.com/updated",
+          "bio": "Updated bio",
+          "languages": [{"name": "German", "level": "Basic"}],
+          "skills": ["Kotlin", "Terraform"],
+          "experience": [
+            {"company": "Acme QA", "role": "Engineer", "start": "2020-01", "end": "2021-02", "description": "Worked on things."},
+            {"company": "Globex QA", "role": "Lead", "start": "2021-03", "end": null, "description": "Still working."}
+          ],
+          "education": [
+            {"institution": "Some University", "degree": "Some Degree", "start": "2010", "end": "2014"}
+          ]
         }
         """;
 
@@ -53,6 +62,20 @@ class ProfileControllerIT extends AbstractIntegrationTest {
     private String adminToken() {
         User admin = new User(null, "admin", "admin@test.dev", "irrelevant-hash", Role.ADMIN);
         return accessTokenIssuer.issue(admin).token();
+    }
+
+    // The response and the request share the same document shape, so a GET is a restorable snapshot.
+    private String currentProfileJson() throws Exception {
+        return mockMvc.perform(get("/api/profile"))
+            .andReturn().getResponse().getContentAsString();
+    }
+
+    private void putProfile(String token, String json) throws Exception {
+        mockMvc.perform(put("/api/profile")
+                .header("Authorization", "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json))
+            .andExpect(status().isOk());
     }
 
     @Test
@@ -85,7 +108,7 @@ class ProfileControllerIT extends AbstractIntegrationTest {
     void shouldReturn401OnUpdateWithoutToken() throws Exception {
         mockMvc.perform(put("/api/profile")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(SEED_PROFILE_JSON))
+                .content(VALID_PROFILE_JSON))
             .andExpect(status().isUnauthorized());
     }
 
@@ -94,57 +117,74 @@ class ProfileControllerIT extends AbstractIntegrationTest {
         mockMvc.perform(put("/api/profile")
                 .header("Authorization", "Bearer " + adminToken())
                 .contentType(MediaType.APPLICATION_JSON)
+                .content(VALID_PROFILE_JSON.replace("\"name\": \"Updated Name\"", "\"name\": \"\"")))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldReturn400OnUpdateWithMalformedExperienceStartDate() throws Exception {
+        mockMvc.perform(put("/api/profile")
+                .header("Authorization", "Bearer " + adminToken())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(VALID_PROFILE_JSON.replace("\"start\": \"2020-01\"", "\"start\": \"2020\"")))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldReturn400OnUpdateWithMissingExperienceList() throws Exception {
+        mockMvc.perform(put("/api/profile")
+                .header("Authorization", "Bearer " + adminToken())
+                .contentType(MediaType.APPLICATION_JSON)
                 .content("""
                     {
-                      "name": "",
-                      "title": "Software Engineer",
-                      "location": "Palma de Mallorca",
-                      "email": "francesc.bisquerra@gmail.com",
-                      "linkedin": "https://www.linkedin.com/in/franbisquerra",
-                      "github": "https://github.com/FranBisquerra",
-                      "bio": "A bio"
+                      "name": "Updated Name",
+                      "title": "Updated Title",
+                      "location": "Updated Location",
+                      "email": "updated@email.dev",
+                      "linkedin": "https://www.linkedin.com/in/updated",
+                      "github": "https://github.com/updated",
+                      "bio": "Updated bio",
+                      "languages": [],
+                      "skills": [],
+                      "education": []
                     }
                     """))
             .andExpect(status().isBadRequest());
     }
 
     @Test
-    void shouldUpdateBasicFieldsAndKeepLists() throws Exception {
+    void shouldReplaceTheWholeProfileDocument() throws Exception {
         String token = adminToken();
+        // The MariaDB container is shared across test classes: restore whatever the seed left.
+        String snapshot = currentProfileJson();
         try {
-            mockMvc.perform(put("/api/profile")
-                    .header("Authorization", "Bearer " + token)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content("""
-                        {
-                          "name": "Updated Name",
-                          "title": "Updated Title",
-                          "location": "Updated Location",
-                          "email": "updated@email.dev",
-                          "linkedin": "https://www.linkedin.com/in/updated",
-                          "github": "https://github.com/updated",
-                          "bio": "Updated bio"
-                        }
-                        """))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name", is("Updated Name")))
-                .andExpect(jsonPath("$.title", is("Updated Title")))
-                .andExpect(jsonPath("$.skills", not(empty())));
+            putProfile(token, VALID_PROFILE_JSON);
 
             mockMvc.perform(get("/api/profile"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name", is("Updated Name")))
                 .andExpect(jsonPath("$.bio", is("Updated bio")))
-                .andExpect(jsonPath("$.languages", not(empty())))
-                .andExpect(jsonPath("$.experience", not(empty())))
-                .andExpect(jsonPath("$.education", not(empty())));
+                .andExpect(jsonPath("$.skills", contains("Kotlin", "Terraform")))
+                .andExpect(jsonPath("$.languages", hasSize(1)))
+                .andExpect(jsonPath("$.education", hasSize(1)))
+                .andExpect(jsonPath("$.experience", hasSize(2)))
+                .andExpect(jsonPath("$.experience[0].company", is("Acme QA")))
+                .andExpect(jsonPath("$.experience[1].end", is(nullValue())));
         } finally {
-            // The MariaDB container is shared across test classes: restore the seed values.
-            mockMvc.perform(put("/api/profile")
-                    .header("Authorization", "Bearer " + token)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(SEED_PROFILE_JSON))
-                .andExpect(status().isOk());
+            putProfile(token, snapshot);
         }
+    }
+
+    @Test
+    void shouldRestoreTheSeedDocumentAfterBeingReplaced() throws Exception {
+        String token = adminToken();
+        String snapshot = currentProfileJson();
+
+        putProfile(token, VALID_PROFILE_JSON);
+        putProfile(token, snapshot);
+
+        mockMvc.perform(get("/api/profile"))
+            .andExpect(status().isOk())
+            .andExpect(content().json(snapshot, JsonCompareMode.STRICT));
     }
 }

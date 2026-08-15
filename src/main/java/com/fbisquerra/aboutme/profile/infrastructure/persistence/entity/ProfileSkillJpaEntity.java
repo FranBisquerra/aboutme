@@ -15,6 +15,10 @@ public class ProfileSkillJpaEntity {
     protected ProfileSkillJpaEntity() {
     }
 
+    public ProfileSkillJpaEntity(String skill) {
+        this.skill = skill;
+    }
+
     public Long getId() {
         return id;
     }

@@ -24,22 +24,22 @@ public class ProfileJpaEntity {
     private String bio;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "profile_id")
+    @JoinColumn(name = "profile_id", nullable = false)
     @OrderBy("id ASC")
     private List<ProfileLanguageJpaEntity> languages = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "profile_id")
+    @JoinColumn(name = "profile_id", nullable = false)
     @OrderBy("id ASC")
     private List<ProfileSkillJpaEntity> skills = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "profile_id")
+    @JoinColumn(name = "profile_id", nullable = false)
     @OrderBy("id ASC")
     private List<ProfileExperienceJpaEntity> experience = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "profile_id")
+    @JoinColumn(name = "profile_id", nullable = false)
     @OrderBy("id ASC")
     private List<ProfileEducationJpaEntity> education = new ArrayList<>();
 

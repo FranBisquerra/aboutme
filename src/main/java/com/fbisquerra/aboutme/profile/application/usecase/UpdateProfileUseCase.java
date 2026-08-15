@@ -17,7 +17,6 @@ public class UpdateProfileUseCase {
     }
 
     public ProfileResponse execute(UpdateProfileRequest request) {
-        var current = profileRepository.get();
         var updated = new Profile(
             request.name(),
             request.title(),
@@ -26,10 +25,16 @@ public class UpdateProfileUseCase {
             request.linkedin(),
             request.github(),
             request.bio(),
-            current.languages(),
-            current.skills(),
-            current.experience(),
-            current.education()
+            request.languages().stream()
+                .map(l -> new Profile.Language(l.name(), l.level()))
+                .toList(),
+            request.skills(),
+            request.experience().stream()
+                .map(e -> new Profile.ExperienceEntry(e.company(), e.role(), e.start(), e.end(), e.description()))
+                .toList(),
+            request.education().stream()
+                .map(e -> new Profile.EducationEntry(e.institution(), e.degree(), e.start(), e.end()))
+                .toList()
         );
         profileRepository.save(updated);
         return ProfileMapper.toResponse(updated);

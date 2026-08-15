@@ -22,6 +22,13 @@ public class ProfileEducationJpaEntity {
     protected ProfileEducationJpaEntity() {
     }
 
+    public ProfileEducationJpaEntity(String institution, String degree, String startYear, String endYear) {
+        this.institution = institution;
+        this.degree = degree;
+        this.startYear = startYear;
+        this.endYear = endYear;
+    }
+
     public Long getId() {
         return id;
     }
