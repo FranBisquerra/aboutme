@@ -26,6 +26,9 @@ public final class ProfileMapper {
                 .toList(),
             profile.education().stream()
                 .map(e -> new ProfileResponse.EducationEntry(e.institution(), e.degree(), e.start(), e.end()))
+                .toList(),
+            profile.courses().stream()
+                .map(c -> new ProfileResponse.CourseEntry(c.institution(), c.name(), c.start(), c.end()))
                 .toList()
         );
     }

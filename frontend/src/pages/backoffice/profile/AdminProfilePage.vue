@@ -110,6 +110,42 @@
       <p v-else class="text-gray-500 dark:text-gray-400 text-sm">No education entries yet.</p>
     </section>
 
+    <section class="mt-12">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Courses</h2>
+        <UButton icon="i-lucide-plus" label="Add course" @click="courses.openCreate"/>
+      </div>
+
+      <table v-if="courses.entries.length" class="w-full text-sm">
+        <thead>
+          <tr class="text-left text-gray-500 dark:text-gray-400">
+            <th class="py-2 font-medium">Course</th>
+            <th class="py-2 font-medium">Institution</th>
+            <th class="py-2 font-medium">Years</th>
+            <th class="py-2 font-medium text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(course, index) in courses.entries" :key="index" class="border-t border-gray-100 dark:border-gray-800">
+            <td class="py-2 text-gray-900 dark:text-white">{{ course.name }}</td>
+            <td class="py-2 text-gray-600 dark:text-gray-300">{{ course.institution }}</td>
+            <td class="py-2 text-gray-600 dark:text-gray-300">{{ formatYears(course) }}</td>
+            <td class="py-2 text-right whitespace-nowrap">
+              <UButton
+                icon="i-lucide-pencil" color="neutral" variant="ghost" size="xs"
+                :aria-label="`Edit ${course.name}`" @click="courses.openEdit(index)"
+              />
+              <UButton
+                icon="i-lucide-trash-2" color="error" variant="ghost" size="xs"
+                :aria-label="`Delete ${course.name}`" @click="courses.askDelete(index)"
+              />
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <p v-else class="text-gray-500 dark:text-gray-400 text-sm">No courses yet.</p>
+    </section>
+
     <USlideover v-model:open="experience.formOpen" :title="experience.isEditing ? 'Edit experience' : 'Add experience'">
       <template #body>
         <UForm :schema="experienceSchema" :state="experience.form" class="flex flex-col gap-4" @submit="onExperienceSubmit">
@@ -174,6 +210,35 @@
       </template>
     </USlideover>
 
+    <USlideover v-model:open="courses.formOpen" :title="courses.isEditing ? 'Edit course' : 'Add course'">
+      <template #body>
+        <UForm :schema="courseSchema" :state="courses.form" class="flex flex-col gap-4" @submit="onCourseSubmit">
+          <UFormField label="Course" name="name">
+            <UInput id="course-name" v-model="courses.form.name" class="w-full"/>
+          </UFormField>
+
+          <UFormField label="Institution" name="institution">
+            <UInput id="course-institution" v-model="courses.form.institution" class="w-full"/>
+          </UFormField>
+
+          <UFormField label="Start year" name="start">
+            <UInput id="course-start" v-model="courses.form.start" placeholder="2021" class="w-full"/>
+          </UFormField>
+
+          <UFormField label="End year" name="end" hint="Optional">
+            <UInput id="course-end" v-model="courseEndModel" placeholder="2022" class="w-full"/>
+          </UFormField>
+
+          <UAlert v-if="courses.isError" color="error" variant="subtle" title="Could not save the course."/>
+
+          <div class="flex justify-end gap-2 pt-2">
+            <UButton label="Cancel" color="neutral" variant="ghost" @click="courses.formOpen = false"/>
+            <UButton type="submit" label="Save" :loading="courses.isSaving"/>
+          </div>
+        </UForm>
+      </template>
+    </USlideover>
+
     <DeleteEntryModal
       v-model:open="experience.deleteOpen"
       title="Delete experience"
@@ -193,6 +258,16 @@
       :error="education.isError"
       @confirm="education.confirmDelete"
     />
+
+    <DeleteEntryModal
+      v-model:open="courses.deleteOpen"
+      title="Delete course"
+      entity="course"
+      :label="`${courses.deleting?.name} · ${courses.deleting?.institution}`"
+      :loading="courses.isSaving"
+      :error="courses.isError"
+      @confirm="courses.confirmDelete"
+    />
   </div>
 </template>
 
@@ -202,8 +277,9 @@ import type {FormSubmitEvent} from '@nuxt/ui'
 import DeleteEntryModal from './DeleteEntryModal.vue'
 import {useProfileSection} from './useProfileSection'
 import {useProfile, useUpdateProfile} from '../../../queries/profile'
-import {educationSchema, experienceSchema, profileSchema} from '../../../schemas/profile'
-import type {EducationEntry, ExperienceEntry, ProfileBasics} from '../../../types/profile'
+import {courseSchema, educationSchema, experienceSchema, profileSchema} from '../../../schemas/profile'
+import type {CourseEntry, EducationEntry, ExperienceEntry, ProfileBasics} from '../../../types/profile'
+import {byStartDesc} from '../../../utils/byStartDesc'
 import {formatDate} from '../../../utils/formatDate'
 
 const toast = useToast()
@@ -233,21 +309,18 @@ watch(profile, current => {
 }, {immediate: true})
 
 function onSubmit(event: FormSubmitEvent<ProfileBasics>) {
-  // Saving the basics still sends the whole document, so the lists travel unchanged.
   updateMutate({...profile.value!, ...event.data}, {
     onSuccess: () => toast.add({title: 'Profile updated', color: 'success'}),
   })
 }
 
-// reactive() unwraps the refs the composable returns, so template and script both read
-// `experience.entries` instead of `experience.entries.value`.
 const experience = reactive(useProfileSection('experience', 'Experience', () => ({
   company: '', role: '', start: '', end: null, description: '',
-})))
+}), byStartDesc))
 
 const education = reactive(useProfileSection('education', 'Education', () => ({
   institution: '', degree: '', start: '', end: '',
-})))
+}), byStartDesc))
 
 function onExperienceSubmit(event: FormSubmitEvent<ExperienceEntry>) {
   experience.submit(event.data)
@@ -257,7 +330,25 @@ function onEducationSubmit(event: FormSubmitEvent<EducationEntry>) {
   education.submit(event.data)
 }
 
-// "I currently work here" is experience-only: it blanks the end date instead of hiding it.
+const courses = reactive(useProfileSection('courses', 'Course', () => ({
+  institution: '', name: '', start: '', end: null,
+}), byStartDesc))
+
+function onCourseSubmit(event: FormSubmitEvent<CourseEntry>) {
+  courses.submit(event.data)
+}
+
+const courseEndModel = computed({
+  get: () => courses.form.end ?? '',
+  set: (value: string) => {
+    courses.form.end = value === '' ? null : value
+  },
+})
+
+function formatYears(course: CourseEntry): string {
+  return course.end ? `${course.start} – ${course.end}` : course.start
+}
+
 const current = ref(false)
 
 const endModel = computed({

@@ -4,7 +4,7 @@ import {useProfile, useUpdateProfile} from '../../../queries/profile'
 import type {Profile, UpdateProfileRequest} from '../../../types/profile'
 
 /** Profile lists edited as a table + form: one entry per row. `skills` is excluded — it is a tag input. */
-export type EntrySectionKey = 'experience' | 'education' | 'languages'
+export type EntrySectionKey = 'experience' | 'education' | 'courses' | 'languages'
 
 type Entry<K extends EntrySectionKey> = Profile[K][number]
 
@@ -14,13 +14,23 @@ type Entry<K extends EntrySectionKey> = Profile[K][number]
  * and leaves the rest of the profile untouched.
  *
  * `label` is the singular name used in the success toasts ("Experience added").
+ *
+ * `sort` reorders the entries for display. Everything here addresses entries **by index**,
+ * so the sort has to happen at the source: sorting only in the template would make edit and
+ * delete act on the wrong row. Saving then persists that order, which is harmless — the
+ * stored order carries no meaning.
  */
-export function useProfileSection<K extends EntrySectionKey>(key: K, label: string, blank: () => Entry<K>) {
+export function useProfileSection<K extends EntrySectionKey>(
+  key: K,
+  label: string,
+  blank: () => Entry<K>,
+  sort: (entries: Entry<K>[]) => Entry<K>[] = entries => entries,
+) {
   const toast = useToast()
   const {data: profile} = useProfile()
   const {mutate, isPending: isSaving, isError} = useUpdateProfile()
 
-  const entries = computed(() => (profile.value?.[key] ?? []) as Entry<K>[])
+  const entries = computed(() => sort((profile.value?.[key] ?? []) as Entry<K>[]))
 
   const formOpen = ref(false)
   const editingIndex = ref<number | null>(null)

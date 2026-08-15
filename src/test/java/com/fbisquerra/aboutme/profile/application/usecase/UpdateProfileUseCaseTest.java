@@ -48,6 +48,8 @@ class UpdateProfileUseCaseTest {
             new Profile.ExperienceEntry("Acme", "Engineer", "2020-01", null, "Did things.")));
         assertThat(saved.education(), contains(
             new Profile.EducationEntry("Some University", "Some Degree", "2010", "2014")));
+        assertThat(saved.courses(), contains(
+            new Profile.CourseEntry("Coursera", "Machine Learning", "2018", null)));
     }
 
     @Test

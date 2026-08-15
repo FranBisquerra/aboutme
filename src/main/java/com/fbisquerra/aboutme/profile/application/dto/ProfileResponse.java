@@ -13,7 +13,8 @@ public record ProfileResponse(
     List<Language> languages,
     List<String> skills,
     List<ExperienceEntry> experience,
-    List<EducationEntry> education
+    List<EducationEntry> education,
+    List<CourseEntry> courses
 ) {
 
     public record Language(String name, String level) {
@@ -23,5 +24,8 @@ public record ProfileResponse(
     }
 
     public record EducationEntry(String institution, String degree, String start, String end) {
+    }
+
+    public record CourseEntry(String institution, String name, String start, String end) {
     }
 }

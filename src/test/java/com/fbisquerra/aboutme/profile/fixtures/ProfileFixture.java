@@ -19,7 +19,8 @@ public class ProfileFixture {
             List.of(new Profile.Language("Catalan", "Native"), new Profile.Language("English", "Full Professional")),
             List.of("Java", "Spring Boot", "Docker"),
             List.of(new Profile.ExperienceEntry("Travel Compositor", "Full-stack Developer", "2022-03", null, "Development of a travel application.")),
-            List.of(new Profile.EducationEntry("Universitat de les Illes Balears", "Bachelor's Degree in Computer Engineering", "2012", "2019"))
+            List.of(new Profile.EducationEntry("Universitat de les Illes Balears", "Bachelor's Degree in Computer Engineering", "2012", "2019")),
+            List.of(new Profile.CourseEntry("Udemy", "Docker Mastery", "2021", null))
         );
     }
 
@@ -35,7 +36,8 @@ public class ProfileFixture {
             List.of(new UpdateProfileRequest.Language("German", "Basic")),
             List.of("Kotlin"),
             List.of(new UpdateProfileRequest.ExperienceEntry("Acme", "Engineer", "2020-01", null, "Did things.")),
-            List.of(new UpdateProfileRequest.EducationEntry("Some University", "Some Degree", "2010", "2014"))
+            List.of(new UpdateProfileRequest.EducationEntry("Some University", "Some Degree", "2010", "2014")),
+            List.of(new UpdateProfileRequest.CourseEntry("Coursera", "Machine Learning", "2018", null))
         );
     }
 }

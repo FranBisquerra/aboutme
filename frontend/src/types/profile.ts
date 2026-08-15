@@ -18,6 +18,13 @@ export interface EducationEntry {
   end: string
 }
 
+export interface CourseEntry {
+  institution: string
+  name: string
+  start: string
+  end: string | null
+}
+
 export interface ProfileBasics {
   name: string
   title: string
@@ -33,6 +40,7 @@ export interface Profile extends ProfileBasics {
   skills: string[]
   experience: ExperienceEntry[]
   education: EducationEntry[]
+  courses: CourseEntry[]
 }
 
 export type UpdateProfileRequest = Profile

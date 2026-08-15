@@ -3,7 +3,7 @@ import {flushPromises} from '@vue/test-utils'
 import AdminProfilePage from './AdminProfilePage.vue'
 import * as profileApi from '../../../api/profile'
 import {mountWithPlugins} from '../../../test/mountWithPlugins'
-import type {EducationEntry, ExperienceEntry, Profile} from '../../../types/profile'
+import type {CourseEntry, EducationEntry, ExperienceEntry, Profile} from '../../../types/profile'
 
 const acme: ExperienceEntry = {
   company: 'Acme',
@@ -20,6 +20,13 @@ const uib: EducationEntry = {
   end: '2019',
 }
 
+const docker: CourseEntry = {
+  institution: 'Udemy',
+  name: 'Docker Mastery',
+  start: '2021',
+  end: null,
+}
+
 const profile: Profile = {
   name: 'Fran',
   title: 'Engineer',
@@ -32,6 +39,7 @@ const profile: Profile = {
   skills: ['Java'],
   experience: [acme],
   education: [uib],
+  courses: [docker],
 }
 
 beforeEach(() => {
@@ -251,6 +259,138 @@ describe('AdminProfilePage', () => {
     await flushPromises()
 
     expect(spy.mock.calls[0][0].education).toEqual([uib])
+  })
+
+  it('lists the courses', async () => {
+    const wrapper = mountWithPlugins(AdminProfilePage)
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('Docker Mastery')
+    expect(wrapper.text()).toContain('Udemy')
+  })
+
+  it('shows only the start year for a course with no end year', async () => {
+    const wrapper = mountWithPlugins(AdminProfilePage)
+    await flushPromises()
+
+    const row = wrapper.findAll('tr').find(r => r.text().includes('Docker Mastery'))!
+    expect(row.text()).toContain('2021')
+    expect(row.text()).not.toContain('–')
+  })
+
+  it('appends a new course to the document', async () => {
+    const spy = vi.spyOn(profileApi, 'updateProfile').mockResolvedValue({data: profile} as never)
+    const wrapper = mountWithPlugins(AdminProfilePage)
+    await flushPromises()
+
+    const addButton = wrapper.findAll('button').find(b => b.text().includes('Add course'))!
+    await addButton.trigger('click')
+    await flushPromises()
+
+    setInput('course-name', 'Kubernetes Deep Dive')
+    setInput('course-institution', 'Coursera')
+    setInput('course-start', '2023')
+    await flushPromises()
+
+    bodyButton('Save')!.click()
+    await flushPromises()
+
+    expect(spy).toHaveBeenCalledWith({
+      ...profile,
+      courses: [
+        docker,
+        {institution: 'Coursera', name: 'Kubernetes Deep Dive', start: '2023', end: null},
+      ],
+    })
+  })
+
+  it('keeps the end year when one is entered', async () => {
+    const spy = vi.spyOn(profileApi, 'updateProfile').mockResolvedValue({data: profile} as never)
+    const wrapper = mountWithPlugins(AdminProfilePage)
+    await flushPromises()
+
+    await wrapper.find('button[aria-label="Edit Docker Mastery"]').trigger('click')
+    await flushPromises()
+
+    setInput('course-end', '2022')
+    await flushPromises()
+
+    bodyButton('Save')!.click()
+    await flushPromises()
+
+    expect(spy).toHaveBeenCalledWith({...profile, courses: [{...docker, end: '2022'}]})
+  })
+
+  it('drops the deleted course from the document after confirmation', async () => {
+    const spy = vi.spyOn(profileApi, 'updateProfile').mockResolvedValue({data: profile} as never)
+    const wrapper = mountWithPlugins(AdminProfilePage)
+    await flushPromises()
+
+    await wrapper.find('button[aria-label="Delete Docker Mastery"]').trigger('click')
+    await flushPromises()
+
+    bodyButton('Delete')!.click()
+    await flushPromises()
+
+    expect(spy).toHaveBeenCalledWith({...profile, courses: []})
+  })
+
+  it('renders each list most recent first, whatever order the api returns', async () => {
+    vi.spyOn(profileApi, 'getProfile').mockResolvedValue({
+      data: {
+        ...profile,
+        experience: [
+          {...acme, company: 'Oldest', start: '2015-07'},
+          {...acme, company: 'Newest', start: '2022-03'},
+          {...acme, company: 'Middle', start: '2019-10'},
+        ],
+        education: [
+          {...uib, degree: 'Older degree', start: '2005'},
+          {...uib, degree: 'Newer degree', start: '2012'},
+        ],
+        courses: [
+          {...docker, name: 'Older course', start: '2018'},
+          {...docker, name: 'Newer course', start: '2023'},
+        ],
+      },
+    } as never)
+    const wrapper = mountWithPlugins(AdminProfilePage)
+    await flushPromises()
+
+    const text = wrapper.text()
+    expect(text.indexOf('Newest')).toBeLessThan(text.indexOf('Middle'))
+    expect(text.indexOf('Middle')).toBeLessThan(text.indexOf('Oldest'))
+    expect(text.indexOf('Newer degree')).toBeLessThan(text.indexOf('Older degree'))
+    expect(text.indexOf('Newer course')).toBeLessThan(text.indexOf('Older course'))
+  })
+
+  it('edits the row the user clicked once the list is reordered', async () => {
+    const spy = vi.spyOn(profileApi, 'updateProfile').mockResolvedValue({data: profile} as never)
+    // The api returns the oldest first, so sorting moves 'Newest' to the top row.
+    vi.spyOn(profileApi, 'getProfile').mockResolvedValue({
+      data: {
+        ...profile,
+        experience: [
+          {...acme, company: 'Oldest', start: '2015-07'},
+          {...acme, company: 'Newest', start: '2022-03'},
+        ],
+      },
+    } as never)
+    const wrapper = mountWithPlugins(AdminProfilePage)
+    await flushPromises()
+
+    await wrapper.find('button[aria-label="Edit Newest"]').trigger('click')
+    await flushPromises()
+
+    setInput('exp-role', 'Renamed')
+    await flushPromises()
+
+    bodyButton('Save')!.click()
+    await flushPromises()
+
+    const saved = spy.mock.calls[0][0].experience
+    expect(saved.find(e => e.company === 'Newest')!.role).toBe('Renamed')
+    expect(saved.find(e => e.company === 'Oldest')!.role).toBe('Senior Dev')
   })
 
   it('shows an error alert when deleting an experience fails', async () => {
