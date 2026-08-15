@@ -17,6 +17,7 @@ const mockProfile: Profile = {
   skills: [],
   experience: [],
   education: [],
+  courses: [],
 }
 
 beforeEach(() => {

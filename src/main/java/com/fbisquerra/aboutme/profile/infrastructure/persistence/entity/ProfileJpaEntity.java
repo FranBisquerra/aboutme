@@ -43,6 +43,11 @@ public class ProfileJpaEntity {
     @OrderBy("id ASC")
     private List<ProfileEducationJpaEntity> education = new ArrayList<>();
 
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "profile_id", nullable = false)
+    @OrderBy("id ASC")
+    private List<ProfileCourseJpaEntity> courses = new ArrayList<>();
+
     protected ProfileJpaEntity() {
     }
 
@@ -120,5 +125,9 @@ public class ProfileJpaEntity {
 
     public List<ProfileEducationJpaEntity> getEducation() {
         return education;
+    }
+
+    public List<ProfileCourseJpaEntity> getCourses() {
+        return courses;
     }
 }

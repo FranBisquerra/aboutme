@@ -18,7 +18,8 @@ public record UpdateProfileRequest(
     @NotNull @Valid List<Language> languages,
     @NotNull List<@NotBlank String> skills,
     @NotNull @Valid List<ExperienceEntry> experience,
-    @NotNull @Valid List<EducationEntry> education) {
+    @NotNull @Valid List<EducationEntry> education,
+    @NotNull @Valid List<CourseEntry> courses) {
 
     public record Language(
         @NotBlank String name,
@@ -38,5 +39,12 @@ public record UpdateProfileRequest(
         @NotBlank String degree,
         @NotBlank @Pattern(regexp = "\\d{4}") String start,
         @NotBlank @Pattern(regexp = "\\d{4}") String end) {
+    }
+
+    public record CourseEntry(
+        @NotBlank String institution,
+        @NotBlank String name,
+        @NotBlank @Pattern(regexp = "\\d{4}") String start,
+        @Pattern(regexp = "\\d{4}") String end) {
     }
 }

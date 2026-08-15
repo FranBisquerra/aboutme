@@ -28,3 +28,11 @@ export const educationSchema = z.object({
   start: year,
   end: year,
 })
+
+// A course may run within a single year, so the end year is optional.
+export const courseSchema = z.object({
+  institution: z.string().min(1, 'Institution is required'),
+  name: z.string().min(1, 'Name is required'),
+  start: year,
+  end: year.nullable(),
+})

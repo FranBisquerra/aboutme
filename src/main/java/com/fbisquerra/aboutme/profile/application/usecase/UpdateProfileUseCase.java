@@ -34,6 +34,9 @@ public class UpdateProfileUseCase {
                 .toList(),
             request.education().stream()
                 .map(e -> new Profile.EducationEntry(e.institution(), e.degree(), e.start(), e.end()))
+                .toList(),
+            request.courses().stream()
+                .map(c -> new Profile.CourseEntry(c.institution(), c.name(), c.start(), c.end()))
                 .toList()
         );
         profileRepository.save(updated);

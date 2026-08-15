@@ -40,6 +40,10 @@ class ProfileControllerIT extends AbstractIntegrationTest {
           ],
           "education": [
             {"institution": "Some University", "degree": "Some Degree", "start": "2010", "end": "2014"}
+          ],
+          "courses": [
+            {"institution": "Udemy", "name": "Docker Mastery", "start": "2021", "end": "2021"},
+            {"institution": "Coursera", "name": "Machine Learning", "start": "2018", "end": null}
           ]
         }
         """;
@@ -146,7 +150,8 @@ class ProfileControllerIT extends AbstractIntegrationTest {
                       "bio": "Updated bio",
                       "languages": [],
                       "skills": [],
-                      "education": []
+                      "education": [],
+                      "courses": []
                     }
                     """))
             .andExpect(status().isBadRequest());
@@ -169,7 +174,10 @@ class ProfileControllerIT extends AbstractIntegrationTest {
                 .andExpect(jsonPath("$.education", hasSize(1)))
                 .andExpect(jsonPath("$.experience", hasSize(2)))
                 .andExpect(jsonPath("$.experience[0].company", is("Acme QA")))
-                .andExpect(jsonPath("$.experience[1].end", is(nullValue())));
+                .andExpect(jsonPath("$.experience[1].end", is(nullValue())))
+                .andExpect(jsonPath("$.courses", hasSize(2)))
+                .andExpect(jsonPath("$.courses[0].name", is("Docker Mastery")))
+                .andExpect(jsonPath("$.courses[1].end", is(nullValue())));
         } finally {
             putProfile(token, snapshot);
         }

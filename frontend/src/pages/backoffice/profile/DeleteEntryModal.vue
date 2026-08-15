@@ -17,9 +17,7 @@
 defineProps<{
   open: boolean
   title: string
-  /** Human description of the row being deleted, e.g. "Senior Dev · Acme". */
   label: string
-  /** Lowercase noun used in the error message, e.g. "experience". */
   entity: string
   loading: boolean
   error: boolean
