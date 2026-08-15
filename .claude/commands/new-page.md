@@ -208,6 +208,16 @@ it('calls the api with the form data', async () => {
   Reka-based dropdown needs `trigger('pointerdown')` + `trigger('click')`.
 - `UIcon` renders an `<svg>`; a loading `UButton` sets `disabled`.
 
+**What earns a test** (full rules in `AGENTS.md` → *Frontend Testing Strategy*):
+
+- This page-level test **is** the default layer — one per page with logic, asserting visible
+  behaviour and the payload sent to `api/*`.
+- Don't add a separate test for the presentational components the page renders; this one
+  covers them.
+- Don't assert copy or the mere existence of a static element. If the only way a test can fail
+  is a wording change, it doesn't earn its place.
+- A placeholder page needs no test — `router.test.ts` already proves the route resolves to it.
+
 ---
 
 ## Checklist

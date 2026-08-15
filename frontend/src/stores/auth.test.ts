@@ -49,6 +49,25 @@ describe('useAuthStore', () => {
     expect(store.username).toBeNull()
   })
 
+  it('is authenticated with a token whose exp is in the future', () => {
+    const exp = Math.floor(Date.now() / 1000) + 3600
+    const payload = btoa(JSON.stringify({sub: 'admin', exp}))
+    const store = useAuthStore()
+    store.setToken(`header.${payload}.signature`)
+
+    expect(store.isAuthenticated).toBe(true)
+  })
+
+  it('is not authenticated with a token whose exp is in the past', () => {
+    const exp = Math.floor(Date.now() / 1000) - 1
+    const payload = btoa(JSON.stringify({sub: 'admin', exp}))
+    const store = useAuthStore()
+    store.setToken(`header.${payload}.signature`)
+
+    expect(store.token).not.toBeNull()
+    expect(store.isAuthenticated).toBe(false)
+  })
+
   it('initializes the token from localStorage', () => {
     localStorage.setItem('auth.token', 'persisted')
     setActivePinia(createPinia())

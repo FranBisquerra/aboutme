@@ -18,7 +18,7 @@ export interface EducationEntry {
   end: string
 }
 
-export interface UpdateProfileRequest {
+export interface ProfileBasics {
   name: string
   title: string
   location: string
@@ -28,16 +28,11 @@ export interface UpdateProfileRequest {
   bio: string
 }
 
-export interface Profile {
-  name: string
-  title: string
-  location: string
-  email: string
-  linkedin: string
-  github: string
-  bio: string
+export interface Profile extends ProfileBasics {
   languages: Language[]
   skills: string[]
   experience: ExperienceEntry[]
   education: EducationEntry[]
 }
+
+export type UpdateProfileRequest = Profile

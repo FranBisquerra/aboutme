@@ -9,3 +9,22 @@ export const profileSchema = z.object({
   github: z.string().min(1, 'GitHub is required'),
   bio: z.string().min(1, 'Bio is required'),
 })
+
+const month = z.string().regex(/^\d{4}-\d{2}$/, 'Use the YYYY-MM format')
+const year = z.string().regex(/^\d{4}$/, 'Use the YYYY format')
+
+export const experienceSchema = z.object({
+  company: z.string().min(1, 'Company is required'),
+  role: z.string().min(1, 'Role is required'),
+  start: month,
+  end: month.nullable(),
+  description: z.string().min(1, 'Description is required'),
+})
+
+// Unlike experience, education has no "ongoing" case — the backend requires both years.
+export const educationSchema = z.object({
+  institution: z.string().min(1, 'Institution is required'),
+  degree: z.string().min(1, 'Degree is required'),
+  start: year,
+  end: year,
+})

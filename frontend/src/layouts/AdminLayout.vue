@@ -2,8 +2,10 @@
   <UDashboardGroup storage="local" storage-key="admin-sidebar">
     <UDashboardSidebar collapsible :ui="{footer: 'flex-col gap-2', header: 'relative'}">
       <template #header="{collapsed}">
-        <UAvatar icon="i-lucide-user"/>
-        <span v-if="!collapsed" class="font-semibold text-highlighted truncate">{{ username }}</span>
+        <RouterLink to="/admin" class="flex items-center gap-2 min-w-0">
+          <UAvatar icon="i-lucide-user"/>
+          <span v-if="!collapsed" class="font-semibold text-highlighted truncate">{{ username }}</span>
+        </RouterLink>
         <UDashboardSidebarCollapse
           size="xs"
           class="absolute top-1/2 -translate-y-1/2 -right-3 z-10 rounded-full border border-default bg-default"
@@ -29,7 +31,7 @@
 
     <UDashboardPanel>
       <template #header>
-        <UDashboardNavbar title="Admin">
+        <UDashboardNavbar :title="pageTitle">
           <template #right>
             <UButton to="/" icon="i-lucide-external-link" color="neutral" variant="ghost" size="sm" label="Site"/>
           </template>
@@ -44,14 +46,18 @@
 </template>
 
 <script setup lang="ts">
+import {computed} from 'vue'
 import {storeToRefs} from 'pinia'
-import {useRouter} from 'vue-router'
+import {useRoute, useRouter} from 'vue-router'
 import type {NavigationMenuItem} from '@nuxt/ui'
 import {useAuthStore} from '../stores/auth'
 
 const router = useRouter()
+const route = useRoute()
 const auth = useAuthStore()
 const {username} = storeToRefs(auth)
+
+const pageTitle = computed(() => (route.meta.title as string | undefined) ?? 'Admin')
 
 const navItems: NavigationMenuItem[] = [
   {label: 'Profile', icon: 'i-lucide-user', to: '/admin/profile'},

@@ -14,7 +14,7 @@ beforeEach(() => {
 })
 
 afterEach(() => {
-  // PrimeVue Menu popup teleports into <body>; clear it between tests.
+  // The dropdown menu teleports its popup into <body>; clear it between tests.
   document.body.innerHTML = ''
 })
 

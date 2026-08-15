@@ -6,7 +6,7 @@
         <RouterLink to="/">franbisquerra</RouterLink>
       </span>
       <div class="flex items-center">
-        <UDropdownMenu :items="menuItems">
+        <UDropdownMenu :items="menuItems" :modal="false">
           <button
             type="button"
             aria-label="Account menu"

@@ -44,6 +44,13 @@ jobs:
         working-directory: frontend
         run: npm ci
 
+      # `type-check` builds first on purpose: Nuxt UI generates auto-imports.d.ts /
+      # components.d.ts at build time and both are gitignored, so on a fresh checkout
+      # vue-tsc alone cannot resolve auto-imported composables like useToast.
+      - name: Type check
+        working-directory: frontend
+        run: npm run type-check
+
       - name: Run tests
         working-directory: frontend
         run: npm test

@@ -13,20 +13,35 @@ const router = createRouter({
     {path: '/', component: HomePage},
     {path: '/contact', component: ContactPage},
     {path: '/login', component: LoginPage},
-    {path: '/admin', component: AdminHomePage, meta: {requiresAuth: true, layout: 'admin'}},
-    {path: '/admin/profile', component: AdminProfilePage, meta: {requiresAuth: true, layout: 'admin'}},
+    {path: '/admin', component: AdminHomePage, meta: {requiresAuth: true, layout: 'admin', title: 'Home'}},
+    {path: '/admin/profile', component: AdminProfilePage, meta: {requiresAuth: true, layout: 'admin', title: 'Profile'}},
   ],
 })
 
 router.beforeEach((to) => {
-  if (to.meta.requiresAuth && !useAuthStore().isAuthenticated) {
+  if (!to.meta.requiresAuth) {
+    return
+  }
+  const auth = useAuthStore()
+  if (auth.isAuthenticated) {
+    return
+  }
+  // A present-but-rejected token means an expired session; drop it and say so.
+  if (auth.token) {
+    auth.clear()
+    useFlashStore().notify({
+      severity: 'warn',
+      summary: 'Session expired',
+      detail: 'Please log in again.',
+    })
+  } else {
     useFlashStore().notify({
       severity: 'warn',
       summary: 'Access denied',
       detail: 'You must be logged in to access the admin area.',
     })
-    return {path: '/'}
   }
+  return {path: '/'}
 })
 
 export default router

@@ -28,14 +28,11 @@ class GetProfileUseCaseTest {
     // Exhaustive field-by-field mapping is covered by ProfileMapperTest.
     @Test
     void shouldReturnProfileFromRepositoryMappedToResponse() {
-        // ARRANGE
         Profile profile = ProfileFixture.validProfile();
         doReturn(profile).when(profileRepository).get();
 
-        // ACT
         ProfileResponse response = getProfileUseCase.execute();
 
-        // ASSERT
         assertThat(response.name(), is(profile.name()));
         verify(profileRepository).get();
     }

@@ -65,6 +65,31 @@ Tailwind 4, lucide icons) — chosen over PrimeVue when v5 went commercial; form
 
 ---
 
+## Frontend Testing Strategy
+
+Which layer a test belongs to — the question is not "unit vs e2e", it's what the test protects.
+
+- **Pure logic → test it directly.** `utils/`, `stores/`, `api/client.ts` (interceptors), and
+  components whose logic is their own DOM/state with no backend (`BackToTop.vue`). Cheap, fast,
+  and awkward to reach from above.
+- **Anything else → page test with `mountWithPlugins` (the default).** It installs the real
+  router, Pinia, Nuxt UI and TanStack Query and mocks only the HTTP edge (`vi.spyOn(api/*)`).
+  Assert **user-visible behaviour + the payload sent to `api/*`**, never internals.
+  `pages/front/login/LoginPage.test.ts` is the reference.
+- **Don't write**: tests asserting that a component renders some copy or that a static element
+  exists, and tests for presentational components (props in / emits out) with no logic — the
+  page test that uses them already covers those. A test that only breaks when the wording
+  changes has negative value; delete it instead of updating it.
+
+**Known gap, accepted**: `api/*` is always mocked, so a change in the backend DTO shape breaks
+nothing in the frontend suite. It is caught by hand with `/verify-e2e`. If browser e2e is ever
+added, it runs only on PRs labelled `autodeploy`, never on every PR to develop.
+
+CI (`.github/workflows/pr-checks.yml`) gates merges on `./gradlew test`, `npm run type-check`
+and `npm test`.
+
+---
+
 ## Spring Boot 4 Compatibility Notes
 
 - **Jackson 3.x**: package moved from `com.fasterxml.jackson` to `tools.jackson`

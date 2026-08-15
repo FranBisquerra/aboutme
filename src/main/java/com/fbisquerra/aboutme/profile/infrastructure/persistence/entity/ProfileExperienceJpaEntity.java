@@ -25,6 +25,14 @@ public class ProfileExperienceJpaEntity {
     protected ProfileExperienceJpaEntity() {
     }
 
+    public ProfileExperienceJpaEntity(String company, String role, String startDate, String endDate, String description) {
+        this.company = company;
+        this.role = role;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.description = description;
+    }
+
     public Long getId() {
         return id;
     }

@@ -2,8 +2,14 @@ package com.fbisquerra.aboutme.profile.infrastructure.persistence;
 
 import com.fbisquerra.aboutme.profile.domain.model.Profile;
 import com.fbisquerra.aboutme.profile.domain.repository.ProfileRepository;
+import com.fbisquerra.aboutme.profile.infrastructure.persistence.entity.ProfileEducationJpaEntity;
+import com.fbisquerra.aboutme.profile.infrastructure.persistence.entity.ProfileExperienceJpaEntity;
 import com.fbisquerra.aboutme.profile.infrastructure.persistence.entity.ProfileJpaEntity;
+import com.fbisquerra.aboutme.profile.infrastructure.persistence.entity.ProfileLanguageJpaEntity;
 import com.fbisquerra.aboutme.profile.infrastructure.persistence.entity.ProfileSkillJpaEntity;
+import java.util.Collection;
+import java.util.List;
+import java.util.function.Function;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,7 +28,6 @@ public class JpaProfileRepository implements ProfileRepository {
         return toDomain(findEntity());
     }
 
-    // Only the basic fields are persisted; the lists stay untouched until they become editable.
     @Override
     @Transactional
     public void save(Profile profile) {
@@ -34,7 +39,22 @@ public class JpaProfileRepository implements ProfileRepository {
         entity.setLinkedin(profile.linkedin());
         entity.setGithub(profile.github());
         entity.setBio(profile.bio());
+        // The children have no identity outside the profile, so each save replaces them wholesale
+        // (orphanRemoval deletes the old rows) and the list order becomes the stored order.
+        replace(entity.getLanguages(), profile.languages(),
+            l -> new ProfileLanguageJpaEntity(l.name(), l.level()));
+        replace(entity.getSkills(), profile.skills(),
+            ProfileSkillJpaEntity::new);
+        replace(entity.getExperience(), profile.experience(),
+            e -> new ProfileExperienceJpaEntity(e.company(), e.role(), e.start(), e.end(), e.description()));
+        replace(entity.getEducation(), profile.education(),
+            e -> new ProfileEducationJpaEntity(e.institution(), e.degree(), e.start(), e.end()));
         profileJpaRepository.save(entity);
+    }
+
+    private static <D, E> void replace(Collection<E> managed, List<D> source, Function<D, E> toEntity) {
+        managed.clear();
+        source.stream().map(toEntity).forEach(managed::add);
     }
 
     private ProfileJpaEntity findEntity() {

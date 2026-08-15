@@ -28,7 +28,6 @@ const colorBySeverity: Record<FlashMessage['severity'], 'success' | 'info' | 'wa
   error: 'error',
 }
 
-// Turn flash messages (set from outside a component context, e.g. the router guard) into a toast.
 watch(message, (value) => {
   if (value) {
     toast.add({title: value.summary, description: value.detail, color: colorBySeverity[value.severity]})

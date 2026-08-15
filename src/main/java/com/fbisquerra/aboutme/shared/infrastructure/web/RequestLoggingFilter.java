@@ -11,10 +11,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-/**
- * Logs one line per HTTP request: method, URI (with query string), response status and duration.
- * Registered automatically by Spring as it extends {@link OncePerRequestFilter}.
- */
 @Component
 public class RequestLoggingFilter extends OncePerRequestFilter {
 

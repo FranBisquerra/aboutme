@@ -11,11 +11,6 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
-/**
- * Bootstraps the initial admin user from configuration on startup. The credentials come from
- * {@code app.security.admin.*} (env vars in production). If they are not configured, or the
- * admin already exists, it is a no-op — so the password never lives in the repository.
- */
 @Component
 public class AdminUserInitializer implements ApplicationRunner {
 
