@@ -52,6 +52,34 @@ tasks.named('test') {
     }
 }
 
+/**
+ * `bootRun` is the `dev` workflow: the backend runs as a local process, so it never sees the
+ * environment that compose injects into the container. Load `.env` and map MARIADB_* onto the
+ * DB_* variables the datasource reads, pointing at the db container's published port.
+ *
+ * This is what makes `./gradlew bootRun` work with no env vars configured in the IDE.
+ */
+tasks.named('bootRun') {
+    def envFile = file('.env')
+    if (envFile.exists()) {
+        def env = [:]
+        envFile.readLines().each { line ->
+            def trimmed = line.trim()
+            if (trimmed && !trimmed.startsWith('#') && trimmed.contains('=')) {
+                def separator = trimmed.indexOf('=')
+                env[trimmed.substring(0, separator).trim()] = trimmed.substring(separator + 1).trim()
+            }
+        }
+        env.each { key, value -> environment key, value }
+
+        if (env.MARIADB_DATABASE) environment 'DB_URL', "jdbc:mariadb://localhost:3306/${env.MARIADB_DATABASE}"
+        if (env.MARIADB_USER) environment 'DB_USERNAME', env.MARIADB_USER
+        if (env.MARIADB_PASSWORD) environment 'DB_PASSWORD', env.MARIADB_PASSWORD
+    }
+
+    environment 'SPRING_PROFILES_ACTIVE', project.findProperty('profile') ?: 'dev'
+}
+
 def executeNpm(Exec task, List<String> args) {
     task.workingDir 'frontend'
 
